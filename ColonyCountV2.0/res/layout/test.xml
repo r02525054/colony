@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- <com.colonycount.cklab.activity.CustomLayout -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:id="@+id/relativeLayout_root" >
+    
+    <RelativeLayout
+        android:id="@+id/relativeLayout_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/btn_background" >
+
+        <!-- <ImageButton
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/btn_back"
+            android:background="@drawable/selector_btn_clicked"
+            android:padding="10dp" /> -->
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="將圓圈對準培養皿拍攝照片"
+            android:textColor="@color/white" />
+
+        <!-- <View
+            android:id="@+id/view1"
+            android:layout_width="1px"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/button1"
+            android:layout_alignBottom="@+id/button1"
+            android:background="@color/home_background" /> -->
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@color/white" >
+
+            <ImageButton
+	            android:id="@+id/button1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentLeft="true"
+	            android:layout_alignParentTop="true"
+	            android:src="@drawable/btn_back"
+	            android:background="@drawable/selector_btn_clicked"
+	            android:padding="10dp" />
+        </LinearLayout>
+        
+        <View
+            android:id="@+id/view1"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/linearLayout3"
+            android:layout_alignBottom="@+id/linearLayout3"
+            android:background="@color/home_background" />
+
+    </RelativeLayout>
+    
+    
+
+    <SurfaceView
+        android:id="@+id/surfaceview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/relativeLayout_top" /> 
+
+    <ImageView
+        android:id="@+id/photo_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/relativeLayout_top" 
+        android:visibility="gone" />
+
+    <!-- <ImageView
+        android:id="@+id/photoMask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout_top"
+        android:visibility="gone" /> -->
+    
+    <view class="com.colonycount.cklab.crop.CropImageView" 
+                android:id="@+id/image3"
+                android:background="#55000000"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/relativeLayout_top" 
+                android:visibility="gone" />
+
+</RelativeLayout>
