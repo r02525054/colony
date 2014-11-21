@@ -34,7 +34,7 @@
 	        android:id="@+id/text1"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:background="#55000000"
+	        android:background="@color/home_background"
 	        android:textColor="@android:color/white"
 	        android:layout_weight="1"
 	        android:maxLines="1" />
@@ -43,7 +43,7 @@
 	        android:id="@+id/text2"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:background="#55000000"
+	        android:background="@color/home_background"
 	        android:textColor="@android:color/white" 
 	        android:layout_weight="1"
 	        android:maxLines="1" />
@@ -52,7 +52,7 @@
 	        android:id="@+id/text3"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:background="#55000000"
+	        android:background="@color/home_background"
 	        android:textColor="@android:color/white"
 	        android:layout_weight="1"
 	        android:maxLines="1"

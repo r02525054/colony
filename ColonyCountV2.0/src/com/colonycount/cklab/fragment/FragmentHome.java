@@ -16,6 +16,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -56,8 +58,8 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
     
     private String user_id;
     private String[] urls;
+ 
     private Bitmap[] photos;
-    
     private String[] num;
     private String[] date;
     private String[] type;
@@ -90,29 +92,37 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 				try {
 					httpRequest.setEntity(new UrlEncodedFormEntity(reqParams, HTTP.UTF_8));
 					HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequest);
-					strResult = EntityUtils.toString(httpResponse.getEntity());
-					Log.d("Test2", "post result = " + strResult);
-					
-					if(strResult.equals("no data"))
-						return null;
 					
 					if(httpResponse.getStatusLine().getStatusCode() == 200){
-						String[] tokens = strResult.split(",");
-						urls = new String[Integer.parseInt(tokens[0])];
-						photos = new Bitmap[Integer.parseInt(tokens[0])];
-						num = new String[Integer.parseInt(tokens[0])];
-						date = new String[Integer.parseInt(tokens[0])];
-						type = new String[Integer.parseInt(tokens[0])];
-						
-						for(int i = 0; i < urls.length; i++){
-							urls[i] = photoUrlPrefix + tokens[i+1].substring(tokens[i+1].indexOf("/"));
-							Log.d("Test2", "url" + i + ":" + urls[i]);
+						strResult = EntityUtils.toString(httpResponse.getEntity());
+						JSONObject jsonObject = new JSONObject(strResult);
+						String status = jsonObject.getString("status");
+						if(status.equals("success")){
+							JSONArray jsonArray = jsonObject.getJSONArray("result");
+							urls = new String[jsonArray.length()];
+							photos = new Bitmap[jsonArray.length()];
+							num = new String[jsonArray.length()];
+							date = new String[jsonArray.length()];
+							type = new String[jsonArray.length()];
+							
+							// TODO: change the url
+							for(int i = 0; i < jsonArray.length(); i++){
+								JSONObject colony = jsonArray.getJSONObject(i);
+								urls[i] = photoUrlPrefix + colony.getString("img_url").substring(colony.getString("img_url").indexOf("/"));
+								num[i] = colony.getString("tag_number");
+								date[i] = colony.getString("tag_date");
+								type[i] = colony.getString("tag_type");
+							}
+						} else if(status.equals("error")){
+							
 						}
+					// TODO: get httpResponse status
 					} else {
 						Log.d("Test2", "not 200");
 						Log.d("Test2", "getStatusCode = " + httpResponse.getStatusLine().getStatusCode());
 					}
 					
+					// get images from urls
 					if(urls != null){
 						for(int i = 0; i < photos.length; i++){
 							Bitmap bmImg = null;
@@ -144,7 +154,6 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 				reqParams.add(new BasicNameValuePair("get_img_data", "true"));
 				reqParams.add(new BasicNameValuePair("user_id", user_id));
 			}
-			
 		}.execute();
 	}
 
@@ -223,7 +232,6 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 //		}
 		
 		File croppedImageFile = new File(getActivity().getFilesDir(), "test.jpg");
-        
         if ((requestCode == REQUEST_PICTURE) && (resultCode == getActivity().RESULT_OK)) {
         	Uri croppedImage = Uri.fromFile(croppedImageFile);
         	
@@ -234,26 +242,6 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
             
             startActivity(cropImage.getIntent(getActivity()));
         }
-		
-		
-		
-//		File croppedImageFile = new File(getActivity().getFilesDir(), "test.jpg");
-//		if ((requestCode == REQUEST_PICTURE) && (resultCode == Activity.RESULT_OK)) {
-//            // When the user is done picking a picture, let's start the CropImage Activity,
-//            // setting the output image file and size to 200x200 pixels square.
-//            Uri croppedImage = Uri.fromFile(croppedImageFile);
-//            
-//            CropImageIntentBuilder cropImage = new CropImageIntentBuilder(480, 480, croppedImage);
-//            cropImage.setSourceImage(intent.getData());
-//            cropImage.setCircleCrop(true);
-//            cropImage.setDoFaceDetection(false);
-//
-////            startActivityForResult(cropImage.getIntent(getActivity()), REQUEST_CROP_PICTURE);
-//            startActivity(cropImage.getIntent(getActivity()));
-//        } else if ((requestCode == REQUEST_CROP_PICTURE) && (resultCode == Activity.RESULT_OK)) {
-//            // When we are done cropping, display it in the ImageView.
-////            imageView.setImageBitmap(BitmapFactory.decodeFile(croppedImageFile.getAbsolutePath()));
-//        }
 	}
 
 	@Override
@@ -264,22 +252,9 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 	}
 	
 	public void setGridView(){
-//		info[0] = "編號:1\n日期:2014-11-04\n菌種:Lactobacillus";
-//		info[0] = "日期:2014-11-04";
-//		num[0] = "編號:1";
-//		date[0] = "日期:2014-11-04";
-//		type[0] = "菌種:Lactobacillus";
-				
 		final Context context = getActivity();
 		CustomGrid adapter = new CustomGrid(context, num, date, type, photos);
-		
 		gridView.setAdapter(adapter);
-//		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(context, "You Clicked at " + info[position], Toast.LENGTH_SHORT).show();
-//            }
-//        });
 	}
 
 	@Override
