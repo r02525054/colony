@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="photo_top_background">#323232</color>
-    <color name="photo_mid_background">#545454</color>
-    <color name="white">#FFFFFF</color>
-    <color name="home_background">#B2D6F7</color>
-    <color name="btn_background">#6A94CD</color>
-    <color name="btn_clicked">#806A94CD</color>
-</resources>
