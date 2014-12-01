@@ -258,22 +258,22 @@ public class HomeActivity extends GPlusClientActivity {
 	    					   null).show(getSupportFragmentManager(), "dialog");
 	    	break;
 	    default:
-	        //�٨S�s�@���ﶵ�Afragment �O null�A������^
+	        //�����S���s���@���������������Afragment ���O null���A������������������^
 	        return;
 	    }
 	}
 
 	
-	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		/* Logout */
-		Log.d(TAG, "onConnectionFailed");
-		
-		Intent i = new Intent(this, LoginActivity.class);
-		startActivity(i);
-		finish();
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-	}
+//	@Override
+//	public void onConnectionFailed(ConnectionResult result) {
+//		/* Logout */
+//		Log.d(TAG, "onConnectionFailed");
+//		
+//		Intent i = new Intent(this, LoginActivity.class);
+//		startActivity(i);
+//		finish();
+//		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+//	}
 	
 	private void setPage(int page){
 		nowPage = page;
