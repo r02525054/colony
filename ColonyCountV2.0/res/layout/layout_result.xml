@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:id="@+id/rel_root2">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_top2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/btn_background" >
+		
+        
+        <LinearLayout 
+            android:id="@+id/btn_result_cancel_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+        	
+            <ImageButton
+	            android:id="@+id/btn_result_cancel"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentLeft="true"
+	            android:layout_alignParentTop="true"
+	            android:src="@drawable/btn_cancel"
+	            android:background="@drawable/selector_btn_clicked"
+	            android:padding="10dp" />
+        </LinearLayout>
+        
+
+        <!-- <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/button3" /> -->
+	
+		<LinearLayout 
+            android:id="@+id/btn_save_or_ok_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+	        android:layout_alignParentTop="true"
+            android:background="@color/white">
+            
+		    <ImageButton
+	            android:id="@+id/btn_save_or_ok"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/selector_btn_clicked"
+	            android:padding="10dp"
+	            android:src="@drawable/btn_save2" />
+		</LinearLayout>
+        
+
+        <TextView
+            android:id="@+id/text_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="TextView"
+            android:textAppearance="?android:attr/textAppearanceLargeInverse" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btn_result_cancel_container"
+            android:layout_toRightOf="@+id/btn_result_cancel_container"
+            android:background="@color/white" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/btn_save_or_ok_container"
+            android:layout_alignBottom="@+id/btn_save_or_ok_container"
+            android:background="@color/white" />
+
+    </RelativeLayout>
+
+    <view class="com.colonycount.cklab.crop.CropImageView2" 
+                android:id="@+id/image2"
+                android:background="#55000000"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/relativeLayout_top2" />
+    
+    <!-- <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/relativeLayout_top2" /> -->
+
+    <ZoomControls
+        android:id="@+id/zoomControls1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/image2"
+         />
+
+    <LinearLayout
+        android:id="@+id/container_show_colony"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/image2"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/show_red_colony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="@color/red" />
+
+        <TextView
+            android:id="@+id/show_green_colony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="@color/green" />
+
+        <TextView
+            android:id="@+id/show_purple_colony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="@color/purple" />
+
+    </LinearLayout>
+
+</RelativeLayout>

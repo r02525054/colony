@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/btn_background" >
+
+    <!-- dialog header -->
+    <LinearLayout 
+        android:id="@+id/dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <TextView
+		    android:id="@+id/textView1"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="搜尋菌落"
+		    android:textAppearance="?android:attr/textAppearanceLarge"
+		    android:textColor="@color/white"
+		    android:layout_marginLeft="10dp"
+		    android:layout_marginBottom="20dp"
+		    android:layout_marginTop="20dp" />
+	    
+	    <View 
+	        android:layout_width="match_parent"
+	        android:layout_height="1dp"
+	        android:background="@color/white"/>
+    </LinearLayout>
+    
+    <!-- dialog body -->
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/dialog_header"
+        android:layout_above="@+id/dialog_footer" >
+
+        <!-- 所有條件的container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <!-- 條件1: 日期 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="日期"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp" >
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="從"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white" />
+
+                    <Button
+                        android:id="@+id/btn_search_start_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@android:drawable/ic_menu_more"
+                        android:text="2014/11/30" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp" >
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="到"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white" />
+
+                    <Button
+                        android:id="@+id/btn_search_end_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@android:drawable/ic_menu_more"
+                        android:text="2014/11/30" />
+                </LinearLayout>
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp" >
+                    
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        
+                        <RadioButton
+	                        android:id="@+id/radioButton1"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="今日" />
+	
+	                    <RadioButton
+	                        android:id="@+id/radioButton2"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="三天內" />
+	
+	                    <RadioButton
+	                        android:id="@+id/radioButton3"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="一周內" />
+	                </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 條件2: 菌種 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="菌種"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+
+				<LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp" >
+                    
+				    <CheckBox
+	                    android:id="@+id/checkBox2"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="酵母菌"
+	                    android:textColor="@color/white" />
+	
+	                <CheckBox
+	                    android:id="@+id/checkBox3"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="根瘤菌"
+	                    android:textColor="@color/white" />
+	
+	                <CheckBox
+	                    android:id="@+id/checkBox4"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="固氮菌"
+	                    android:textColor="@color/white" />
+				</LinearLayout>
+            </LinearLayout>
+
+            <!-- 條件3: 稀釋倍數 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginBottom="10dp" >
+				
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="稀釋倍數"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+                
+                <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp" >
+	                
+                    <com.colonycount.cklab.rangebar.RangeBar
+					    xmlns:custom="http://schemas.android.com/apk/res-auto"
+					    android:id="@+id/rangebar"
+					    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+					    custom:tickCount="7"
+					    />
+	
+	                <LinearLayout
+	                    android:layout_width="match_parent"
+	                    android:layout_height="match_parent"
+	                    android:weightSum="7" >
+	
+	                    <TextView
+	                        android:id="@+id/rangebar_value_1"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-1"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	
+	                    <TextView
+	                        android:id="@+id/rangebar_value_2"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-2"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	                    
+	                    <TextView
+	                        android:id="@+id/rangebar_value_3"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-3"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	                    
+	                    <TextView
+	                        android:id="@+id/rangebar_value_4"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-4"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	                    
+	                    <TextView
+	                        android:id="@+id/rangebar_value_5"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-5"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	                    
+	                    <TextView
+	                        android:id="@+id/rangebar_value_6"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-6"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	                    
+	                    <TextView
+	                        android:id="@+id/rangebar_value_7"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:text="10-7"
+	                        android:textAppearance="?android:attr/textAppearanceMedium"
+	                        android:textColor="@color/white"
+	                        android:layout_weight="1"
+	                        android:textSize="14sp"
+	                        android:gravity="center" />
+	                </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            
+            <!-- 條件4: 實驗對照參數 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="10dp" >
+                
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="實驗對照參數"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+            	    
+                <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp" >
+                    
+				    <CheckBox
+	                    android:id="@+id/checkBox5"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="時間 vs 菌數"
+	                    android:textColor="@color/white" />
+	
+	                <CheckBox
+	                    android:id="@+id/checkBox6"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="濃度 vs 菌數"
+	                    android:textColor="@color/white" />
+	
+	                <CheckBox
+	                    android:id="@+id/checkBox7"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="酸鹼性 vs 菌數"
+	                    android:textColor="@color/white" />
+				</LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    
+    <!-- dialog footer button -->
+    <LinearLayout 
+        android:id="@+id/dialog_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
+        
+        <View 
+	        android:layout_width="match_parent"
+	        android:layout_height="1dp"
+	        android:background="@color/white"/>
+        
+        <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:layout_alignParentBottom="true">
+            
+            <Button
+                android:id="@+id/btn_search_cancel"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="取消"
+	            android:padding="0dp"
+	            android:background="@color/btn_background"
+	            android:textColor="@color/white" />
+            
+            <View 
+		        android:layout_width="1dp"
+		        android:layout_height="match_parent"
+		        android:background="@color/white"/>
+	        
+	        <Button
+	            android:id="@+id/btn_search_ok"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="搜尋"
+	            android:padding="0dp"
+	            android:background="@color/btn_background"
+	            android:textColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
