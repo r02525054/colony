@@ -1,11 +1,13 @@
 package com.colonycount.cklab.activity;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
@@ -32,10 +35,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,6 +62,7 @@ import com.colonycount.cklab.model.CancelView;
 import com.colonycount.cklab.model.Component;
 import com.colonycount.cklab.model.DataWrapper;
 import com.colonycount.cklab.model.ImgInfo;
+import com.colonycount.cklab.rangebar.RangeBar;
 
 public class ResultActivity extends GPlusClientActivity implements View.OnClickListener, AsyncTaskCompleteListener<Boolean> {
 	private ImageView imageView_bot;
@@ -66,7 +72,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	private Context context;
 	private TextView text_result;
 	
-	private ImageButton btn_save;
+	private ImageButton btn_set_tag;
 	private ImageButton btn_circle_add;
 	private ImageButton btn_circle_sub;
 	
@@ -81,14 +87,22 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
     public int hvCount;
     public State state = State.VIEW;
     
+    private TextView showRedColony;
+    private TextView showGreenColony;
+    private TextView showPurpleColony;
+    private boolean isRedColonyShow = true;
+    private boolean isGreenColonyShow = true;
+    private boolean isPurpleColonyShow = true;
+    
     public enum State {
-    	VIEW, ADD, SUB
+    	VIEW, ADD, SUB, SET_TAG
     }
 	
     public HighlightView2 mCrop2;
     private ZoomControls zoomControls;
-    private ImageButton btn_set_tag;
+//    private ImageButton btn_set_tag;
     private ImgInfo imgInfo;
+    private ImageButton btn_save_or_ok;
     
     private int areaThreshold = 4;
 	private double shapeFactorThreshold = 0.5;
@@ -99,7 +113,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		super.onCreate(savedInstanceState);
 		
 		setFullScreen();
-		setContentView(R.layout.test2);
+		setContentView(R.layout.layout_result);
 		setViews();
 		setListeners();
 		setColony();
@@ -108,15 +122,19 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	
 	private void setViews(){
 		imgInfo = new ImgInfo(loadPrefIntData("imgNumber", 1));
-		left = (ImageButton) findViewById(R.id.button3);
+		left = (ImageButton) findViewById(R.id.btn_result_cancel);
+		btn_save_or_ok = (ImageButton) findViewById(R.id.btn_save_or_ok);
 		image = (CropImageView2) findViewById(R.id.image2);
 		rel_top = (RelativeLayout) findViewById(R.id.relativeLayout_top2);
 		rel_root = (RelativeLayout) findViewById(R.id.rel_root2);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls1);
 		zoomControls.setVisibility(View.INVISIBLE);
 		context = this;
-		btn_set_tag = (ImageButton) findViewById(R.id.button1);
-		
+
+		showRedColony = (TextView) findViewById(R.id.show_red_colony);
+		showGreenColony = (TextView) findViewById(R.id.show_green_colony);
+		showPurpleColony = (TextView) findViewById(R.id.show_purple_colony);
+		text_result = (TextView) findViewById(R.id.text_result);
 		
 		byte[] data = getIntent().getByteArrayExtra("pictureData");
 		int rotation = getIntent().getIntExtra("pictureRotation", -1);
@@ -150,6 +168,13 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		    	params.topMargin = rel_top_height + windowSize.x;
 		    	rel_root.addView(imageView_bot, params);
 		    	
+		    	// add text info
+//		    	LinearLayout textContainer = (LinearLayout) findViewById(R.id.container_show_colony);
+//		    	params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+//		    	params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//		    	params.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.image2);
+//		    	rel_root.addView(textContainer, params);
+		    	
 		    	int imageRadius = 40;
 		    	btn_circle_add = new ImageButton(context);
 		    	btn_circle_add.setImageResource(R.drawable.btn_add);
@@ -163,11 +188,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		    	btn_circle_sub.setPadding(0,0,0,0);
 		    	btn_circle_sub.setScaleType(ScaleType.FIT_CENTER);
 		    	
-		    	btn_save = new ImageButton(context);
-		    	btn_save.setImageResource(R.drawable.btn_save);
-		    	btn_save.setBackgroundResource(R.drawable.selector_btn_clicked);
-		    	btn_save.setPadding(0,0,0,0);
-//		    	btn_save.setScaleType(ScaleType.FIT_CENTER);
+		    	btn_set_tag = new ImageButton(context);
+		    	btn_set_tag.setImageResource(R.drawable.btn_edit);
+		    	btn_set_tag.setBackgroundResource(R.drawable.selector_btn_clicked);
+		    	btn_set_tag.setPadding(0,0,0,0);
+		    	btn_set_tag.setScaleType(ScaleType.FIT_CENTER);
 		    	
 		    	params = new RelativeLayout.LayoutParams(2*imageRadius, 2*imageRadius);
 		    	params.leftMargin = windowSize.x / 6 - imageRadius;
@@ -179,51 +204,135 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		    	params.topMargin = rel_top_height + windowSize.x + (windowSize.y - rel_top_height - windowSize.x) / 2 - imageRadius;
 		    	rel_root.addView(btn_circle_sub, params);
 		    	
-		    	imageRadius = 60;
 		    	params = new RelativeLayout.LayoutParams(2*imageRadius, 2*imageRadius);
 		    	params.leftMargin = windowSize.x / 6 * 5 - imageRadius;
 		    	params.topMargin = rel_top_height + windowSize.x + (windowSize.y - rel_top_height - windowSize.x) / 2 - imageRadius;
-		    	rel_root.addView(btn_save, params);
+		    	rel_root.addView(btn_set_tag, params);
 		    	
-		    	// TODO: add red circle
 		    	btn_circle_add.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						state = State.ADD;
-						setSaveDoneBtn();
+						setTitleBar();
+						setFuncBtn();
 						
-						addHighlightView();
-	                    image.invalidate();
-						
-	                    mCrop = image.mHighlightViews.get(image.mHighlightViews.size()-1);
-                        mCrop.setFocus(true);
-                        setDisabledBtn();
+//						setSaveDoneBtn();
+//						addHighlightView();
+//	                    image.invalidate();
+//						
+//	                    mCrop = image.mHighlightViews.get(image.mHighlightViews.size()-1);
+//                        mCrop.setFocus(true);
+//                        setDisabledBtn();
 					}
 				});
 		    	
 		    	btn_circle_sub.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						zoomControls.setVisibility(View.VISIBLE);
 						state = State.SUB;
-						addHighlightView3(0, 0, mBitmapShow.getWidth(), mBitmapShow.getHeight());
-						setSaveDoneBtn();
-						setDisabledBtn();
-						drawHighlightImage();
+						setTitleBar();
+						setFuncBtn();
+						
+//						zoomControls.setVisibility(View.VISIBLE);
+//						addHighlightView3(0, 0, mBitmapShow.getWidth(), mBitmapShow.getHeight());
+//						setSaveDoneBtn();
+//						setDisabledBtn();
+//						drawHighlightImage();
 					}
 				});
 		    	
-		    	btn_save.setOnClickListener(new View.OnClickListener() {
+		    	btn_set_tag.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						Log.d("test", "button save");
-						if(state == State.ADD || state == State.SUB){
-							doDone();
-						} else if(state == State.VIEW){
-							saveImg();
-						}
+//						Log.d("test", "button save");
+//						if(state == State.ADD || state == State.SUB){
+//							doDone();
+//						} else if(state == State.VIEW){
+//							saveImg();
+//						}
+						
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						View dialogContent = getLayoutInflater().inflate(R.layout.dialog_add_tag_view, null);
+						builder.setView(dialogContent);
+					    
+//					    Button btnSearchStartDate = (Button) dialogContent.findViewById(R.id.btn_search_start_date);
+//					    Button btnSearchEndDate = (Button) dialogContent.findViewById(R.id.btn_search_end_date);
+//					    btnSearchStartDate.setOnClickListener(new View.OnClickListener() {
+//							@Override
+//							public void onClick(View v) {
+//								// TODO Auto-generated method stub
+//								Calendar c = Calendar.getInstance();
+//								
+//								final DatePickerDialog dateDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+//								    boolean fired = false;
+//								    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
+//								        if (fired == true) {
+//								            return;
+//								        } else {
+//								            fired = true;
+//								        }
+//								    }
+//								}, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+//								dateDialog.show();
+//							}
+//						});
+//					    btnSearchEndDate.setOnClickListener(new View.OnClickListener() {
+//							@Override
+//							public void onClick(View v) {
+//								// TODO Auto-generated method stub
+//								
+//							}
+//						});
+					    
+//					    RangeBar rangebar = (RangeBar) dialogContent.findViewById(R.id.rangebar);
+//					    TextView rangebarValue1 = (TextView) dialogContent.findViewById(R.id.rangebar_value_1);
+//					    TextView rangebarValue2 = (TextView) dialogContent.findViewById(R.id.rangebar_value_2);
+//					    TextView rangebarValue3 = (TextView) dialogContent.findViewById(R.id.rangebar_value_3);
+//					    TextView rangebarValue4 = (TextView) dialogContent.findViewById(R.id.rangebar_value_4);
+//					    TextView rangebarValue5 = (TextView) dialogContent.findViewById(R.id.rangebar_value_5);
+//					    TextView rangebarValue6 = (TextView) dialogContent.findViewById(R.id.rangebar_value_6);
+//					    TextView rangebarValue7 = (TextView) dialogContent.findViewById(R.id.rangebar_value_7);
+//					    rangebarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
+//					    rangebarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
+//					    rangebarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
+//					    rangebarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
+//					    rangebarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
+//					    rangebarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
+//					    rangebarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
+//					    rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+//					        @Override
+//					        public void onIndexChangeListener(RangeBar rangeBar, int leftThumbIndex, int rightThumbIndex) { 
+//					            Log.d("Test2", "left = " + leftThumbIndex + ", right = " + rightThumbIndex);
+//					        }
+//					    });
+					    
+					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
+					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
+					    
+					    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+					    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+					    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+					    
+					    final Dialog d = builder.create();
+					    d.show();
+					    d.getWindow().setAttributes(lp);
+					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+								d.dismiss();
+							}
+						});
+					    
+					    btnSetTagOK.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+								d.dismiss();
+							}
+						});
 					}
 		    	});
 		    	
@@ -231,71 +340,78 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 			}
 		});
 		
-		btn_set_tag.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				PopupMenu popupMenu = new PopupMenu(context, btn_set_tag);
-			    popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-			    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-					@Override
-					public boolean onMenuItemClick(final MenuItem item) {
-						if(item.getItemId() == R.id.popupmenu_num || item.getItemId() == R.id.popupmenu_type){
-							AlertDialog.Builder builder = new AlertDialog.Builder(context);
-							final EditText input = new EditText(context);
-							if(item.getItemId() == R.id.popupmenu_num){
-								builder.setTitle("設定編號");
-								input.setInputType(InputType.TYPE_CLASS_NUMBER);
-								input.setText(imgInfo.getNumber()+"");
-							} else {
-								builder.setTitle("設定菌種");
-								input.setText(imgInfo.getType());
-							}
-							
-							builder.setPositiveButton("完成", new DialogInterface.OnClickListener() {
-						        public void onClick(DialogInterface dialog, int whichButton) {
-						        	if(item.getItemId() == R.id.popupmenu_num)
-						        		imgInfo.setNumber(Integer.parseInt(input.getText().toString()));
-						        	else
-						        		imgInfo.setType(input.getText().toString());
-						        }
-						    });
-							
-							builder.setView(input);
-						    builder.setCancelable(false);
-						    AlertDialog dialog = builder.create();
-						    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-						    dialog.show();
-						} else if(item.getItemId() == R.id.popupmenu_date){
-							final DatePickerDialog dateDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-							    boolean fired = false;
-							    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-							        Log.i("PEW PEW", "Double fire check");
-							        if (fired == true) {
-							            Log.i("PEW PEW", "Double fire occured. Silently-ish returning");
-							            return;
-							        } else {
-							            //first time fired
-							            fired = true;
-							        }
-							        //Normal date picking logic goes here
-							        imgInfo.setDate(year, monthOfYear, dayOfMonth);
-							    }
-							}, imgInfo.getYear(), imgInfo.getMonth(), imgInfo.getDay());
-							dateDialog.setCancelable(false);
-							dateDialog.show();
-						}
-							
-						return true;
-					}
-			    });
-			    popupMenu.show();
-			}
-		});
+//		btn_set_tag.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				PopupMenu popupMenu = new PopupMenu(context, btn_set_tag);
+//			    popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+//			    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//					@Override
+//					public boolean onMenuItemClick(final MenuItem item) {
+//						if(item.getItemId() == R.id.popupmenu_num || item.getItemId() == R.id.popupmenu_type){
+//							AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//							final EditText input = new EditText(context);
+//							if(item.getItemId() == R.id.popupmenu_num){
+//								builder.setTitle("設定編號");
+//								input.setInputType(InputType.TYPE_CLASS_NUMBER);
+//								input.setText(imgInfo.getNumber()+"");
+//							} else {
+//								builder.setTitle("設定菌種");
+//								input.setText(imgInfo.getType());
+//							}
+//							
+//							builder.setPositiveButton("完成", new DialogInterface.OnClickListener() {
+//						        public void onClick(DialogInterface dialog, int whichButton) {
+//						        	if(item.getItemId() == R.id.popupmenu_num)
+//						        		imgInfo.setNumber(Integer.parseInt(input.getText().toString()));
+//						        	else
+//						        		imgInfo.setType(input.getText().toString());
+//						        }
+//						    });
+//							
+//							builder.setView(input);
+//						    builder.setCancelable(false);
+//						    AlertDialog dialog = builder.create();
+//						    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+//						    dialog.show();
+//						} else if(item.getItemId() == R.id.popupmenu_date){
+//							final DatePickerDialog dateDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+//							    boolean fired = false;
+//							    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
+//							        Log.i("PEW PEW", "Double fire check");
+//							        if (fired == true) {
+//							            Log.i("PEW PEW", "Double fire occured. Silently-ish returning");
+//							            return;
+//							        } else {
+//							            //first time fired
+//							            fired = true;
+//							        }
+//							        //Normal date picking logic goes here
+//							        imgInfo.setDate(year, monthOfYear, dayOfMonth);
+//							    }
+//							}, imgInfo.getYear(), imgInfo.getMonth(), imgInfo.getDay());
+//							dateDialog.setCancelable(false);
+//							dateDialog.show();
+//						}
+//							
+//						return true;
+//					}
+//			    });
+//			    popupMenu.show();
+//			}
+//		});
 	}
 	
 	private void setListeners(){
-		left.setOnClickListener(this);
+		left.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
+		
 		zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -342,6 +458,9 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 								  image.showView.getCenterY()+mBitmapShow.getHeight()/target/2);
 			}
 		});
+		showRedColony.setOnClickListener(this);
+		showGreenColony.setOnClickListener(this);
+		showPurpleColony.setOnClickListener(this);
 	}
 	
 	public void setColony(){
@@ -374,7 +493,82 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		Log.d("test4", "cancelView red count = " + rCount);
 		Log.d("test4", "cancelView green count = " + gCount);
 		Log.d("test4", "cancelView purple count = " + pCount);
+		
+		setTextInfo(image.rViews.size(), image.gViews.size(), image.myViews.size());
 	}
+	
+	
+	public void setTextInfo(int rCount, int gCount, int pCount){
+		text_result.setText("菌落總數:" + rCount + "個");
+		showRedColony.setText("菌落:" + rCount);
+		showGreenColony.setText("非菌落:" + gCount);
+		showPurpleColony.setText("新增:" + pCount);
+	}
+	
+	public void setTitleBar(){
+		if(state == State.ADD || state == State.SUB){
+			if(state == State.ADD){
+				text_result.setText("新增菌落");
+			} else if(state == State.SUB){
+				text_result.setText("刪除菌落");
+			}
+			
+			// set cancel button
+			left.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					state = State.VIEW;
+					setTitleBar();
+				}
+			});
+			
+			// set ok button
+			btn_save_or_ok.setImageResource(R.drawable.btn_check);
+			btn_save_or_ok.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					state = State.VIEW;
+					setTitleBar();
+					// TODO:
+					// do save change
+				}
+			});
+		} else if(state == State.VIEW){
+			text_result.setText("菌落總數:" + image.rViews.size() + "個");
+			// set cancel button
+			left.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					finish();
+				}
+			});
+			
+			// set save button
+			btn_save_or_ok.setImageResource(R.drawable.btn_save2);
+			btn_save_or_ok.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					saveImg();
+				}
+			});
+			
+			btn_circle_add.setVisibility(View.VISIBLE);
+			btn_circle_sub.setVisibility(View.VISIBLE);
+			btn_set_tag.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public void setFuncBtn(){
+		if(state == State.ADD || state == State.SUB){
+			btn_circle_add.setVisibility(View.GONE);
+			btn_circle_sub.setVisibility(View.GONE);
+			btn_set_tag.setVisibility(View.GONE);
+		} 
+	}
+	
 	
 	public void saveImg(){
 		// save the image number to sharedpref
@@ -476,10 +670,12 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 			image.mHighlightViews.clear();
 			image.invalidate();
 			image.zoomTo(1F, image.getWidth()/2, image.getHeight()/2, 300F);
+			setTextInfo(image.rViews.size(), image.gViews.size(), image.myViews.size());
 		} else if(state == State.SUB){
 			zoomControls.setVisibility(View.INVISIBLE);
 			image.removeHighlightView3();
 			drawNormalImage();
+			setTextInfo(image.rViews.size(), image.gViews.size(), image.myViews.size());
 		}
 		
 		state = State.VIEW;
@@ -514,12 +710,40 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch(v.getId()){
-		case R.id.button3:
-			finish();
+		case R.id.show_red_colony:
+			isRedColonyShow = !isRedColonyShow;
+			for(int i = 0; i < image.rViews.size(); i++){
+				HighlightView4 rView = image.rViews.get(i);
+				rView.setHidden(!rView.getHidden());
+			}
+			
+			image.invalidate();
+			break;
+		case R.id.show_green_colony:
+			isGreenColonyShow = !isGreenColonyShow;
+			for(int i = 0; i < image.gViews.size(); i++){
+				HighlightView5 gView = image.gViews.get(i);
+				gView.setHidden(!gView.getHidden());
+			}
+			
+			image.invalidate();
+			break;
+		case R.id.show_purple_colony:
+			isPurpleColonyShow = !isPurpleColonyShow; 
+			for(int i = 0; i < image.myViews.size(); i++){
+				HighlightView2 myView = image.myViews.get(i);
+				myView.setHidden(!myView.getHidden());
+			}
+			
+			image.invalidate();
 			break;
 		}
+	}
+	
+	
+	public void setTextColor(){
+		
 	}
 	
     
@@ -607,6 +831,9 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
                 cropWidth = cropHeight * mAspectX / mAspectY;
             }
         }
+        
+        if(!isPurpleColonyShow)
+        	hv.setHidden(true);
         
         RectF cropRect = new RectF(centerX-radius, centerY-radius, centerX+radius, centerY+radius);
         hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
