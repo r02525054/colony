@@ -16,6 +16,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +40,9 @@ public class HomeActivity extends GPlusClientActivity {
     private CharSequence mTitle;
     
     private int nowPage;
+    
+    private static FragmentHome    fragmentHome;
+    private static FragmentSetting fragmentSettings; 
     
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {  
         @Override  
@@ -118,6 +123,7 @@ public class HomeActivity extends GPlusClientActivity {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getActionBar().setTitle(mTitle);
+                FragmentHome.setMenuVisible(true);
                 
                 supportInvalidateOptionsMenu(); 
             }
@@ -126,6 +132,7 @@ public class HomeActivity extends GPlusClientActivity {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getActionBar().setTitle(mDrawerTitle);
+                FragmentHome.setMenuVisible(false);
                 
                 supportInvalidateOptionsMenu();
             }
@@ -155,15 +162,6 @@ public class HomeActivity extends GPlusClientActivity {
 	    if (drawerToggle.onOptionsItemSelected(item)) {
 	        return true;
 	    }
-	    
-	    //action buttons
-	    switch (item.getItemId()) {
-	    case R.id.actionbar_menu:
-	        //....
-	        break;
-	    default:
-	        break;
-	    }
 
 	    return super.onOptionsItemSelected(item);
 	}
@@ -186,7 +184,7 @@ public class HomeActivity extends GPlusClientActivity {
 
 	
 	private void selectItem(int position) {
-		Fragment fragment = null;
+//		Fragment fragment = null;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		String title = getResources().getStringArray(R.array.drawer_menu)[position];
@@ -197,10 +195,12 @@ public class HomeActivity extends GPlusClientActivity {
 	    switch (position) {
 	    case 0:
 	    	if(nowPage != 0){
-	    		fragment = new FragmentHome(loadPrefStringData(USER_ID));
+	    		Log.d("Test2", "fragmentHome == null: " + (fragmentHome == null));
+	    		if(fragmentHome == null)
+	    			fragmentHome = new FragmentHome(loadPrefStringData(USER_ID));
 			    // -----
-			    fragmentTransaction.replace(R.id.content_frame, fragment);
-			    fragmentTransaction.addToBackStack("home");
+			    fragmentTransaction.replace(R.id.content_frame, fragmentHome);
+//			    fragmentTransaction.addToBackStack("home");
 			    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			    fragmentTransaction.commit();
 
@@ -214,11 +214,12 @@ public class HomeActivity extends GPlusClientActivity {
 	    	break;
 	    case 1:
 	    	if(nowPage != 1){
-	    		fragment = new FragmentSetting();
+	    		Log.d("Test2", "fragmentSettings == null: " + (fragmentSettings == null));
+	    		if(fragmentSettings == null)
+	    			fragmentSettings = new FragmentSetting();
 		        
-		        // -----
-			    fragmentTransaction.replace(R.id.content_frame, fragment);
-			    fragmentTransaction.addToBackStack("home");
+			    fragmentTransaction.replace(R.id.content_frame, fragmentSettings);
+//			    fragmentTransaction.addToBackStack("home");
 			    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			    fragmentTransaction.commit();
 
@@ -258,25 +259,30 @@ public class HomeActivity extends GPlusClientActivity {
 	    					   null).show(getSupportFragmentManager(), "dialog");
 	    	break;
 	    default:
-	        //�����S���s���@���������������Afragment ���O null���A������������������^
 	        return;
 	    }
 	}
 
 	
-//	@Override
-//	public void onConnectionFailed(ConnectionResult result) {
-//		/* Logout */
-//		Log.d(TAG, "onConnectionFailed");
-//		
-//		Intent i = new Intent(this, LoginActivity.class);
-//		startActivity(i);
-//		finish();
-//		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-//	}
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		/* Logout */
+		Log.d(TAG, "onConnectionFailed");
+		
+		Intent i = new Intent(this, LoginActivity.class);
+		startActivity(i);
+		finish();
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
 	
 	private void setPage(int page){
 		nowPage = page;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	

@@ -45,7 +45,9 @@ public class HighlightView {
     public static final int GROW_TOP_EDGE    = (1 << 3);
     public static final int GROW_BOTTOM_EDGE = (1 << 4);
     public static final int MOVE             = (1 << 5);
-
+    // my code
+    public static final int GROW			 = (1 << 6);
+    	
     // my code
     float centerX;
     float centerY;
@@ -192,8 +194,7 @@ public class HighlightView {
         if (mCircle) {
             float distX = x - r.centerX();
             float distY = y - r.centerY();
-            int distanceFromCenter =
-                    (int) Math.sqrt(distX * distX + distY * distY);
+            int distanceFromCenter = (int) Math.sqrt(distX * distX + distY * distY);
             int radius  = mDrawRect.width() / 2;
             int delta = distanceFromCenter - radius;
             if (Math.abs(delta) <= hysteresis) {
@@ -255,6 +256,15 @@ public class HighlightView {
             // Convert to image space before sending to moveBy().
             moveBy(dx * (mCropRect.width() / r.width()),
                    dy * (mCropRect.height() / r.height()));
+        } else if(edge == GROW){ 
+        	float xDelta = dx * (mCropRect.width() / r.width());
+            float yDelta = dy * (mCropRect.height() / r.height());
+            
+        	if((xDelta < 0 && yDelta < 0 && xDelta > yDelta) || (xDelta > 0 && yDelta > 0 && xDelta > yDelta)){
+        		growBy(dx, 0);
+        	} else if((xDelta < 0 && yDelta < 0 && yDelta > xDelta) || (xDelta > 0 && yDelta > 0 && yDelta > xDelta)){
+        		growBy(0, dy);
+        	} 
         } else {
             if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
                 dx = 0;
@@ -267,6 +277,8 @@ public class HighlightView {
             // Convert to image space before sending to growBy().
             float xDelta = dx * (mCropRect.width() / r.width());
             float yDelta = dy * (mCropRect.height() / r.height());
+            
+            Log.d("Test2", (((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta + ", " + (((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
             growBy((((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta,
                     (((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
         }

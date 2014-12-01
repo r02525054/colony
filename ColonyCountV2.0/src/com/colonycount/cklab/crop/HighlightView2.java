@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.colonycount.cklab.activity.R;
 
+// 畫出"自己加"的colony
 public class HighlightView2 {
 
     @SuppressWarnings("unused")
@@ -57,6 +58,10 @@ public class HighlightView2 {
 
     public void setHidden(boolean hidden) {
         mHidden = hidden;
+    }
+    
+    public boolean getHidden(){
+    	return mHidden;
     }
     
     protected void draw(Canvas canvas) {

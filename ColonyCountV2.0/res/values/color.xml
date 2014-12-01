@@ -6,4 +6,7 @@
     <color name="home_background">#B2D6F7</color>
     <color name="btn_background">#6A94CD</color>
     <color name="btn_clicked">#806A94CD</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#00FF00</color>
+    <color name="purple">#EF04D6</color>
 </resources>

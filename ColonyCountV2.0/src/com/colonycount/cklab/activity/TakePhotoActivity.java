@@ -42,6 +42,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
@@ -66,6 +67,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     private ImageButton btnCapture;
     private ImageButton btnReCapture;
     private ImageButton btnCount;
+    private TextView titleMsg;
     
     private AsyncTaskCompleteListener<Boolean> asyncTaskCompleteListener;
     private Bitmap rawImg;
@@ -95,7 +97,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 		if(requestCode != -1){
 			if(requestCode == TAKE_PHOTO){
 				setFullScreen();
-		        setContentView(R.layout.test);
+		        setContentView(R.layout.layout_take_photo_preview);
 		        setViews();
 		        
 		        // Find the total number of cameras available
@@ -164,6 +166,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     
     
     private void setViews(){
+    	titleMsg = (TextView) findViewById(R.id.title_msg);
     	relativeLayout_root = (RelativeLayout) findViewById(R.id.relativeLayout_root);
     	relativeLayout_top = (RelativeLayout) findViewById(R.id.relativeLayout_top);
     	photoPreview = (ImageView) findViewById(R.id.photo_preview);
@@ -261,6 +264,8 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 									        photoPreview.setVisibility(View.VISIBLE);
 									        btnReCapture.setVisibility(View.VISIBLE);
 									    	btnCount.setVisibility(View.VISIBLE);
+									    	
+									    	titleMsg.setText("選擇重新拍攝或開始計算菌落");
 										}
 									});
 								} else {
@@ -316,6 +321,8 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 				        photoPreview.setVisibility(View.GONE);
 				        btnReCapture.setVisibility(View.GONE);
 				    	btnCount.setVisibility(View.GONE);
+				    	
+				    	titleMsg.setText("將圓圈對準培養皿拍攝照片");
 					}
 				});
 		    	

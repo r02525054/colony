@@ -61,6 +61,10 @@ public class HighlightView5 {
         mHidden = hidden;
     }
     
+    public boolean getHidden(){
+    	return mHidden;
+    }
+    
     protected void draw(Canvas canvas) {
         if (mHidden) {
             return;

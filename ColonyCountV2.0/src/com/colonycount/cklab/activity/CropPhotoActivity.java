@@ -54,7 +54,6 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -88,7 +87,7 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
     private Uri mSaveUri = null;
     private boolean mSetWallpaper = false;
     private int mAspectX, mAspectY;
-    private boolean mDoFaceDetection = true;
+    private boolean mDoFaceDetection = false;
     private boolean mCircleCrop = false;
     private final Handler mHandler = new Handler(Looper.getMainLooper()){
     	public void handleMessage(Message msg) {
@@ -138,16 +137,13 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
         asyncTaskCompleteListener = this;
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.test);
-//        setContentView(R.layout.test_highlight);
-//        setContentView(R.layout.cropimage);
-        
+        setContentView(R.layout.layout_take_photo_preview);
         
         relativeLayout_root = (RelativeLayout) findViewById(R.id.relativeLayout_root);
         mImageView = (CropImageView) findViewById(R.id.image3);
         mImageView.setVisibility(View.VISIBLE);
         findViewById(R.id.surfaceview).setVisibility(View.GONE);
-        ((TextView) findViewById(R.id.textView1)).setText("選取培養皿的範圍以開始計算");
+        ((TextView) findViewById(R.id.title_msg)).setText("選取培養皿的範圍，開始計算菌落");
         
         btnLeft = (ImageButton) findViewById(R.id.button1);
         btnLeft.setOnClickListener(new View.OnClickListener() {

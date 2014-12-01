@@ -14,6 +14,7 @@ import android.view.View;
 import com.colonycount.cklab.activity.R;
 import com.colonycount.cklab.crop.HighlightView.ModifyMode;
 
+// 移動視窗畫面的highlightview
 public class HighlightView3 {
 
     @SuppressWarnings("unused")

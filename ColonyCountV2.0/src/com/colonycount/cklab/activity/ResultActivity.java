@@ -65,12 +65,6 @@ import com.colonycount.cklab.model.ImgInfo;
 import com.colonycount.cklab.rangebar.RangeBar;
 
 public class ResultActivity extends GPlusClientActivity implements View.OnClickListener, AsyncTaskCompleteListener<Boolean> {
-
-	// add
-	private int addd;
-	
-	
-	
 	private ImageView imageView_bot;
 	private ImageButton left;
 	private RelativeLayout rel_top;

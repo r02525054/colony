@@ -22,7 +22,7 @@ public class FragmentSetting extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		View view = inflater.inflate(R.layout.fragment_setting, container, false);
+		View view = inflater.inflate(R.layout.layout_fragment_setting, container, false);
 		TextView txtCat = (TextView) view.findViewById(R.id.textView1);
         txtCat.setText("settings");
 		
