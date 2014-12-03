@@ -123,14 +123,19 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	private void setViews(){
 		imgInfo = new ImgInfo(loadPrefIntData("imgNumber", 1));
 		left = (ImageButton) findViewById(R.id.btn_result_cancel);
+		
 		btn_save_or_ok = (ImageButton) findViewById(R.id.btn_save_or_ok);
-		image = (CropImageView2) findViewById(R.id.image2);
+		btn_circle_add = (ImageButton) findViewById(R.id.btn_add);
+		btn_circle_sub = (ImageButton) findViewById(R.id.btn_sub);
+		btn_set_tag    = (ImageButton) findViewById(R.id.btn_edit);
+		
+		image = (CropImageView2) findViewById(R.id.cropimageview);
 		rel_top = (RelativeLayout) findViewById(R.id.relativeLayout_top2);
 		rel_root = (RelativeLayout) findViewById(R.id.rel_root2);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls1);
 		zoomControls.setVisibility(View.INVISIBLE);
 		context = this;
-
+		
 		showRedColony = (TextView) findViewById(R.id.show_red_colony);
 		showGreenColony = (TextView) findViewById(R.id.show_green_colony);
 		showPurpleColony = (TextView) findViewById(R.id.show_purple_colony);
@@ -209,132 +214,132 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 //		    	params.topMargin = rel_top_height + windowSize.x + (windowSize.y - rel_top_height - windowSize.x) / 2 - imageRadius;
 //		    	rel_root.addView(btn_set_tag, params);
 		    	
-//		    	btn_circle_add.setOnClickListener(new View.OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						// TODO Auto-generated method stub
-//						state = State.ADD;
-//						setTitleBar();
-//						setFuncBtn();
+		    	btn_circle_add.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						state = State.ADD;
+						setTitleBar();
+						setFuncBtn();
+						
+//						setSaveDoneBtn();
+//						addHighlightView();
+//	                    image.invalidate();
 //						
-////						setSaveDoneBtn();
-////						addHighlightView();
-////	                    image.invalidate();
-////						
-////	                    mCrop = image.mHighlightViews.get(image.mHighlightViews.size()-1);
-////                        mCrop.setFocus(true);
-////                        setDisabledBtn();
-//					}
-//				});
+//	                    mCrop = image.mHighlightViews.get(image.mHighlightViews.size()-1);
+//                        mCrop.setFocus(true);
+//                        setDisabledBtn();
+					}
+				});
 		    	
-//		    	btn_circle_sub.setOnClickListener(new View.OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						state = State.SUB;
-//						setTitleBar();
-//						setFuncBtn();
-//						
-////						zoomControls.setVisibility(View.VISIBLE);
-////						addHighlightView3(0, 0, mBitmapShow.getWidth(), mBitmapShow.getHeight());
-////						setSaveDoneBtn();
-////						setDisabledBtn();
-////						drawHighlightImage();
-//					}
-//				});
+		    	btn_circle_sub.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						state = State.SUB;
+						setTitleBar();
+						setFuncBtn();
+						
+//						zoomControls.setVisibility(View.VISIBLE);
+//						addHighlightView3(0, 0, mBitmapShow.getWidth(), mBitmapShow.getHeight());
+//						setSaveDoneBtn();
+//						setDisabledBtn();
+//						drawHighlightImage();
+					}
+				});
 		    	
-//		    	btn_set_tag.setOnClickListener(new View.OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						// TODO Auto-generated method stub
-////						Log.d("test", "button save");
-////						if(state == State.ADD || state == State.SUB){
-////							doDone();
-////						} else if(state == State.VIEW){
-////							saveImg();
-////						}
-//						
-//						AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//						View dialogContent = getLayoutInflater().inflate(R.layout.dialog_add_tag_view, null);
-//						builder.setView(dialogContent);
-//					    
-////					    Button btnSearchStartDate = (Button) dialogContent.findViewById(R.id.btn_search_start_date);
-////					    Button btnSearchEndDate = (Button) dialogContent.findViewById(R.id.btn_search_end_date);
-////					    btnSearchStartDate.setOnClickListener(new View.OnClickListener() {
-////							@Override
-////							public void onClick(View v) {
-////								// TODO Auto-generated method stub
-////								Calendar c = Calendar.getInstance();
-////								
-////								final DatePickerDialog dateDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-////								    boolean fired = false;
-////								    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-////								        if (fired == true) {
-////								            return;
-////								        } else {
-////								            fired = true;
-////								        }
-////								    }
-////								}, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-////								dateDialog.show();
-////							}
-////						});
-////					    btnSearchEndDate.setOnClickListener(new View.OnClickListener() {
-////							@Override
-////							public void onClick(View v) {
-////								// TODO Auto-generated method stub
-////								
-////							}
-////						});
-//					    
-////					    RangeBar rangebar = (RangeBar) dialogContent.findViewById(R.id.rangebar);
-////					    TextView rangebarValue1 = (TextView) dialogContent.findViewById(R.id.rangebar_value_1);
-////					    TextView rangebarValue2 = (TextView) dialogContent.findViewById(R.id.rangebar_value_2);
-////					    TextView rangebarValue3 = (TextView) dialogContent.findViewById(R.id.rangebar_value_3);
-////					    TextView rangebarValue4 = (TextView) dialogContent.findViewById(R.id.rangebar_value_4);
-////					    TextView rangebarValue5 = (TextView) dialogContent.findViewById(R.id.rangebar_value_5);
-////					    TextView rangebarValue6 = (TextView) dialogContent.findViewById(R.id.rangebar_value_6);
-////					    TextView rangebarValue7 = (TextView) dialogContent.findViewById(R.id.rangebar_value_7);
-////					    rangebarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
-////					    rangebarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
-////					    rangebarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
-////					    rangebarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
-////					    rangebarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
-////					    rangebarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
-////					    rangebarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
-////					    rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
-////					        @Override
-////					        public void onIndexChangeListener(RangeBar rangeBar, int leftThumbIndex, int rightThumbIndex) { 
-////					            Log.d("Test2", "left = " + leftThumbIndex + ", right = " + rightThumbIndex);
-////					        }
-////					    });
-//					    
-//					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
-//					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
-//					    
-//					    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-//					    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-//					    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-//					    
-//					    final Dialog d = builder.create();
-//					    d.show();
-//					    d.getWindow().setAttributes(lp);
-//					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
+		    	btn_set_tag.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+//						Log.d("test", "button save");
+//						if(state == State.ADD || state == State.SUB){
+//							doDone();
+//						} else if(state == State.VIEW){
+//							saveImg();
+//						}
+						
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						View dialogContent = getLayoutInflater().inflate(R.layout.dialog_add_tag_view, null);
+						builder.setView(dialogContent);
+					    
+//					    Button btnSearchStartDate = (Button) dialogContent.findViewById(R.id.btn_search_start_date);
+//					    Button btnSearchEndDate = (Button) dialogContent.findViewById(R.id.btn_search_end_date);
+//					    btnSearchStartDate.setOnClickListener(new View.OnClickListener() {
 //							@Override
 //							public void onClick(View v) {
 //								// TODO Auto-generated method stub
-//								d.dismiss();
+//								Calendar c = Calendar.getInstance();
+//								
+//								final DatePickerDialog dateDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+//								    boolean fired = false;
+//								    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
+//								        if (fired == true) {
+//								            return;
+//								        } else {
+//								            fired = true;
+//								        }
+//								    }
+//								}, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+//								dateDialog.show();
 //							}
 //						});
-//					    
-//					    btnSetTagOK.setOnClickListener(new View.OnClickListener() {
+//					    btnSearchEndDate.setOnClickListener(new View.OnClickListener() {
 //							@Override
 //							public void onClick(View v) {
 //								// TODO Auto-generated method stub
-//								d.dismiss();
+//								
 //							}
 //						});
-//					}
-//		    	});
+					    
+//					    RangeBar rangebar = (RangeBar) dialogContent.findViewById(R.id.rangebar);
+//					    TextView rangebarValue1 = (TextView) dialogContent.findViewById(R.id.rangebar_value_1);
+//					    TextView rangebarValue2 = (TextView) dialogContent.findViewById(R.id.rangebar_value_2);
+//					    TextView rangebarValue3 = (TextView) dialogContent.findViewById(R.id.rangebar_value_3);
+//					    TextView rangebarValue4 = (TextView) dialogContent.findViewById(R.id.rangebar_value_4);
+//					    TextView rangebarValue5 = (TextView) dialogContent.findViewById(R.id.rangebar_value_5);
+//					    TextView rangebarValue6 = (TextView) dialogContent.findViewById(R.id.rangebar_value_6);
+//					    TextView rangebarValue7 = (TextView) dialogContent.findViewById(R.id.rangebar_value_7);
+//					    rangebarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
+//					    rangebarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
+//					    rangebarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
+//					    rangebarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
+//					    rangebarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
+//					    rangebarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
+//					    rangebarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
+//					    rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+//					        @Override
+//					        public void onIndexChangeListener(RangeBar rangeBar, int leftThumbIndex, int rightThumbIndex) { 
+//					            Log.d("Test2", "left = " + leftThumbIndex + ", right = " + rightThumbIndex);
+//					        }
+//					    });
+					    
+					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
+					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
+					    
+					    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+					    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+					    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+					    
+					    final Dialog d = builder.create();
+					    d.show();
+					    d.getWindow().setAttributes(lp);
+					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+								d.dismiss();
+							}
+						});
+					    
+					    btnSetTagOK.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+								d.dismiss();
+							}
+						});
+					}
+		    	});
 		    	
 		    	rel_root.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 			}
