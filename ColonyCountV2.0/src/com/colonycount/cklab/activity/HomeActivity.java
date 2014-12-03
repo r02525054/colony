@@ -41,8 +41,8 @@ public class HomeActivity extends GPlusClientActivity {
     
     private int nowPage;
     
-    private static FragmentHome    fragmentHome;
-    private static FragmentSetting fragmentSettings; 
+    private FragmentHome    fragmentHome;
+    private FragmentSetting fragmentSettings; 
     
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {  
         @Override  

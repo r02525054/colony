@@ -125,9 +125,11 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
     
     private Context context;
     private AsyncTaskCompleteListener<Boolean> asyncTaskCompleteListener;
+    
     private RelativeLayout relativeLayout_root;
-    private ImageButton btnLeft;
-
+    private ImageButton btnClose;
+    private ImageButton btnCount;
+    
     @Override
 	protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -137,16 +139,14 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
         asyncTaskCompleteListener = this;
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.layout_take_photo_preview);
+        setContentView(R.layout.layout_crop_photo);
         
         relativeLayout_root = (RelativeLayout) findViewById(R.id.relativeLayout_root);
-        mImageView = (CropImageView) findViewById(R.id.image3);
-        mImageView.setVisibility(View.VISIBLE);
-        findViewById(R.id.surfaceview).setVisibility(View.GONE);
-        ((TextView) findViewById(R.id.title_msg)).setText("選取培養皿的範圍，開始計算菌落");
+        mImageView = (CropImageView) findViewById(R.id.cropImageView);
         
-        btnLeft = (ImageButton) findViewById(R.id.button1);
-        btnLeft.setOnClickListener(new View.OnClickListener() {
+        btnCount = (ImageButton) findViewById(R.id.btn_count);
+        btnClose = (ImageButton) findViewById(R.id.btn_close);
+        btnClose.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				finish();
@@ -199,8 +199,7 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
 
         if (mBitmap == null) {
             Uri target = intent.getData();
-            mAllImages = ImageManager.makeImageList(mContentResolver, target,
-                    ImageManager.SORT_ASCENDING);
+            mAllImages = ImageManager.makeImageList(mContentResolver, target, ImageManager.SORT_ASCENDING);
             mImage = mAllImages.getImageForUri(target);
             if (mImage != null) {
                 // Don't read in really large bitmaps. Use the (big) thumbnail
@@ -242,7 +241,7 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
         if (isFinishing()) {
             return;
         }
-
+        
         mImageView.setImageBitmapResetBase(mBitmap, true);
         
         Util.startBackgroundJob(this, null,
@@ -270,32 +269,32 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
                                     
                                     // add bottom bar
                                     RelativeLayout top = (RelativeLayout) findViewById(R.id.relativeLayout_top);
-                                    final ImageView botBar = new ImageView(context);
-                                    botBar.setBackgroundResource(R.color.btn_background);
+//                                    final ImageView botBar = new ImageView(context);
+//                                    botBar.setBackgroundResource(R.color.btn_background);
                     		    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                    		    	params.leftMargin = 0;
-                    		    	params.topMargin = finalHeight + top.getHeight();
-                    		    	relativeLayout_root.addView(botBar, params);
+//                    		    	params.leftMargin = 0;
+//                    		    	params.topMargin = finalHeight + top.getHeight();
+//                    		    	relativeLayout_root.addView(botBar, params);
                     		    	
                     		    	Display display = getWindowManager().getDefaultDisplay();
                     		    	Point size = new Point();
                     		    	display.getSize(size);
                     		    	
                     		    	// add button count
-                    		    	ImageButton btnCount = new ImageButton(context);
-                    		    	btnCount.setImageResource(R.drawable.btn_count);
-                    		    	btnCount.setBackgroundResource(R.drawable.selector_btn_clicked);
-                    		    	int buttonR = (size.y - top.getHeight() - finalHeight - 10) / 2;
-                    		    	btnCount.setMinimumWidth(2*buttonR);
-                    		    	btnCount.setMinimumHeight(2*buttonR);
-                    		    	btnCount.setMaxWidth(300);
-                    		    	btnCount.setMaxHeight(300);
-                    		    	btnCount.setScaleType(ScaleType.FIT_CENTER);
-                    		    	btnCount.setPadding(0, 0, 0, 0);
-                    		    	params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    		    	params.leftMargin = size.x / 2 - 2 * buttonR;
-                    		    	params.topMargin = finalHeight + top.getHeight() + 5;
-                    		    	relativeLayout_root.addView(btnCount, params);
+//                    		    	ImageButton btnCount = new ImageButton(context);
+//                    		    	btnCount.setImageResource(R.drawable.btn_count);
+//                    		    	btnCount.setBackgroundResource(R.drawable.selector_btn_clicked);
+//                    		    	int buttonR = (size.y - top.getHeight() - finalHeight - 10) / 2;
+//                    		    	btnCount.setMinimumWidth(2*buttonR);
+//                    		    	btnCount.setMinimumHeight(2*buttonR);
+//                    		    	btnCount.setMaxWidth(300);
+//                    		    	btnCount.setMaxHeight(300);
+//                    		    	btnCount.setScaleType(ScaleType.FIT_CENTER);
+//                    		    	btnCount.setPadding(0, 0, 0, 0);
+//                    		    	params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+//                    		    	params.leftMargin = size.x / 2 - 2 * buttonR;
+//                    		    	params.topMargin = finalHeight + top.getHeight() + 5;
+//                    		    	relativeLayout_root.addView(btnCount, params);
                     		    	
                     		    	btnCount.setOnClickListener(new View.OnClickListener() {
 										@Override
@@ -305,7 +304,7 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
 									});
                     		    	
                     		    	mImageView.setTopPadding(top.getHeight());
-                    		    	Log.d("test4", "size.y = " + size.y + ", finalHeight = " + finalHeight + ", top.getHeight() = " + top.getHeight());
+//                    		    	Log.d("test4", "size.y = " + size.y + ", finalHeight = " + finalHeight + ", top.getHeight() = " + top.getHeight());
                     			}
                             });
                             

@@ -1,6 +1,7 @@
 package com.colonycount.cklab.base;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
@@ -104,6 +105,12 @@ public class BaseActivity extends FragmentActivity {
 		
 		settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		editor = settings.edit();
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
 	}
 	
 	

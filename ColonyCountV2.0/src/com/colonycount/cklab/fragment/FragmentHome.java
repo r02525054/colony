@@ -63,12 +63,16 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
     private String[] date;
     private String[] type;
     
-    private AlphaAnimation buttonClickAnimation = new AlphaAnimation(1F, 0.8F);
+//    private AlphaAnimation buttonClickAnimation = new AlphaAnimation(1F, 0.8F);
     
     private static boolean isMenuVisible = true;
     
     public FragmentHome(String user_id){
     	this.user_id = user_id;
+    }
+    
+    public FragmentHome(){
+    	super();
     }
     
     
@@ -187,8 +191,7 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 	
 	@Override
 	public void onClick(View view) {
-		view.startAnimation(buttonClickAnimation);
-		
+//		view.startAnimation(buttonClickAnimation);
 		switch(view.getId()){
 		case R.id.btn_take_photo:
 			if(hasCameraHardware(getActivity())){

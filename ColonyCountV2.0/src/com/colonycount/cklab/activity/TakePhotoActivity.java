@@ -61,9 +61,12 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     private SurfaceView mSurfaceView;
     private RelativeLayout relativeLayout_root;
     private RelativeLayout relativeLayout_top;
+    private RelativeLayout relativeLayout_take_photo_bot_layout;
+    private RelativeLayout relativeLayout_take_photo_done_bot_layout;
+    
     private ImageView imageView_bot;
     private ImageView photoPreview;
-    private ImageButton button1;
+    private ImageButton btnClose;
     private ImageButton btnCapture;
     private ImageButton btnReCapture;
     private ImageButton btnCount;
@@ -166,11 +169,18 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     
     
     private void setViews(){
-    	titleMsg = (TextView) findViewById(R.id.title_msg);
     	relativeLayout_root = (RelativeLayout) findViewById(R.id.relativeLayout_root);
     	relativeLayout_top = (RelativeLayout) findViewById(R.id.relativeLayout_top);
+    	relativeLayout_take_photo_bot_layout = (RelativeLayout) findViewById(R.id.take_photo_bot_layout);
+    	relativeLayout_take_photo_done_bot_layout = (RelativeLayout) findViewById(R.id.take_photo_done_bot_layout);
+    	
+    	titleMsg = (TextView) findViewById(R.id.title_msg);
     	photoPreview = (ImageView) findViewById(R.id.photo_preview);
-    	button1 = (ImageButton) findViewById(R.id.button1);
+    	btnClose = (ImageButton) findViewById(R.id.btn_close);
+    	btnCapture = (ImageButton) findViewById(R.id.btn_capture);
+    	btnReCapture = (ImageButton) findViewById(R.id.btn_recapture);
+    	btnCount = (ImageButton) findViewById(R.id.btn_count);
+    	
     	mSurfaceView = (SurfaceView) findViewById(R.id.surfaceview);
     	context = this;
     	asyncTaskCompleteListener = this;
@@ -185,40 +195,13 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
                 // TODO Auto-generated method stub
 		        int rel_top_height = relativeLayout_top.getHeight();
 		        
-		        // add bottom bar
-		        imageView_bot = new ImageView(context);
-		    	imageView_bot.setBackgroundResource(R.color.btn_background);
-		    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		    	params.leftMargin = 0;
-		    	params.topMargin = rel_top_height + windowSize.x;
-		    	relativeLayout_root.addView(imageView_bot, params);
-		    	
 		    	// add surfaceView
+		        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		    	double scale = 640.0 / 480.0;
 		    	params = new RelativeLayout.LayoutParams(windowSize.x, (int)(windowSize.x * scale));
 		    	params.leftMargin = 0;
 		    	params.topMargin = rel_top_height;
 		    	mSurfaceView.setLayoutParams(params);
-		    	
-		    	
-		    	// add bottom capture button
-		    	int radius = (windowSize.y - rel_top_height - windowSize.x) / 4;
-		    	btnCapture = new ImageButton(context);
-		    	btnCapture.setImageResource(R.drawable.btn_capture);
-		    	btnCapture.setBackgroundResource(R.drawable.selector_btn_clicked);
-		    	btnCapture.setPadding(0,0,0,0);
-		    	btnCapture.setMaxWidth(300);
-		    	btnCapture.setMaxHeight(300);
-		    	btnCapture.setMinimumWidth(radius*2);
-		    	btnCapture.setMinimumHeight(radius*2);
-		    	btnCapture.setScaleType(ScaleType.FIT_CENTER);
-		    	Log.d("test4", "bot height = " +(windowSize.y - rel_top_height - windowSize.x));
-		    	Log.d("test4", "btn width = " + btnCapture.getMinimumWidth());
-		    	Log.d("test4", "btn height = " + btnCapture.getMinimumHeight());
-		    	params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		    	params.leftMargin = windowSize.x / 2 - radius;
-		    	params.topMargin = rel_top_height + windowSize.x + (windowSize.y - rel_top_height - windowSize.x) / 2 - radius;
-		    	relativeLayout_root.addView(btnCapture, params);
 		    	
 		    	// add red circle hint view
 		    	circleViewRadius = windowSize.x / 2 - 5;
@@ -259,11 +242,11 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 									        
 									        mSurfaceView.setVisibility(View.GONE);
 									        circleHintView.setVisibility(View.GONE);
-									        btnCapture.setVisibility(View.GONE);
+									        relativeLayout_take_photo_bot_layout.setVisibility(View.GONE);
 									        
 									        photoPreview.setVisibility(View.VISIBLE);
-									        btnReCapture.setVisibility(View.VISIBLE);
-									    	btnCount.setVisibility(View.VISIBLE);
+									        relativeLayout_take_photo_done_bot_layout.setVisibility(View.VISIBLE);
+									        
 									    	
 									    	titleMsg.setText("選擇重新拍攝或開始計算菌落");
 										}
@@ -277,50 +260,16 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 				});
 		    	
 		    	
-		    	// add button recapture
-		    	btnReCapture = new ImageButton(context);
-		    	int buttonSize = 50;
-		    	btnReCapture.setImageResource(R.drawable.btn_retaking_photo);
-		    	btnReCapture.setBackgroundResource(R.drawable.selector_btn_clicked);
-		    	btnReCapture.setPadding(0,0,0,0);
-		    	btnReCapture.setMaxWidth(300);
-		    	btnReCapture.setMaxHeight(300);
-		    	btnReCapture.setMinimumWidth(buttonSize*2);
-		    	btnReCapture.setMinimumHeight(buttonSize*2);
-		    	params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		    	params.leftMargin = windowSize.x / 4 - buttonSize;
-		    	params.topMargin = rel_top_height + windowSize.x + (windowSize.y - rel_top_height - windowSize.x) / 2 - buttonSize;
-		    	relativeLayout_root.addView(btnReCapture, params);
-		    	
-		    	
-		    	// add button count
-		    	btnCount = new ImageButton(context);
-		    	btnCount.setImageResource(R.drawable.btn_count);
-		    	btnCount.setBackgroundResource(R.drawable.selector_btn_clicked);
-		    	btnCount.setPadding(0,0,0,0);
-		    	btnCount.setMaxWidth(200);
-		    	btnCount.setMaxHeight(200);
-		    	buttonSize = 50;
-		    	params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		    	params.leftMargin = windowSize.x / 4 * 3 - buttonSize;
-		    	params.topMargin = rel_top_height + windowSize.x + (windowSize.y - rel_top_height - windowSize.x) / 2 - buttonSize;
-		    	relativeLayout_root.addView(btnCount, params);
-
-		    	btnReCapture.setVisibility(View.GONE);
-		    	btnCount.setVisibility(View.GONE);
-		    	
-		    	
 		    	btnReCapture.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						mSurfaceView.setVisibility(View.VISIBLE);
 				        circleHintView.setVisibility(View.VISIBLE);
-				        btnCapture.setVisibility(View.VISIBLE);
+				        relativeLayout_take_photo_bot_layout.setVisibility(View.VISIBLE);
 				        
 				        photoPreview.setVisibility(View.GONE);
-				        btnReCapture.setVisibility(View.GONE);
-				    	btnCount.setVisibility(View.GONE);
+				        relativeLayout_take_photo_done_bot_layout.setVisibility(View.GONE);
 				    	
 				    	titleMsg.setText("將圓圈對準培養皿拍攝照片");
 					}
@@ -340,9 +289,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 		    }
         });
         
-        
-        
-        button1.setOnClickListener(new View.OnClickListener() {
+        btnClose.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
