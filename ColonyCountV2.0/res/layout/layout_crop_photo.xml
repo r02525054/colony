@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="將圓圈對準培養皿拍攝照片"
+            android:text="選取培養皿的範圍，開始計算菌落"
             android:textColor="@color/white" />
 
         <LinearLayout
@@ -51,47 +51,43 @@
             android:background="@color/home_background" />
 
     </RelativeLayout>
-    
-    
-	<!-- <com.colonycount.cklab.view.SquareSurfaceView 
-	    android:id="@+id/surfaceview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/relativeLayout_top" /> -->
 	
-	<com.colonycount.cklab.view.SquareImageView
-	    android:id="@+id/square_view" 
-	    android:layout_width="match_parent"
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/relativeLayout_top"
-        android:visibility="invisible" />
+        android:layout_above="@+id/bot_layout" >
+        
+		<com.colonycount.cklab.crop.CropImageView 
+	        android:id="@+id/cropImageView"
+	        android:background="#55000000"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	         />
 	
-    <SurfaceView
-        android:id="@+id/surfaceview"
+	</ScrollView>
+	
+    <RelativeLayout
+        android:id="@+id/bot_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/relativeLayout_top" /> 
-
-    <ImageView
-        android:id="@+id/photo_preview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/relativeLayout_top" 
-        android:visibility="gone" />
-
-    <com.colonycount.cklab.crop.CropImageView 
-        android:id="@+id/cropImageView"
-        android:background="#55000000"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayout_top" 
-        android:visibility="gone" />
+        android:background="@color/btn_background"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp" >
+        
+        <ImageButton
+            android:id="@+id/btn_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_btn_clicked"
+            android:src="@drawable/btn_count" />
+    </RelativeLayout>
 
     <!-- 拍照片前出現的layout -->
-    <RelativeLayout
+    <!-- <RelativeLayout
         android:id="@+id/take_photo_bot_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -113,10 +109,10 @@
 	            android:background="@drawable/selector_btn_clicked"
 	            android:src="@drawable/btn_capture" />
         </LinearLayout>
-    </RelativeLayout>
+    </RelativeLayout> -->
 
     <!-- 拍完照片後出現的layout -->
-    <RelativeLayout
+    <!-- <RelativeLayout
         android:id="@+id/take_photo_done_bot_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -162,6 +158,6 @@
                     android:src="@drawable/btn_count" />
             </RelativeLayout>
         </LinearLayout>
-    </RelativeLayout>
+    </RelativeLayout> -->
 
 </RelativeLayout>

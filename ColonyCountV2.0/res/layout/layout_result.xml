@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rel_root2"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:id="@+id/rel_root2">
+    android:layout_height="match_parent" >
 
     <RelativeLayout
         android:id="@+id/relativeLayout_top2"
@@ -11,50 +11,40 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="@color/btn_background" >
-		
-        
-        <LinearLayout 
+
+        <LinearLayout
             android:id="@+id/btn_result_cancel_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white">
-        	
-            <ImageButton
-	            android:id="@+id/btn_result_cancel"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_alignParentLeft="true"
-	            android:layout_alignParentTop="true"
-	            android:src="@drawable/btn_cancel"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:padding="10dp" />
-        </LinearLayout>
-        
+            android:background="@color/white" >
 
-        <!-- <Spinner
-            android:id="@+id/spinner1"
-            android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_below="@+id/button3" /> -->
-	
-		<LinearLayout 
+            <ImageButton
+                android:id="@+id/btn_result_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/selector_btn_clicked"
+                android:padding="10dp"
+                android:src="@drawable/btn_cancel" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btn_save_or_ok_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-	        android:layout_alignParentTop="true"
-            android:background="@color/white">
-            
-		    <ImageButton
-	            android:id="@+id/btn_save_or_ok"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:padding="10dp"
-	            android:src="@drawable/btn_save2" />
-		</LinearLayout>
-        
+            android:layout_alignParentTop="true"
+            android:background="@color/white" >
+
+            <ImageButton
+                android:id="@+id/btn_save_or_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_btn_clicked"
+                android:padding="10dp"
+                android:src="@drawable/btn_save2" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/text_result"
@@ -77,33 +67,32 @@
             android:id="@+id/view2"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/btn_save_or_ok_container"
             android:layout_alignBottom="@+id/btn_save_or_ok_container"
+            android:layout_toLeftOf="@+id/btn_save_or_ok_container"
             android:background="@color/white" />
-
     </RelativeLayout>
 
-    <view class="com.colonycount.cklab.crop.CropImageView2" 
-                android:id="@+id/image2"
-                android:background="#55000000"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relativeLayout_top2" />
-    
-    <!-- <ImageView
-        android:id="@+id/imageView1"
+    <view
+        android:id="@+id/image2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/relativeLayout_top2" /> -->
+        android:layout_below="@+id/relativeLayout_top2"
+        class="com.colonycount.cklab.crop.CropImageView2"
+        android:background="#55000000" />
+
+    <com.colonycount.cklab.view.SquareImageView
+        android:id="@+id/squareImageView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout_top2"
+        android:visibility="invisible" />
 
     <ZoomControls
         android:id="@+id/zoomControls1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/image2"
-         />
+        android:layout_alignTop="@+id/image2" />
 
     <LinearLayout
         android:id="@+id/container_show_colony"
@@ -111,7 +100,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/image2"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:visibility="gone" >
 
         <TextView
             android:id="@+id/show_red_colony"
@@ -133,7 +123,63 @@
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textColor="@color/purple" />
-
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/squareImageView1"
+        android:weightSum="3"
+        android:background="@color/btn_background" >
+
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" 
+            android:background="@color/white">
+            
+        	<ImageButton
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:background="@drawable/selector_btn_clicked"
+	            android:src="@drawable/btn_add" />    
+        </LinearLayout>
+        
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" 
+            android:background="@color/white">
+            
+        	<ImageButton
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:background="@drawable/selector_btn_clicked"
+	            android:src="@drawable/btn_sub" />    
+        </LinearLayout>
+        
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" 
+            android:background="@color/white">
+            
+        	<ImageButton
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:background="@drawable/selector_btn_clicked"
+	            android:src="@drawable/btn_edit" />    
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>
