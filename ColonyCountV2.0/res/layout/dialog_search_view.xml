@@ -34,7 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/dialog_header"
-        android:layout_above="@+id/dialog_footer" >
+        android:layout_above="@+id/dialog_footer"
+        android:background="@color/dialog_background" >
 
         <!-- 所有條件的container -->
         <LinearLayout
