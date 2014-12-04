@@ -15,7 +15,7 @@
 		    android:id="@+id/textView1"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:text="新增標籤"
+		    android:text="設定實驗資訊"
 		    android:textAppearance="?android:attr/textAppearanceLarge"
 		    android:textColor="@color/white"
 		    android:layout_marginLeft="10dp"
@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:text="日期"
+                    android:text="實驗日期"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
                 
