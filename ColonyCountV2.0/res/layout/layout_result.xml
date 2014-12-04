@@ -72,27 +72,49 @@
             android:background="@color/white" />
     </RelativeLayout>
 
-    <view
-        android:id="@+id/image2"
+    <!-- workaround margin -->
+
+    <View
+        android:id="@+id/margin_view_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_below="@+id/relativeLayout_top2"
-        class="com.colonycount.cklab.crop.CropImageView2"
-        android:background="#55000000" />
+        android:background="@color/black" />
 
     <com.colonycount.cklab.view.SquareImageView
         android:id="@+id/squareImageView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayout_top2"
-        android:visibility="invisible" />
+        android:layout_below="@+id/margin_view_top"
+        android:background="@color/black" />
 
-    <ZoomControls
+    <!-- workaround margin -->
+
+    <View
+        android:id="@+id/margin_view_bot"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_below="@+id/squareImageView1"
+        android:background="@color/black" />
+
+    <!-- workaround margin -->
+
+    <com.colonycount.cklab.crop.CropImageView2
+        android:id="@+id/cropimageview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout_top2"
+        android:layout_marginTop="30dp"
+        android:background="#55000000" />
+
+    <!--
+         <ZoomControls
         android:id="@+id/zoomControls1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/image2" />
+    -->
 
     <LinearLayout
         android:id="@+id/container_show_colony"
@@ -126,60 +148,201 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/action_bot_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/squareImageView1"
-        android:weightSum="3"
-        android:background="@color/btn_background" >
+        android:layout_below="@+id/margin_view_bot"
+        android:background="@color/btn_background"
+        android:weightSum="3" >
 
-        <LinearLayout 
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" 
-            android:background="@color/white">
-            
-        	<ImageButton
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:src="@drawable/btn_add" />    
+            android:layout_weight="1"
+            android:background="@color/white" >
+
+            <ImageButton
+                android:id="@+id/btn_add"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_btn_clicked"
+                android:src="@drawable/btn_add" />
         </LinearLayout>
-        
+
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@color/white" />
-        
-        <LinearLayout 
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" 
-            android:background="@color/white">
-            
-        	<ImageButton
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:src="@drawable/btn_sub" />    
+            android:layout_weight="1"
+            android:background="@color/white" >
+
+            <ImageButton
+                android:id="@+id/btn_sub"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_btn_clicked"
+                android:src="@drawable/btn_sub" />
         </LinearLayout>
-        
+
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@color/white" />
-        
-        <LinearLayout 
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" 
-            android:background="@color/white">
-            
-        	<ImageButton
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:src="@drawable/btn_edit" />    
+            android:layout_weight="1"
+            android:background="@color/white" >
+
+            <ImageButton
+                android:id="@+id/btn_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_btn_clicked"
+                android:src="@drawable/btn_edit" />
         </LinearLayout>
     </LinearLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/msg_bot_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/margin_view_bot"
+        android:background="@color/btn_background"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/text_action_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Medium Text"
+            android:textColor="@color/white"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+    </RelativeLayout>
+    
+    
+    <RelativeLayout 
+        android:id="@+id/text_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/action_bot_bar">
+        
+        <TextView
+	        android:id="@+id/textView2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:text="選擇以下動作來編輯菌落計算結果:"
+	        android:textColor="@color/white" />
+        
+        <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView2"
+	        android:layout_alignParentLeft="true"
+	        android:text="- 新增菌落、刪除菌落或設定實驗資訊"
+	        android:textColor="@color/white"
+	        android:paddingLeft="15dp" />
+    </RelativeLayout>
+    
+
+    
+    <RelativeLayout 
+        android:id="@+id/text_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout_top2">
+        
+        <TextView
+	        android:id="@+id/textView3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true"
+	        android:text="實驗日期:"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView4"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_toRightOf="@+id/textView3"
+	        android:text="2014/12/4"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView5"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/textView3"
+	        android:text="實驗對照參數:"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView6"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView4"
+	        android:layout_toRightOf="@+id/textView5"
+	        android:text="未設定"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView7"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/textView5"
+	        android:text="稀釋倍數:"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView8"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView6"
+	        android:layout_toRightOf="@+id/textView7"
+	        android:text="未設定"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView9"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/textView7"
+	        android:text="菌種:"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+	
+	    <TextView
+	        android:id="@+id/textView10"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView8"
+	        android:layout_toRightOf="@+id/textView9"
+	        android:text="未設定"
+	        android:textColor="@color/red"
+	        android:textSize="12sp" />
+    </RelativeLayout>
+    
 </RelativeLayout>
