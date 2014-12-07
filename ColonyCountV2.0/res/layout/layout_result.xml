@@ -120,31 +120,36 @@
         android:id="@+id/container_show_colony"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout_top2"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/image2"
         android:orientation="vertical"
-        android:visibility="gone" >
+        >
+<!--         android:visibility="gone" --> 
 
         <TextView
             android:id="@+id/show_red_colony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/red" />
+            android:textColor="@color/red"
+            android:background="@drawable/btn_eye01" />
 
         <TextView
             android:id="@+id/show_green_colony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/green" />
+            android:textColor="@color/green"
+            android:background="@drawable/btn_eye02" />
 
         <TextView
             android:id="@+id/show_purple_colony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/purple" />
+            android:textColor="@color/purple"
+            android:background="@drawable/btn_eye04" />
     </LinearLayout>
 
     <LinearLayout
