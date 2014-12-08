@@ -12,9 +12,9 @@
     <color name="purple">#EF04D6</color>
     <color name="black">#000000</color>
     
-    <color name="eye_red">#000000</color>
-    <color name="eye_green">#000000</color>
-    <color name="eye_blue">#000000</color>
+    <color name="eye_red">#C51723</color>
+    <color name="eye_green">#8EC552</color>
+    <color name="eye_blue">#7AC499</color>
     
     
     <!-- datetimepicker library -->

@@ -372,7 +372,7 @@
             android:id="@+id/align_left_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="120個"
+            android:text="120個  "
             android:textColor="@color/red"
             android:drawableLeft="@drawable/btn_eye01"
             android:layout_alignParentRight="true"
@@ -384,10 +384,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="50個"
-            android:textColor="@color/red"
+            android:textColor="@color/eye_red"
             android:drawableLeft="@drawable/btn_eye01"
             android:layout_alignLeft="@+id/align_left_text"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:padding="1dp" />
 
         <TextView
             android:id="@+id/show_green_colony"
@@ -397,7 +398,8 @@
             android:layout_below="@+id/show_red_colony"
             android:drawableLeft="@drawable/btn_eye04"
             android:text="120個"
-            android:textColor="@color/green" />
+            android:textColor="@color/eye_green"
+            android:padding="1dp" />
 
         <TextView
             android:id="@+id/show_purple_colony"
@@ -405,9 +407,9 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_below="@+id/show_green_colony"
-            android:drawableLeft="@drawable/btn_eye02"
+            android:drawableLeft="@drawable/btn_eye05"
             android:text="0個"
-            android:textColor="@color/white" />
-
+            android:textColor="@color/eye_blue"
+            android:padding="1dp" />
     </RelativeLayout>
 </RelativeLayout>

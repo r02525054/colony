@@ -71,18 +71,18 @@
 	                    android:layout_width="wrap_content"
 	                    android:layout_height="wrap_content"
 	                    android:drawableRight="@android:drawable/ic_menu_more"
-	                    android:text="button" />
+	                    android:text="2014/12/8" />
 
                     <Button
                         android:id="@+id/button1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="今天" />
+                        android:text="三天前" />
                 </LinearLayout>
             </LinearLayout>
             
             <!-- 條件2: 菌種 -->
-            <!-- <LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -104,7 +104,8 @@
 	                android:orientation="vertical"
 	                android:paddingLeft="10dp" >
                     
-				    <RadioGroup
+				    
+				    <!-- <RadioGroup
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" >
@@ -130,9 +131,9 @@
 	                        android:layout_height="wrap_content"
 	                        android:text="固氮菌"
 	                        android:textColor="@color/white" />
-	                </RadioGroup>
+	                </RadioGroup> -->
 				    
-	                <RelativeLayout
+	                <!-- <RelativeLayout
 		                android:layout_width="match_parent"
 		                android:layout_height="match_parent"
 		                android:orientation="horizontal"
@@ -156,10 +157,24 @@
 	                        android:layout_alignParentRight="true"
 	                        android:layout_alignParentTop="true"
 	                        android:text="新增" />
+	                </RelativeLayout> -->
 
-	                </RelativeLayout>
+					<EditText
+                        android:id="@+id/editText1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="新增項目..."
+                        android:singleLine="true"
+                        android:layout_toLeftOf="@+id/button2"
+                        android:layout_alignBottom="@+id/button2"
+                        android:drawableLeft="@drawable/btn_add"
+                        android:drawablePadding="20dp"
+                        android:background="@null">
+                    </EditText>
+	                
 				</LinearLayout>
-            </LinearLayout> -->
+            </LinearLayout>
             
             <!-- 條件3: 稀釋倍數 -->
             <LinearLayout
@@ -183,8 +198,129 @@
 		            android:id="@+id/seek_bar"
 		            android:layout_width="fill_parent"
 		            android:layout_height="wrap_content"
-		            android:layout_margin="10dp"
 		            custom:tickCount="10" />
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="10" >
+
+                    <TextView
+                        android:id="@+id/seekbar_value_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-1"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/seekbar_value_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-2"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:visibility="invisible" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-3"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:visibility="invisible" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-4"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-5"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:visibility="invisible" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-6"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:visibility="invisible" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-7"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-8"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:visibility="invisible" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-9"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center"
+                        android:visibility="invisible" />
+                    
+                    <TextView
+                        android:id="@+id/seekbar_value_10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10-10"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:gravity="center" />
+	            </LinearLayout>
             </LinearLayout>
             
             <!-- 條件4: 實驗對照參數 -->
