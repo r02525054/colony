@@ -168,7 +168,7 @@
                         android:singleLine="true"
                         android:layout_toLeftOf="@+id/button2"
                         android:layout_alignBottom="@+id/button2"
-                        android:drawableLeft="@drawable/btn_add"
+                        android:drawableLeft="@drawable/btn_list_add"
                         android:drawablePadding="20dp"
                         android:background="@null">
                     </EditText>
