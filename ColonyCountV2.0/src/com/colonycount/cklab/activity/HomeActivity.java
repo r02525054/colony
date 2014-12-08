@@ -264,16 +264,16 @@ public class HomeActivity extends GPlusClientActivity {
 	}
 
 	
-//	@Override
-//	public void onConnectionFailed(ConnectionResult result) {
-//		/* Logout */
-//		Log.d(TAG, "onConnectionFailed");
-//		
-//		Intent i = new Intent(this, LoginActivity.class);
-//		startActivity(i);
-//		finish();
-//		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-//	}
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		/* Logout */
+		Log.d(TAG, "onConnectionFailed");
+		
+		Intent i = new Intent(this, LoginActivity.class);
+		startActivity(i);
+		finish();
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
 	
 	private void setPage(int page){
 		nowPage = page;

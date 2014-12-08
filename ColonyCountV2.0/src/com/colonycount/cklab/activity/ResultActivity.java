@@ -1,10 +1,12 @@
 package com.colonycount.cklab.activity;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.colonycount.cklab.activity.R.id;
 import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
 import com.colonycount.cklab.asynctask.AsyncTaskPayload;
 import com.colonycount.cklab.asynctask.SaveAndUploadImageAsyncTask;
@@ -49,6 +52,8 @@ import com.colonycount.cklab.model.CancelView;
 import com.colonycount.cklab.model.Component;
 import com.colonycount.cklab.model.DataWrapper;
 import com.colonycount.cklab.model.ImgInfo;
+import com.colonycount.cklab.rangebar.CustomSeekBar;
+import com.colonycount.cklab.rangebar.RangeBar;
 
 public class ResultActivity extends GPlusClientActivity implements View.OnClickListener, AsyncTaskCompleteListener<Boolean> {
 	private RelativeLayout rel_top;
@@ -61,6 +66,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	private ImageButton btn_circle_sub;
 	
 	private TextView text_result;
+	private TextView text_action_msg;
 	private RelativeLayout text_info;
 	private RelativeLayout text_msg;
 	private LinearLayout action_bot_bar;
@@ -125,6 +131,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		text_msg = (RelativeLayout) findViewById(R.id.text_msg);
 		action_bot_bar = (LinearLayout) findViewById(R.id.action_bot_bar);
 		msg_bot_bar = (RelativeLayout) findViewById(R.id.msg_bot_bar);
+		text_action_msg = (TextView) findViewById(R.id.text_action_msg);
 		
 //		zoomControls = (ZoomControls) findViewById(R.id.zoomControls1);
 //		zoomControls.setVisibility(View.INVISIBLE);
@@ -263,6 +270,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 					    
 					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
 					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
+					    Button btn_set_tag_date = (Button) dialogContent.findViewById(id.btn_set_tag_date);
 					    
 					    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 					    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -274,7 +282,6 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								// TODO Auto-generated method stub
 								d.dismiss();
 							}
 						});
@@ -282,10 +289,30 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 					    btnSetTagOK.setOnClickListener(new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								// TODO Auto-generated method stub
 								d.dismiss();
 							}
 						});
+					    
+					    CustomSeekBar seekBar = (CustomSeekBar) dialogContent.findViewById(R.id.seek_bar);
+					    seekBar.setOnRangeBarChangeListener(new CustomSeekBar.OnSeekBarChangeListener() {
+							@Override
+							public void onIndexChangeListener(CustomSeekBar seekBar, int index) {
+								Log.d("Test2", "index = " + index);
+							}
+						});
+					    
+//					    final Calendar calendar = Calendar.getInstance();
+//					    final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
+//					    final String DATEPICKER_TAG = "datepicker";
+//					    btn_set_tag_date.setOnClickListener(new View.OnClickListener() {
+//							@Override
+//							public void onClick(View v) {
+//								datePickerDialog.setVibrate(false);
+//				                datePickerDialog.setYearRange(1985, 2028);
+//				                datePickerDialog.setCloseOnSingleTapDay(isCloseOnSingleTapDay());
+//				                datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
+//							}
+//						});
 					}
 		    	});
 		    	
@@ -293,6 +320,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 			}
 		});
 	}
+	
 	
 	private void setListeners(){
 		btn_close.setOnClickListener(new View.OnClickListener() {
@@ -464,6 +492,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		if(state == State.ADD || state == State.SUB){
 			text_info.setVisibility(View.INVISIBLE);
 			text_msg.setVisibility(View.INVISIBLE);
+			
+			if(state == State.ADD)
+				text_action_msg.setText("點擊螢幕上未標示到的菌落來新增菌落");
+			else
+				text_action_msg.setText("點擊螢幕上標示錯誤的菌落來刪除菌落");
 		} else if(state == State.VIEW){
 			text_info.setVisibility(View.VISIBLE);
 			text_msg.setVisibility(View.VISIBLE);

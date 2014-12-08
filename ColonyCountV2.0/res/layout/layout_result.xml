@@ -73,7 +73,6 @@
     </RelativeLayout>
 
     <!-- workaround margin -->
-
     <View
         android:id="@+id/margin_view_top"
         android:layout_width="match_parent"
@@ -89,16 +88,33 @@
         android:background="@color/black" />
 
     <!-- workaround margin -->
-
     <View
         android:id="@+id/margin_view_bot"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="10dp"
         android:layout_below="@+id/squareImageView1"
         android:background="@color/black" />
-
-    <!-- workaround margin -->
-
+    
+    <RelativeLayout
+        android:id="@+id/text_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/margin_view_bot"
+        android:background="@color/btn_background"
+        android:padding="5dp" >
+        
+        <TextView 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" 
+            android:text="你可以進一步編輯計算結果:"
+            android:gravity="center"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+    
+    
     <com.colonycount.cklab.crop.CropImageView2
         android:id="@+id/cropimageview"
         android:layout_width="match_parent"
@@ -120,36 +136,31 @@
         android:id="@+id/container_show_colony"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayout_top2"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/image2"
         android:orientation="vertical"
-        >
-<!--         android:visibility="gone" --> 
+        android:visibility="gone" >
 
         <TextView
             android:id="@+id/show_red_colony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/red"
-            android:background="@drawable/btn_eye01" />
+            android:textColor="@color/red" />
 
         <TextView
             android:id="@+id/show_green_colony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/green"
-            android:background="@drawable/btn_eye02" />
+            android:textColor="@color/green" />
 
         <TextView
             android:id="@+id/show_purple_colony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:textColor="@color/purple"
-            android:background="@drawable/btn_eye04" />
+            android:textColor="@color/purple" />
     </LinearLayout>
 
     <LinearLayout
@@ -157,7 +168,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/margin_view_bot"
+        android:layout_below="@+id/text_msg"
         android:background="@color/btn_background"
         android:weightSum="3" >
 
@@ -165,20 +176,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/white" >
+            android:background="@color/white"
+            android:orientation="vertical" >
 
             <ImageButton
                 android:id="@+id/btn_add"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/selector_btn_clicked"
-                android:src="@drawable/btn_add" />
+                android:src="@drawable/btn_add_v2" />
         </LinearLayout>
 
-        <View
+        <!-- <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/white" />
+            android:background="@color/white" /> -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -191,13 +203,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/selector_btn_clicked"
-                android:src="@drawable/btn_sub" />
+                android:src="@drawable/btn_sub_v2" />
         </LinearLayout>
 
-        <View
+        <!-- <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/white" />
+            android:background="@color/white" /> -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -210,7 +222,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/selector_btn_clicked"
-                android:src="@drawable/btn_edit" />
+                android:src="@drawable/btn_edit_v2" />
         </LinearLayout>
     </LinearLayout>
     
@@ -236,21 +248,21 @@
     </RelativeLayout>
     
     
-    <RelativeLayout 
+    <!--<RelativeLayout 
         android:id="@+id/text_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/action_bot_bar">
         
-        <TextView
+         <TextView
 	        android:id="@+id/textView2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
 	        android:text="選擇以下動作來編輯菌落計算結果:"
-	        android:textColor="@color/white" />
+	        android:textColor="@color/white" /> 
         
-        <TextView
+         <TextView
 	        android:id="@+id/textView1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -258,8 +270,8 @@
 	        android:layout_alignParentLeft="true"
 	        android:text="- 新增菌落、刪除菌落或設定實驗資訊"
 	        android:textColor="@color/white"
-	        android:paddingLeft="15dp" />
-    </RelativeLayout>
+	        android:paddingLeft="15dp" /> 
+    </RelativeLayout>-->
     
 
     
@@ -349,5 +361,53 @@
 	        android:textColor="@color/red"
 	        android:textSize="12sp" />
     </RelativeLayout>
-    
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/relativeLayout_top2" >
+	    
+        <TextView
+            android:id="@+id/align_left_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="120個"
+            android:textColor="@color/red"
+            android:drawableLeft="@drawable/btn_eye01"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:visibility="invisible" />
+        
+        <TextView
+            android:id="@+id/show_red_colony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50個"
+            android:textColor="@color/red"
+            android:drawableLeft="@drawable/btn_eye01"
+            android:layout_alignLeft="@+id/align_left_text"
+            android:layout_alignParentTop="true" />
+
+        <TextView
+            android:id="@+id/show_green_colony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/align_left_text"
+            android:layout_below="@+id/show_red_colony"
+            android:drawableLeft="@drawable/btn_eye04"
+            android:text="120個"
+            android:textColor="@color/green" />
+
+        <TextView
+            android:id="@+id/show_purple_colony"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/align_left_text"
+            android:layout_below="@+id/show_green_colony"
+            android:drawableLeft="@drawable/btn_eye02"
+            android:text="0個"
+            android:textColor="@color/white" />
+
+    </RelativeLayout>
 </RelativeLayout>

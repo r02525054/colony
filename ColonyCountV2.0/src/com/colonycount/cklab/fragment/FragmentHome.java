@@ -356,6 +356,9 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 		    TextView rangebarValue5 = (TextView) dialogContent.findViewById(R.id.rangebar_value_5);
 		    TextView rangebarValue6 = (TextView) dialogContent.findViewById(R.id.rangebar_value_6);
 		    TextView rangebarValue7 = (TextView) dialogContent.findViewById(R.id.rangebar_value_7);
+		    TextView rangebarValue8 = (TextView) dialogContent.findViewById(R.id.rangebar_value_8);
+		    TextView rangebarValue9 = (TextView) dialogContent.findViewById(R.id.rangebar_value_9);
+		    TextView rangebarValue10 = (TextView) dialogContent.findViewById(R.id.rangebar_value_10);
 		    rangebarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
 		    rangebarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
 		    rangebarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
@@ -363,6 +366,9 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 		    rangebarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
 		    rangebarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
 		    rangebarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
+		    rangebarValue8.setText(Html.fromHtml("10<sup><small>-8</small></sup>"));
+		    rangebarValue9.setText(Html.fromHtml("10<sup><small>-9</small></sup>"));
+		    rangebarValue10.setText(Html.fromHtml("10<sup><small>-10</small></sup>"));
 		    rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
 		        @Override
 		        public void onIndexChangeListener(RangeBar rangeBar, int leftThumbIndex, int rightThumbIndex) { 

@@ -22,7 +22,7 @@ import android.util.TypedValue;
  * This class represents the underlying gray bar in the RangeBar (without the
  * thumbs).
  */
-class Bar {
+public class Bar {
 
     // Member Variables ////////////////////////////////////////////////////////
 

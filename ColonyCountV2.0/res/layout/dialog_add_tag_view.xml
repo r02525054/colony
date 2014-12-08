@@ -34,15 +34,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/dialog_header"
-        android:layout_above="@+id/dialog_footer" 
+        android:layout_above="@+id/dialog_footer"
         android:background="@color/dialog_background" >
 		
         <!-- 所有條件的container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" 
-             >
+            android:orientation="vertical" >
 			
             <!-- 條件1: 日期 -->
             <LinearLayout
@@ -83,7 +82,7 @@
             </LinearLayout>
             
             <!-- 條件2: 菌種 -->
-            <LinearLayout
+            <!-- <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -144,7 +143,7 @@
 	                        android:layout_width="match_parent"
 	                        android:layout_height="wrap_content"
 	                        android:ems="10"
-	                        android:hint="自行新增菌種"
+	                        android:hint="新增菌種"
 	                        android:singleLine="true"
 	                        android:layout_toLeftOf="@+id/button2"
 	                        android:layout_alignBottom="@+id/button2">
@@ -160,7 +159,7 @@
 
 	                </RelativeLayout>
 				</LinearLayout>
-            </LinearLayout>
+            </LinearLayout> -->
             
             <!-- 條件3: 稀釋倍數 -->
             <LinearLayout
@@ -169,8 +168,67 @@
                 android:orientation="vertical"
                 android:padding="10dp"
                 android:layout_marginBottom="10dp" >
-            
+            	
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="稀釋倍數"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
                 
+                <com.colonycount.cklab.rangebar.CustomSeekBar
+                    xmlns:custom="http://schemas.android.com/apk/res-auto"
+		            android:id="@+id/seek_bar"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_margin="10dp"
+		            custom:tickCount="10" />
+            </LinearLayout>
+            
+            <!-- 條件4: 實驗對照參數 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_marginBottom="10dp" >
+                
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="實驗對照參數"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+            	
+                <RelativeLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="match_parent"
+	                android:orientation="horizontal"
+	                android:paddingLeft="10dp" >
+
+                   <EditText
+                       android:id="@+id/editText2"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:ems="10"
+                       android:hint="新增實驗參數"
+                       android:singleLine="true"
+                       android:layout_toLeftOf="@+id/button3"
+                       android:layout_alignBottom="@+id/button3">
+                   </EditText>
+
+                   <Button
+                       android:id="@+id/button3"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentRight="true"
+                       android:layout_alignParentTop="true"
+                       android:text="新增" />
+               </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -214,7 +272,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
-	            android:text="新增"
+	            android:text="確定"
 	            android:padding="0dp"
 	            android:background="@color/btn_background"
 	            android:textColor="@color/white" />

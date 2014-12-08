@@ -21,7 +21,7 @@ import android.util.TypedValue;
 /**
  * Class representing the blue connecting line between the two thumbs.
  */
-class ConnectingLine {
+public class ConnectingLine {
 
     // Member Variables ////////////////////////////////////////////////////////
 

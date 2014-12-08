@@ -344,6 +344,8 @@ public class CropImageView2 extends ImageViewTouchBase {
                 // my code
                 } else if(cropImage.getState() == State.SUB) {
                 	// add another highlight view to move
+                	
+                	// TODO: bug: NullPointerException
                 	showView.handleMotion(HighlightView3.MOVE, event.getX() - mLastXSub, event.getY() - mLastYSub);
                 	if (true) {
                         // This section of code is optional. It has some user

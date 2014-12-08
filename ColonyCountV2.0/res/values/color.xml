@@ -4,11 +4,30 @@
     <color name="photo_mid_background">#545454</color>
     <color name="white">#FFFFFF</color>
     <color name="home_background">#B2D6F7</color>
-    <color name="dialog_background">#B2D6F7</color>
     <color name="btn_background">#6A94CD</color>
+    <color name="dialog_background">#B2D6F7</color>
     <color name="btn_clicked">#806A94CD</color>
     <color name="red">#FF0000</color>
     <color name="green">#00FF00</color>
     <color name="purple">#EF04D6</color>
     <color name="black">#000000</color>
+    
+    <color name="eye_red">#000000</color>
+    <color name="eye_green">#000000</color>
+    <color name="eye_blue">#000000</color>
+    
+    
+    <!-- datetimepicker library -->
+    <color name="circle_background">#fff2f2f2</color>
+    <color name="line_background">#ffcccccc</color>
+    <color name="done_text_color_normal">#ff333333</color>
+    <color name="done_text_color_disabled">#ffcccccc</color>
+    <color name="blue">#ff33b5e5</color>
+    <color name="darker_blue">#ff0099cc</color>
+    <color name="date_picker_text_normal">#ff999999</color>
+    <color name="calendar_header">#ff999999</color>
+    <color name="date_picker_view_animator">#fff2f2f2</color>
+    <color name="ampm_text_color">#8c8c8c</color>
+    <color name="numbers_text_color">#8c8c8c</color>
+    <color name="transparent_black">#7F000000</color>
 </resources>
