@@ -385,10 +385,11 @@
             android:layout_height="wrap_content"
             android:text="50個"
             android:textColor="@color/eye_red"
-            android:drawableLeft="@drawable/btn_eye01"
+            android:drawableLeft="@drawable/selector_eye01_click"
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_alignParentTop="true"
             android:padding="1dp" />
+        <!-- android:drawableLeft="@drawable/selector_eye_clicked" -->
 
         <TextView
             android:id="@+id/show_green_colony"
@@ -396,7 +397,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_below="@+id/show_red_colony"
-            android:drawableLeft="@drawable/btn_eye04"
+            android:drawableLeft="@drawable/selector_eye04_click"
             android:text="120個"
             android:textColor="@color/eye_green"
             android:padding="1dp" />
@@ -407,7 +408,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_below="@+id/show_green_colony"
-            android:drawableLeft="@drawable/btn_eye05"
+            android:drawableLeft="@drawable/selector_eye05_click"
             android:text="0個"
             android:textColor="@color/eye_blue"
             android:padding="1dp" />
