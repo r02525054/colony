@@ -159,15 +159,18 @@
 	                        android:text="新增" />
 	                </RelativeLayout> -->
 
+					<!-- <com.colonycount.cklab.swipemenulistview.SwipeMenuListView
+				        android:id="@+id/colony_type_list"
+				        android:layout_width="match_parent"
+				        android:layout_height="wrap_content" /> -->
+
 					<EditText
-                        android:id="@+id/editText1"
+                        android:id="@+id/et_add_colony_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="新增項目..."
                         android:singleLine="true"
-                        android:layout_toLeftOf="@+id/button2"
-                        android:layout_alignBottom="@+id/button2"
                         android:drawableLeft="@drawable/btn_list_add"
                         android:drawablePadding="20dp"
                         android:background="@null">
@@ -340,31 +343,24 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
             	
-                <RelativeLayout
+                <LinearLayout
 	                android:layout_width="match_parent"
 	                android:layout_height="match_parent"
-	                android:orientation="horizontal"
+	                android:orientation="vertical"
 	                android:paddingLeft="10dp" >
 
                    <EditText
-                       android:id="@+id/editText2"
+                       android:id="@+id/et_add_experiment_param"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
                        android:ems="10"
-                       android:hint="新增實驗參數"
+                       android:hint="新增項目..."
                        android:singleLine="true"
-                       android:layout_toLeftOf="@+id/button3"
-                       android:layout_alignBottom="@+id/button3">
+                       android:drawableLeft="@drawable/btn_list_add"
+                       android:drawablePadding="20dp"
+                       android:background="@null">
                    </EditText>
-
-                   <Button
-                       android:id="@+id/button3"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_alignParentRight="true"
-                       android:layout_alignParentTop="true"
-                       android:text="新增" />
-               </RelativeLayout>
+               </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -388,30 +384,45 @@
 	        android:orientation="horizontal"
 	        android:layout_alignParentBottom="true">
             
-            <Button
-                android:id="@+id/btn_set_tag_cancel"
-	            android:layout_width="wrap_content"
+            
+            <LinearLayout 
+                android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
-	            android:text="取消"
-	            android:padding="0dp"
-	            android:background="@color/btn_background"
-	            android:textColor="@color/white" />
+	            android:background="@color/white">
+            	
+                <Button
+	                android:id="@+id/btn_set_tag_cancel"
+		            android:layout_width="match_parent"
+		            android:layout_height="match_parent"
+		            android:text="取消"
+		            android:padding="0dp"
+		            android:background="@drawable/selector_btn_clicked"
+		            android:textColor="@color/white" />
+            </LinearLayout>
+            
             
             <View 
 		        android:layout_width="1dp"
 		        android:layout_height="match_parent"
 		        android:background="@color/white"/>
 	        
-	        <Button
-	            android:id="@+id/btn_set_tag_ok"
-	            android:layout_width="wrap_content"
+            <LinearLayout 
+                android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
-	            android:text="確定"
-	            android:padding="0dp"
-	            android:background="@color/btn_background"
-	            android:textColor="@color/white" />
+	            android:background="@color/white">
+            	
+                <Button
+		            android:id="@+id/btn_set_tag_ok"
+		            android:layout_width="match_parent"
+		            android:layout_height="match_parent"
+		            android:text="確定"
+		            android:padding="0dp"
+		            android:background="@drawable/selector_btn_clicked"
+		            android:textColor="@color/white" />
+            </LinearLayout>
+	        
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

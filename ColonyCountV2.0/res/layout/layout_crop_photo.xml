@@ -52,22 +52,15 @@
 
     </RelativeLayout>
 	
-    <ScrollView
-        android:id="@+id/scrollView1"
+    <com.colonycount.cklab.crop.CropImageView
+        android:id="@+id/cropImageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/relativeLayout_top"
-        android:layout_above="@+id/bot_layout" >
-        
-		<com.colonycount.cklab.crop.CropImageView 
-	        android:id="@+id/cropImageView"
-	        android:background="#55000000"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	         />
-	
-	</ScrollView>
-	
+        android:background="#55000000" />
+    
+    
     <RelativeLayout
         android:id="@+id/bot_layout"
         android:layout_width="match_parent"
@@ -159,5 +152,7 @@
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout> -->
+
+    
 
 </RelativeLayout>
