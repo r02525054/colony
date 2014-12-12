@@ -43,7 +43,6 @@ public class CropImageView extends ImageViewTouchBase {
     @Override
     protected void zoomTo(float scale, float centerX, float centerY) {
         super.zoomTo(scale, centerX, centerY);
-        Log.d("test3", "zoomTo");
         for (HighlightView hv : mHighlightViews) {
             hv.mMatrix.set(getImageMatrix());
             hv.invalidate();
@@ -53,7 +52,6 @@ public class CropImageView extends ImageViewTouchBase {
     @Override
     protected void zoomIn() {
         super.zoomIn();
-        Log.d("test3", "zoomIn");
         for (HighlightView hv : mHighlightViews) {
             hv.mMatrix.set(getImageMatrix());
             hv.invalidate();
@@ -63,7 +61,6 @@ public class CropImageView extends ImageViewTouchBase {
     @Override
     protected void zoomOut() {
         super.zoomOut();
-        Log.d("test3", "zoomOut");
         for (HighlightView hv : mHighlightViews) {
             hv.mMatrix.set(getImageMatrix());
             hv.invalidate();
@@ -126,22 +123,6 @@ public class CropImageView extends ImageViewTouchBase {
                         mLastY = event.getY();
                         mMotionHighlightView.setMode(HighlightView.ModifyMode.Move);
                     }
-//                    for (int i = 0; i < mHighlightViews.size(); i++) {
-//                        
-//                        int edge = hv.getHit(event.getX(), event.getY());
-//                        if (edge != HighlightView.GROW_NONE) {
-//                            mMotionEdge = edge;
-//                            mMotionHighlightView = hv;
-//                            mLastX = event.getX();
-//                            mLastY = event.getY();
-//                            mMotionHighlightView.setMode(HighlightView.ModifyMode.Move);
-////                            mMotionHighlightView.setMode(
-////                                    (edge == HighlightView.MOVE)
-////                                    ? HighlightView.ModifyMode.Move
-////                                    : HighlightView.ModifyMode.Grow);
-//                            break;
-//                        }
-//                    }
                 }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -153,7 +134,6 @@ public class CropImageView extends ImageViewTouchBase {
             	
             	break;
             case MotionEvent.ACTION_UP:
-//            	Log.d("test3", "on touch: UP");
                 if (cropImage.mWaitingToPick) {
                     for (int i = 0; i < mHighlightViews.size(); i++) {
                         HighlightView hv = mHighlightViews.get(i);
@@ -231,15 +211,6 @@ public class CropImageView extends ImageViewTouchBase {
         return true;
     }
     
-    /**
-    * Determine the space between the first two fingers
-    */
-    private float spacing(MotionEvent event) {
-	    float x = event.getX(0) - event.getX(1);
-	    float y = event.getY(0) - event.getY(1);
-	    
-	    return (float)Math.sqrt(x * x + y * y);
-    }
 
     // Pan the displayed image to make sure the cropping rectangle is visible.
     private void ensureVisible(HighlightView hv) {
@@ -247,7 +218,7 @@ public class CropImageView extends ImageViewTouchBase {
         
         int panDeltaX1 = Math.max(0, this.getLeft() - r.left);
         int panDeltaX2 = Math.min(0, this.getRight() - r.right);
-
+        
 //        int panDeltaY1 = Math.max(0, this.getTop() - r.top);
         int panDeltaY1 = Math.max(0, this.getTop() - r.top - topPadding);
 //        int panDeltaY2 = Math.min(0, this.getBottom() - r.bottom);
@@ -267,7 +238,6 @@ public class CropImageView extends ImageViewTouchBase {
     // If the cropping rectangle's size changed significantly, change the
     // view's center and scale according to the cropping rectangle.
     private void centerBasedOnHighlightView(HighlightView hv) {
-    	Log.d("test3", "centerBasedOnHighlightView");
         Rect drawRect = hv.mDrawRect;
 
         float width = drawRect.width();
@@ -282,10 +252,6 @@ public class CropImageView extends ImageViewTouchBase {
         float zoom = Math.min(z1, z2);
         zoom = zoom * this.getScale();
         zoom = Math.max(1F, zoom);
-//        Log.d("test2", "width, height = " + width + ", " + height);
-//        Log.d("test2", "thisWidth, thisHeight = " + thisWidth + ", " + thisHeight);
-//        Log.d("test2", "z1, z2 = " + z1 + ", " + z2);
-//        Log.d("test2", "zoom = " + zoom);
 
          if ((Math.abs(zoom - getScale()) / zoom) > .1) {
             float [] coordinates = new float[] {hv.mCropRect.centerX(),

@@ -1,8 +1,8 @@
 package com.colonycount.cklab.fragment;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.GridView;
@@ -34,6 +33,7 @@ import android.widget.Toast;
 
 import com.colonycount.cklab.activity.R;
 import com.colonycount.cklab.activity.TakePhotoActivity;
+import com.colonycount.cklab.activity.Test;
 import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
 import com.colonycount.cklab.asynctask.AsyncTaskPayload;
 import com.colonycount.cklab.crop.CropImageIntentBuilder;
@@ -62,6 +62,13 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
     private String[] num;
     private String[] date;
     private String[] type;
+    
+    private String searchStartDate;
+    private String searchEndDate;
+    private String searchType;
+    private String searchStartDilution;
+    private String searchEndDilution;
+    private String searchParams;
     
 //    private AlphaAnimation buttonClickAnimation = new AlphaAnimation(1F, 0.8F);
     
@@ -238,6 +245,11 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 //			startActivity(intent);
 //		}
 		
+		
+//		Intent i = new Intent(getActivity(), Test.class);
+//		i.setData(intent.getData());
+//		startActivity(i);
+		
 		File croppedImageFile = new File(getActivity().getFilesDir(), "test.jpg");
         if ((requestCode == REQUEST_PICTURE) && (resultCode == Activity.RESULT_OK)) {
         	Uri croppedImage = Uri.fromFile(croppedImageFile);
@@ -279,7 +291,7 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 //		inflater.inflate(R.menu.action_bar, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 		
-		MenuItem item = menu.add(ACTION_BAR_GROUP, MENU_SEARCH, 0, "search");
+		MenuItem item = menu.add(ACTION_BAR_GROUP, MENU_SEARCH, 0, "搜尋菌落");
 		item.setIcon(R.drawable.btn_magnifier);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		
@@ -293,7 +305,7 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 	public static void setMenuVisible(boolean isVisible){
 		isMenuVisible = isVisible;
 	}
-
+	
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -307,23 +319,37 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 			View dialogContent = getActivity().getLayoutInflater().inflate(R.layout.dialog_search_view, null);
 			builder.setView(dialogContent);
 //		    AlertDialog dialog = builder.create();
-			
 //		    dialog.show();
 		    
 		    final Button btnSearchStartDate = (Button) dialogContent.findViewById(R.id.btn_search_start_date);
 		    final Button btnSearchEndDate = (Button) dialogContent.findViewById(R.id.btn_search_end_date);
+		    
+		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		    Calendar calendar = Calendar.getInstance();
+		    // set date to today
+		    searchEndDate = dateFormat.format(calendar.getTime());
+		    calendar.add(Calendar.YEAR, -1);
+		    // set date to 1 year ago
+		    searchStartDate = dateFormat.format(calendar.getTime());
+		    // set to search btn
+		    btnSearchEndDate.setText(searchEndDate);
+		    btnSearchStartDate.setText(searchStartDate);
+		    
 		    
 		    btnSearchStartDate.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					Calendar calendar = Calendar.getInstance();
+					calendar.add(Calendar.YEAR, -1);
+					String[] dateArr = searchStartDate.split("/");
 					final DatePickerDialog dateDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
 					    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-					    	btnSearchStartDate.setText(year + "/" + (monthOfYear+1) + "/" + dayOfMonth);
+					    	searchStartDate = year + "/" + (monthOfYear+1) + "/" + dayOfMonth;
+					    	btnSearchStartDate.setText(searchStartDate);
 					    }
-					}, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-					calendar.add(Calendar.YEAR, -1);
+					}, Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1])-1, Integer.parseInt(dateArr[2]));
+					
 					dateDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
 					Calendar calendar2 = Calendar.getInstance();
 					dateDialog.getDatePicker().setMaxDate(calendar2.getTimeInMillis());
@@ -335,16 +361,56 @@ public class FragmentHome extends Fragment implements View.OnClickListener, Asyn
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					Calendar calendar = Calendar.getInstance();
+					String[] dateArr = searchEndDate.split("/");
 					final DatePickerDialog dateDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
 					    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-					    	btnSearchEndDate.setText(year + "/" + (monthOfYear+1) + "/" + dayOfMonth);
+					    	searchEndDate = year + "/" + (monthOfYear+1) + "/" + dayOfMonth;
+					    	btnSearchEndDate.setText(searchEndDate);
 					    }
-					}, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+					}, Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1])-1, Integer.parseInt(dateArr[2]));
+					
 					calendar.add(Calendar.YEAR, -1);
 					dateDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
 					Calendar calendar2 = Calendar.getInstance();
 					dateDialog.getDatePicker().setMaxDate(calendar2.getTimeInMillis());
 					dateDialog.show();
+				}
+			});
+		    
+		    Button btnSearch3Day = (Button) dialogContent.findViewById(R.id.btn_search_3day);
+		    Button btnSearch1Week = (Button) dialogContent.findViewById(R.id.btn_search_1week);
+		    Button btnSearch1Month = (Button) dialogContent.findViewById(R.id.btn_search_1month);
+		    btnSearch3Day.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Calendar calendar = Calendar.getInstance();
+					searchEndDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
+					calendar.add(Calendar.DATE, -3);
+					searchStartDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
+					btnSearchStartDate.setText(searchStartDate);
+					btnSearchEndDate.setText(searchEndDate);
+				}
+			});
+		    btnSearch1Week.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Calendar calendar = Calendar.getInstance();
+					searchEndDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
+					calendar.add(Calendar.DATE, -7);
+					searchStartDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
+					btnSearchStartDate.setText(searchStartDate);
+					btnSearchEndDate.setText(searchEndDate);
+				}
+			});
+		    btnSearch1Month.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Calendar calendar = Calendar.getInstance();
+					searchEndDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
+					calendar.add(Calendar.MONTH, -1);
+					searchStartDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
+					btnSearchStartDate.setText(searchStartDate);
+					btnSearchEndDate.setText(searchEndDate);
 				}
 			});
 		    

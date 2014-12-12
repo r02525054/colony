@@ -1,15 +1,15 @@
 package com.colonycount.cklab.activity;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
@@ -23,15 +23,20 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -53,7 +58,6 @@ import com.colonycount.cklab.model.Component;
 import com.colonycount.cklab.model.DataWrapper;
 import com.colonycount.cklab.model.ImgInfo;
 import com.colonycount.cklab.rangebar.CustomSeekBar;
-import com.colonycount.cklab.rangebar.RangeBar;
 
 public class ResultActivity extends GPlusClientActivity implements View.OnClickListener, AsyncTaskCompleteListener<Boolean> {
 	private RelativeLayout rel_top;
@@ -101,7 +105,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
     
     private int areaThreshold = 4;
 	private double shapeFactorThreshold = 0.5;
-    
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -246,27 +250,33 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 //							}
 //						});
 					    
-//					    RangeBar rangebar = (RangeBar) dialogContent.findViewById(R.id.rangebar);
-//					    TextView rangebarValue1 = (TextView) dialogContent.findViewById(R.id.rangebar_value_1);
-//					    TextView rangebarValue2 = (TextView) dialogContent.findViewById(R.id.rangebar_value_2);
-//					    TextView rangebarValue3 = (TextView) dialogContent.findViewById(R.id.rangebar_value_3);
-//					    TextView rangebarValue4 = (TextView) dialogContent.findViewById(R.id.rangebar_value_4);
-//					    TextView rangebarValue5 = (TextView) dialogContent.findViewById(R.id.rangebar_value_5);
-//					    TextView rangebarValue6 = (TextView) dialogContent.findViewById(R.id.rangebar_value_6);
-//					    TextView rangebarValue7 = (TextView) dialogContent.findViewById(R.id.rangebar_value_7);
-//					    rangebarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
-//					    rangebarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
-//					    rangebarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
-//					    rangebarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
-//					    rangebarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
-//					    rangebarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
-//					    rangebarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
-//					    rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
-//					        @Override
-//					        public void onIndexChangeListener(RangeBar rangeBar, int leftThumbIndex, int rightThumbIndex) { 
-//					            Log.d("Test2", "left = " + leftThumbIndex + ", right = " + rightThumbIndex);
-//					        }
-//					    });
+					    CustomSeekBar seekbar = (CustomSeekBar) dialogContent.findViewById(R.id.seek_bar);
+					    TextView seekbarValue1 = (TextView) dialogContent.findViewById(R.id.seekbar_value_1);
+					    TextView seekbarValue2 = (TextView) dialogContent.findViewById(R.id.seekbar_value_2);
+					    TextView seekbarValue3 = (TextView) dialogContent.findViewById(R.id.seekbar_value_3);
+					    TextView seekbarValue4 = (TextView) dialogContent.findViewById(R.id.seekbar_value_4);
+					    TextView seekbarValue5 = (TextView) dialogContent.findViewById(R.id.seekbar_value_5);
+					    TextView seekbarValue6 = (TextView) dialogContent.findViewById(R.id.seekbar_value_6);
+					    TextView seekbarValue7 = (TextView) dialogContent.findViewById(R.id.seekbar_value_7);
+					    TextView seekbarValue8 = (TextView) dialogContent.findViewById(R.id.seekbar_value_8);
+					    TextView seekbarValue9 = (TextView) dialogContent.findViewById(R.id.seekbar_value_9);
+					    TextView seekbarValue10 = (TextView) dialogContent.findViewById(R.id.seekbar_value_10);
+					    seekbarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
+					    seekbarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
+					    seekbarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
+					    seekbarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
+					    seekbarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
+					    seekbarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
+					    seekbarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
+					    seekbarValue8.setText(Html.fromHtml("10<sup><small>-8</small></sup>"));
+					    seekbarValue9.setText(Html.fromHtml("10<sup><small>-9</small></sup>"));
+					    seekbarValue10.setText(Html.fromHtml("10<sup><small>-10</small></sup>"));
+					    seekbar.setOnRangeBarChangeListener(new CustomSeekBar.OnSeekBarChangeListener() {
+							@Override
+							public void onIndexChangeListener(CustomSeekBar seekBar, int index) {
+								
+							}
+						});
 					    
 					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
 					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
@@ -300,6 +310,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 								Log.d("Test2", "index = " + index);
 							}
 						});
+					    
 					    
 //					    final Calendar calendar = Calendar.getInstance();
 //					    final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
@@ -377,6 +388,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 //								  image.showView.getCenterY()+mBitmapShow.getHeight()/target/2);
 //			}
 //		});
+		
 		showRedColony.setOnClickListener(this);
 		showGreenColony.setOnClickListener(this);
 		showPurpleColony.setOnClickListener(this);
@@ -643,6 +655,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 
 	@Override
 	public void onClick(View v) {
+		Log.d("Test2", "id = " + v.getId());
 		switch(v.getId()){
 		case R.id.show_red_colony:
 			isRedColonyShow = !isRedColonyShow;
@@ -650,6 +663,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 				HighlightView4 rView = image.rViews.get(i);
 				rView.setHidden(!rView.getHidden());
 			}
+//			if(isRedColonyShow){
+//				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye01, 0, 0, 0);
+//			} else{
+//				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye01_close, 0, 0, 0);
+//			}
 			
 			image.invalidate();
 			break;
@@ -659,6 +677,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 				HighlightView5 gView = image.gViews.get(i);
 				gView.setHidden(!gView.getHidden());
 			}
+//			if(isGreenColonyShow){
+//				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye04, 0, 0, 0);
+//			} else{
+//				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye04_close, 0, 0, 0);
+//			}
 			
 			image.invalidate();
 			break;
@@ -668,6 +691,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 				HighlightView2 myView = image.myViews.get(i);
 				myView.setHidden(!myView.getHidden());
 			}
+//			if(isPurpleColonyShow){
+//				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye05, 0, 0, 0);
+//			} else{
+//				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye05_close, 0, 0, 0);
+//			}
 			
 			image.invalidate();
 			break;
