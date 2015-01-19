@@ -15,29 +15,32 @@ public class BaseAsyncTask extends AsyncTask<AsyncTaskPayload, Void, AsyncTaskPa
 	private String progressDialogTitle;
 	private String progressDialogMsg;
 	private AsyncTaskCompleteListener<Boolean> listener;
+	private boolean showDialog;
 	
-	public BaseAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls) {
+	public BaseAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls, boolean showDialog) {
 		this.context = context;
         this.progressDialogTitle = progressDialogTitle;
         this.progressDialogMsg = progressDialogMsg;
         this.listener = listener;
         this.TAG = cls.getSimpleName();
+        this.showDialog = showDialog;
     }
 	
 	@Override
 	protected void onPreExecute() {
 		progressDialog = new ProgressDialog(context, ProgressDialog.THEME_HOLO_DARK);
-		progressDialog.setTitle(progressDialogTitle);
-		progressDialog.setMessage(progressDialogMsg);
-		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//			progressDialog.setMax(100);
-		progressDialog.setCancelable(false);
-		progressDialog.show();
+		if(showDialog){
+			progressDialog.setTitle(progressDialogTitle);
+			progressDialog.setMessage(progressDialogMsg);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	//			progressDialog.setMax(100);
+			progressDialog.setCancelable(false);
+			progressDialog.show();
+		}
     }
 	
 	@Override
 	protected AsyncTaskPayload doInBackground(AsyncTaskPayload... params) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

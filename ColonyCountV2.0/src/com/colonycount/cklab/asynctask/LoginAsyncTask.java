@@ -14,6 +14,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.util.Log;
@@ -25,14 +27,11 @@ public class LoginAsyncTask extends BaseAsyncTask {
 	private Map<String,String> request;
 	
 	public LoginAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls) {
-		super(context, progressDialogTitle, progressDialogMsg, listener, cls);
-		// TODO Auto-generated constructor stub
+		super(context, progressDialogTitle, progressDialogMsg, listener, cls, true);
 	}
-	
 	
 	@Override
 	protected AsyncTaskPayload doInBackground(AsyncTaskPayload... params) {
-		// TODO Auto-generated method stub
 		HttpPost httpRequest = new HttpPost(postUrl);
 		List<NameValuePair> reqParams = new ArrayList<NameValuePair>();
 		addRequest(reqParams);
@@ -42,17 +41,28 @@ public class LoginAsyncTask extends BaseAsyncTask {
 			httpRequest.setEntity(new UrlEncodedFormEntity(reqParams, HTTP.UTF_8));
 			HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequest);
 			
+			Log.d("test4", "http status code = " + (httpResponse.getStatusLine().getStatusCode()));
 			if(httpResponse.getStatusLine().getStatusCode() == 200){
 				strResult = EntityUtils.toString(httpResponse.getEntity());
-				Log.d(TAG, "post result = " + strResult);
+				Log.d("test4", "strResult = " + strResult);
 			}
 		} catch(Exception e) {
-			Log.d(TAG, "exception: " + e.toString());
+			Log.d("test4", "exception: " + e.toString());
 		}
-		
-		
+
 		AsyncTaskPayload result = new AsyncTaskPayload();
-		result.putValue("result", strResult);
+		result.putValue("status", "success");
+		result.putValue("msg", "success");
+		
+//		try {
+//			JSONObject jsonObject = new JSONObject(strResult);
+//			String status = jsonObject.getString("status");
+//			String msg = jsonObject.getString("msg");
+//			result.putValue("status", status);
+//			result.putValue("msg", msg);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
 		
 		return result;
 	}
@@ -64,7 +74,7 @@ public class LoginAsyncTask extends BaseAsyncTask {
 	public void addRequest(List<NameValuePair> reqParams){
 		Set<String> keys = request.keySet();
 		Iterator<String> it = keys.iterator();
-		for(int i = 0; i < request.size(); i++){
+		while(it.hasNext()){
 			String key = it.next();
 			reqParams.add(new BasicNameValuePair(key, request.get(key)));
 		}

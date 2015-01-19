@@ -27,6 +27,11 @@ public class Pixel {
 		
 	}
 	
+	public Pixel(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	
 	public Pixel(int r, int g, int b){
 		this.r = r;
 		this.g = g;

@@ -53,6 +53,10 @@ public class Component implements Serializable {
 		return area;
 	}
 	
+//	public int getArea(){
+//		return pixels.size();
+//	}
+	
 	public void addPerimeter(int periNumber){
 		this.perimeter += periNumber;
 	}
@@ -62,7 +66,7 @@ public class Component implements Serializable {
 	}
 	
 	public void setProperties(){
-//		area = pixels.size();
+		area = pixels.size();
 		diameter = 2 * Math.sqrt(area / Math.PI); 
 		diameter = (double)Math.round(diameter * 100) / 100.0;
 		radius = diameter / 2;
@@ -76,6 +80,13 @@ public class Component implements Serializable {
 	public double getDiameter() {
 		return diameter;
 	}
+	
+//	public double getDiameter(){
+//		double d = 2 * Math.sqrt(getArea() / Math.PI);
+//		d = (double)Math.round(diameter * 100) / 100.0;
+//		
+//		return d;
+//	}
 	
 	public void setRadius(double radius){
 		this.radius = radius;

@@ -14,28 +14,35 @@ import com.colonycount.cklab.activity.R;
 
 public class CustomGrid extends BaseAdapter {
 	private Context mContext;
-	private final String[] num;
+	
+	// colony info
 	private final String[] date;
 	private final String[] type;
+	private final String[] dilution_num;
+	private final String[] exp_param;
+	private final String[] colony_num;
 	private final Bitmap[] images;
 
-	public CustomGrid(Context mContext, String[] num, String[] date, String[] type, Bitmap[] Images) {
+	public CustomGrid(Context mContext, String[] date, String[] type, String[] dilution_num, String[] exp_param, String[] colony_num, Bitmap[] images) {
 		this.mContext = mContext;
-		this.num = num;
 		this.date = date;
 		this.type = type;
-		this.images = Images;
+		this.dilution_num = dilution_num;
+		this.exp_param = exp_param;
+		this.colony_num = colony_num;
+		this.images = images;
 	}
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
+		if(images == null)
+			return 0;
+		
 		return images.length;
 	}
 
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -47,22 +54,6 @@ public class CustomGrid extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-//		View grid;
-//		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//		if (convertView == null) {
-//			grid = new View(mContext);
-//			grid = inflater.inflate(R.layout.custom_grid, null);
-//			TextView textView = (TextView) grid.findViewById(R.id.textView1);
-//			ImageView imageView = (ImageView) grid.findViewById(R.id.imageView1);
-//			textView.setText(texts[position]);
-//			imageView.setImageBitmap(images[position]);
-//		} else {
-//			grid = (View) convertView;
-//		}
-//		
-//		return grid;
-		
 		View v = convertView;
         ImageView picture;
         TextView tNum;
@@ -84,7 +75,7 @@ public class CustomGrid extends BaseAdapter {
         tType = (TextView) v.getTag(R.id.text3);
         
         picture.setImageBitmap(images[position]);
-        tNum.setText(num[position]);
+//        tNum.setText(num[position]);
         tDate.setText(date[position]);
         tType.setText(type[position]);
 

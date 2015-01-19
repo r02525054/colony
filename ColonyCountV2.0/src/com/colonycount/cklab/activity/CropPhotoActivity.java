@@ -46,8 +46,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
@@ -72,6 +74,7 @@ import com.colonycount.cklab.crop.ImageManager;
 import com.colonycount.cklab.crop.MonitoredActivity;
 import com.colonycount.cklab.crop.Util;
 import com.colonycount.cklab.model.DataWrapper;
+import com.google.android.gms.internal.hv;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -94,12 +97,20 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
     		switch(msg.what){
     		case LAUNCH_COUNT_COLONY_TASK:
     			Bitmap croppedImage = (Bitmap) msg.obj;
-    			Log.d("test", "in handleMessage: width = " + croppedImage.getWidth() + ", height = " + croppedImage.getHeight());
+//    			Log.d("test", "in handleMessage: width = " + croppedImage.getWidth() + ", height = " + croppedImage.getHeight());
+//    			
+//    			AsyncTaskPayload asyncTaskPayload = new AsyncTaskPayload();
+//    			asyncTaskPayload.setRawImg(croppedImage);
+//    			new CountColonyAsyncTask(context, "系統訊息", "計算中，請稍後...", asyncTaskCompleteListener, CountColonyAsyncTask.class).execute(asyncTaskPayload);
     			
-    			AsyncTaskPayload asyncTaskPayload = new AsyncTaskPayload();
-    			asyncTaskPayload.setRawImg(croppedImage);
-    			new CountColonyAsyncTask(context, "系統訊息", "計算中，請稍後...", asyncTaskCompleteListener, CountColonyAsyncTask.class).execute(asyncTaskPayload);
+    			ImageView showImageTest = (ImageView) findViewById(R.id.show_image_test);
+    			showImageTest.setImageBitmap(croppedImage);
+    			showImageTest.setVisibility(View.VISIBLE);
     			
+    			mImageView.setVisibility(View.GONE);
+    			
+    			
+//    			mImageView.setImageBitmap(croppedImage);
     			break;
     		}
     	}
@@ -130,6 +141,41 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
     private ImageButton btnClose;
     private ImageButton btnCount;
     
+    // these matrices will be used to move and zoom image
+    private Matrix matrix = new Matrix();
+    private Matrix savedMatrix = new Matrix();
+    private static final int NONE = 0;
+    private static final int DRAG = 1;
+    private static final int ZOOM = 2;
+    private int mode = NONE;
+    private PointF start = new PointF();
+    private PointF mid = new PointF();
+    private float oldDist = 1f;
+    private float d = 0f;
+    private float newRot = 0f;
+    private float[] lastEvent = null;
+    private float lastX, lastY;
+    private float scaleFactor = 1;
+    
+    
+    /**
+     * Determine the space between the first two fingers
+     */
+    private float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return FloatMath.sqrt(x * x + y * y);
+    }
+    
+    /**
+     * Calculate the mid point of the first two fingers
+     */
+    private void midPoint(PointF point, MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
+    
     @Override
 	protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -143,6 +189,132 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
         
         relativeLayout_root = (RelativeLayout) findViewById(R.id.relativeLayout_root);
         mImageView = (CropImageView) findViewById(R.id.cropImageView);
+        mImageView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				CropImageView view = (CropImageView) v;
+		        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+		        case MotionEvent.ACTION_DOWN:
+	                savedMatrix.set(matrix);
+	                start.set(event.getX(), event.getY());
+	                lastX = event.getX();
+	                lastY = event.getY();
+	                mode = DRAG;
+	                lastEvent = null;
+	                break;
+	            case MotionEvent.ACTION_POINTER_DOWN:
+	            	oldDist = spacing(event);
+	                if (oldDist > 10f) {
+	                    savedMatrix.set(matrix);
+	                    midPoint(mid, event);
+	                    mode = ZOOM;
+	                }
+	                lastEvent = new float[4];
+	                lastEvent[0] = event.getX(0);
+	                lastEvent[1] = event.getX(1);
+	                lastEvent[2] = event.getY(0);
+	                lastEvent[3] = event.getY(1);
+//	                d = rotation(event);
+	                break;
+	            case MotionEvent.ACTION_UP:
+	            case MotionEvent.ACTION_POINTER_UP:
+	                mode = NONE;
+	                lastEvent = null;
+	                break;
+		        case MotionEvent.ACTION_MOVE:
+	                if (mode == DRAG) {
+//	                	matrix.set(savedMatrix);
+	                	float[] values = new float[9];
+	                    matrix.getValues(values);
+	                    float matrixleft = values[Matrix.MTRANS_X];
+	                    float matrixRight = matrixleft + mBitmap.getWidth() * scaleFactor;
+	                    float matrixTop = values[Matrix.MTRANS_Y];
+	                    float matrixBot = matrixTop + mBitmap.getHeight() * scaleFactor;
+	                    
+	                    float dx = event.getX() - lastX;
+	                    float dy = event.getY() - lastY;
+	                    
+	                    if(matrixleft + dx > mCrop.mDrawRect.left){
+	                    	dx = 0;
+	                    }
+	                    
+	                    if(matrixRight + dx < mCrop.mDrawRect.right){
+	                    	dx = 0;
+	                    }
+	                    
+	                    if(matrixTop + dy > mCrop.mDrawRect.top){
+	                    	dy = 0;
+	                    }
+	                    
+	                    if(matrixBot + dy < mCrop.mDrawRect.bottom){
+	                    	dy = 0;
+	                    }
+	                    
+                    	matrix.postTranslate(dx, dy);
+                    	
+                    	lastX = event.getX();
+                    	lastY = event.getY();
+                    	
+                    	Log.d("Test2", "matrixleft = " + matrixleft + ", matrixRight = " + matrixRight);
+                    	Log.d("Test2", "matrixTop = " + matrixTop + ", matrixBot = " + matrixBot);
+	                } else if (mode == ZOOM) {
+	                	// TODO: 縮小時一邊碰到底時要縮小另一邊
+	                    float newDist = spacing(event);
+	                    if (newDist > 10f) {
+	                    	float[] values = new float[9];
+		                    matrix.getValues(values);
+		                    float matrixScaleX = values[Matrix.MSCALE_X];
+		                    float matrixScaleY = values[Matrix.MSCALE_Y];
+		                    float matrixLeft = values[Matrix.MTRANS_X];
+		                    float matrixRight = matrixLeft + mBitmap.getWidth() * scaleFactor;
+		                    float matrixTop = values[Matrix.MTRANS_Y];
+		                    float matrixBot = matrixTop + mBitmap.getHeight() * scaleFactor;
+		                    
+	                        float scale = (newDist / oldDist);
+	                        
+	                        if((mid.x - matrixLeft) * scale < mid.x - mCrop.mDrawRect.left){
+	                        	scale = 1;
+	                        }
+	                        
+	                        if((matrixRight - mid.x) * scale < mCrop.mDrawRect.right - mid.x){
+	                        	scale = 1;
+	                        }
+	                        
+	                        if((mid.y - matrixTop) * scale < mid.y - mCrop.mDrawRect.top){
+	                        	scale = 1;
+	                        }
+	                        
+	                        if((matrixBot - mid.y) * scale < mCrop.mDrawRect.bottom - mid.y){
+	                        	scale = 1;
+	                        }
+	                        
+	                        	
+	                        matrix.postScale(scale, scale, mid.x, mid.y);
+	                        oldDist = newDist;
+	                        scaleFactor = matrixScaleX;
+	                        Log.d("Test2", "matrixScaleX = " + matrixScaleX);
+	                        Log.d("Test2", "matrixleft = " + matrixLeft + ", matrixRight = " + matrixRight);
+	                    	Log.d("Test2", "matrixTop = " + matrixTop + ", matrixBot = " + matrixBot);
+	                    }
+//	                    if (lastEvent != null && event.getPointerCount() == 3) {
+//	                        newRot = rotation(event);
+//	                        float r = newRot - d;
+//	                        float[] values = new float[9];
+//	                        matrix.getValues(values);
+//	                        float tx = values[2];
+//	                        float ty = values[5];
+//	                        float sx = values[0];
+//	                        float xc = (view.getWidth() / 2) * sx;
+//	                        float yc = (view.getHeight() / 2) * sx;
+//	                        matrix.postRotate(r, tx + xc, ty + yc);
+//	                    }
+	                }
+	                break;
+		        }
+		        view.setImageMatrix(matrix);
+		        return true;
+			}
+		});
         
         btnCount = (ImageButton) findViewById(R.id.btn_count);
         btnClose = (ImageButton) findViewById(R.id.btn_close);
@@ -336,7 +508,7 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
         }
 
         if (mSaving) return;
-        mSaving = true;
+//        mSaving = true;
 
         Bitmap croppedImage;
 
@@ -380,9 +552,29 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
             croppedImage = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             
             Canvas canvas = new Canvas(croppedImage);
+            
+            // TODO
+            float[] values = new float[9];
+            matrix.getValues(values);
+            float matrixScaleX = values[Matrix.MSCALE_X];
+            float matrixScaleY = values[Matrix.MSCALE_Y];
+            float matrixLeft = values[Matrix.MTRANS_X];
+            float matrixRight = matrixLeft + mBitmap.getWidth() * scaleFactor;
+            float matrixTop = values[Matrix.MTRANS_Y];
+            float matrixBot = matrixTop + mBitmap.getHeight() * scaleFactor;
+            
+            int diameter = mCrop.mDrawRect.right - mCrop.mDrawRect.left;
+            int left = (int)(mCrop.mDrawRect.left-matrixLeft);
+            int top = (int)(mCrop.mDrawRect.top-matrixTop);
+            int right = (int)((left + diameter) / scaleFactor);
+            int bot = (int)((top+diameter) / scaleFactor);
+            
+//            Rect dstRect = new Rect(left, top, right, bot);
             Rect dstRect = new Rect(0, 0, width, height);
-            canvas.drawBitmap(mBitmap, r, dstRect, null);
+            canvas.drawBitmap(mBitmap, dstRect, r, null);
 
+            Log.d("Test2", "left = " + left + ", top = " + top + ", right = " + right + ", bot = " + bot);
+            
             // Release bitmap memory as soon as possible
 //            mImageView.clear();
 //            mBitmap.recycle();
@@ -585,7 +777,6 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
 
         // Create a default HightlightView if we found no face in the picture.
         private void makeDefault() {
-        	Log.d("test", "makeDefault start");
             HighlightView hv = new HighlightView(mImageView);
 
             int width = mBitmap.getWidth();
@@ -593,8 +784,8 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
 
             Rect imageRect = new Rect(0, 0, width, height);
             
-            // make the default size about 4/5 of the width or height
-            int cropWidth = Math.min(width, height) * 4 / 5;
+            // make the default size to (width or height) - 20
+            int cropWidth = Math.min(width, height) - 20;
             int cropHeight = cropWidth;
 
             if (mAspectX != 0 && mAspectY != 0) {
@@ -675,19 +866,18 @@ public class CropPhotoActivity extends MonitoredActivity implements AsyncTaskCom
         }
     };
 
-    
-    
 	@SuppressLint("NewApi")
 	@Override
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
-		// TODO Auto-generated method stub
 		if(taskName.equals("CountColonyAsyncTask")){
-			Intent intent = new Intent(this, ResultActivity.class);
+//			Intent intent = new Intent(this, ResultActivity.class);
+			
+			Intent intent = new Intent(this, Test2.class);
 			
 			if(result.getRawImg() != null){
 				Bitmap bitmap = result.getRawImg();
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				bitmap.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
+				bitmap.compress(CompressFormat.PNG, 100, bos);//100 is the best quality possibe
 				byte[] square = bos.toByteArray();
 				intent.putExtra("pictureData", square);	
 			}

@@ -13,8 +13,8 @@ import com.colonycount.cklab.utils.CustomKmeans2;
 
 public class CountColonyAsyncTask extends BaseAsyncTask {
 
-	public CountColonyAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls) {
-		super(context, progressDialogTitle, progressDialogMsg, listener, cls);
+	public CountColonyAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls, boolean showDialog) {
+		super(context, progressDialogTitle, progressDialogMsg, listener, cls, showDialog);
 	}
 
 	/**
@@ -25,13 +25,15 @@ public class CountColonyAsyncTask extends BaseAsyncTask {
 		Bitmap b = params[0].getRawImg();
 		// my algorithm
 //		ColonyModel algorithm = new ColonyModel(b);
-		CustomKmeans2 algorithm = new CustomKmeans2(b, 3);
+		
+		
+//		CustomKmeans2 algorithm = new CustomKmeans2(b, 3);
 		// -----------------
 		
-		List<Component> components = algorithm.count();
+//		List<Component> components = algorithm.count();
 //		algorithm.count();
 		AsyncTaskPayload resultPayload = new AsyncTaskPayload();
-		resultPayload.setComponents(components);
+//		resultPayload.setComponents(components);
 		resultPayload.setRawImg(params[0].getRawImg());
 		
 		return resultPayload;

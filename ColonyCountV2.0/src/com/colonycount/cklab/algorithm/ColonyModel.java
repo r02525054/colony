@@ -12,7 +12,7 @@ import android.util.Log;
 import com.colonycount.cklab.model.Component;
 import com.colonycount.cklab.model.Pixel;
 import com.colonycount.cklab.utils.BitmapUtil;
-import com.colonycount.cklab.utils.ImageProcess;
+import com.colonycount.cklab.utils.MyImageProcess;
 
 public class ColonyModel {
 	private Bitmap rawImg;
@@ -108,7 +108,7 @@ public class ColonyModel {
 			int y_searchGrid = searchGrid[1];
 			
 			int[] hist = getHistogramAndTotalPixels(x_searchGrid, y_searchGrid, raw_gray_RGBA);
-			int threshold = ImageProcess.otsu(hist, hist[256]);
+			int threshold = MyImageProcess.otsu(hist, hist[256]);
 			gridGraySacle(x_searchGrid, y_searchGrid, threshold, raw_gray_RGBA);
 			
 			

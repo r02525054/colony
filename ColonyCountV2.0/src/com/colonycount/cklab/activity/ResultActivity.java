@@ -45,7 +45,7 @@ import android.widget.Toast;
 import com.colonycount.cklab.activity.R.id;
 import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
 import com.colonycount.cklab.asynctask.AsyncTaskPayload;
-import com.colonycount.cklab.asynctask.SaveAndUploadImageAsyncTask;
+import com.colonycount.cklab.asynctask.SaveImgAsyncTask;
 import com.colonycount.cklab.base.GPlusClientActivity;
 import com.colonycount.cklab.crop.CropImageView2;
 import com.colonycount.cklab.crop.HighlightView;
@@ -120,8 +120,8 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	
 	
 	private void setViews(){
-		imgInfo = new ImgInfo(loadPrefIntData("imgNumber", 1));
-		btn_close = (ImageButton) findViewById(R.id.btn_result_cancel);
+//		imgInfo = new ImgInfo(loadPrefIntData("imgNumber", 1));
+		btn_close = (ImageButton) findViewById(R.id.btn_close);
 		
 		btn_save_or_ok = (ImageButton) findViewById(R.id.btn_save_or_ok);
 		btn_circle_add = (ImageButton) findViewById(R.id.btn_add);
@@ -278,7 +278,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 							}
 						});
 					    
-					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
+//					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
 					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
 					    Button btn_set_tag_date = (Button) dialogContent.findViewById(id.btn_set_tag_date);
 					    
@@ -289,12 +289,13 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 					    final Dialog d = builder.create();
 					    d.show();
 					    d.getWindow().setAttributes(lp);
-					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								d.dismiss();
-							}
-						});
+					    
+//					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
+//							@Override
+//							public void onClick(View v) {
+//								d.dismiss();
+//							}
+//						});
 					    
 					    btnSetTagOK.setOnClickListener(new View.OnClickListener() {
 							@Override
@@ -517,7 +518,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	
 	public void saveImg(){
 		// save the image number to sharedpref
-		savePrefData("imgNumber", imgInfo.getNumber());
+//		savePrefData("imgNumber", imgInfo.getNumber());
 		
 		// upload raw image
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -596,7 +597,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		bos = new ByteArrayOutputStream();
 		mBitmapShow.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
 		byte[] data_counted = bos.toByteArray();
-		new SaveAndUploadImageAsyncTask(context, "系統訊息", "儲存中，請稍後...", this, SaveAndUploadImageAsyncTask.class, data_raw, data_counted, loadPrefStringData(USER_ACCOUNT), loadPrefStringData(USER_ID), imgInfo).execute();
+		new SaveImgAsyncTask(context, "系統訊息", "儲存中，請稍後...", this, SaveImgAsyncTask.class, true, data_raw, data_counted, loadPrefStringData(USER_ACCOUNT), loadPrefStringData(USER_ID), imgInfo).execute();
 	}
 	
 	
@@ -605,9 +606,13 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		if(state == State.ADD){
 			for(int i = 0; i < image.mHighlightViews.size(); i++){
 				HighlightView hv = image.mHighlightViews.get(i);
-				float centerX = hv.getCenterX();
-				float centerY = hv.getCenterY();
-				float radius = hv.getRadius();
+//				float centerX = hv.getCenterX();
+//				float centerY = hv.getCenterY();
+//				float radius = hv.getRadius();
+				
+				int centerX = hv.getX();
+				int centerY = hv.getY();
+				int radius = hv.getR();
 				
 				addHighlightView2(centerX, centerY, radius);
 			}
@@ -663,11 +668,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 				HighlightView4 rView = image.rViews.get(i);
 				rView.setHidden(!rView.getHidden());
 			}
-//			if(isRedColonyShow){
-//				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye01, 0, 0, 0);
-//			} else{
-//				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye01_close, 0, 0, 0);
-//			}
+			if(isRedColonyShow){
+				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_clicked, 0, 0, 0);
+			} else{
+				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_close_clicked, 0, 0, 0);
+			}
 			
 			image.invalidate();
 			break;
@@ -677,11 +682,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 				HighlightView5 gView = image.gViews.get(i);
 				gView.setHidden(!gView.getHidden());
 			}
-//			if(isGreenColonyShow){
-//				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye04, 0, 0, 0);
-//			} else{
-//				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye04_close, 0, 0, 0);
-//			}
+			if(isGreenColonyShow){
+				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_green_clicked, 0, 0, 0);
+			} else{
+				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_green_close_clicked, 0, 0, 0);
+			}
 			
 			image.invalidate();
 			break;
@@ -691,11 +696,11 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 				HighlightView2 myView = image.myViews.get(i);
 				myView.setHidden(!myView.getHidden());
 			}
-//			if(isPurpleColonyShow){
-//				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye05, 0, 0, 0);
-//			} else{
-//				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btn_eye05_close, 0, 0, 0);
-//			}
+			if(isPurpleColonyShow){
+				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_blue_clicked, 0, 0, 0);
+			} else{
+				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_blue_close_clicked, 0, 0, 0);
+			}
 			
 			image.invalidate();
 			break;
@@ -732,6 +737,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
     	
     	int width = mBitmapShow.getWidth();
         int height = mBitmapShow.getHeight();
+        // 2.
         Rect imageRect = new Rect(0, 0, width, height);
         
         // make the default size about 4/5 of the width or height
@@ -743,7 +749,10 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
         int mAspectX = 1;
         int mAspectY = 1;
         boolean mCircleCrop = true;
+        
+        // 1.
         Matrix mImageMatrix = image.getImageMatrix();
+        
         if (mAspectX != 0 && mAspectY != 0) {
             if (mAspectX > mAspectY) {
                 cropHeight = cropWidth * mAspectY / mAspectX;
@@ -755,14 +764,15 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
         float x = (width - cropWidth) / 2;
         float y = (height - cropHeight) / 2;
         
+        // 3.
         RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
         hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
         
         // my code
-        hv.setCenterX(x + cropWidth / 2);
-        hv.setCenterY(y + cropHeight / 2);
-        float radius = cropWidth / 2;
-        hv.setRadius(radius);
+//        hv.setCenterX(x + cropWidth / 2);
+//        hv.setCenterY(y + cropHeight / 2);
+//        float radius = cropWidth / 2;
+//        hv.setRadius(radius);
         
         image.add(hv);
     }
@@ -1021,7 +1031,6 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 
 	@Override
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
-		// TODO Auto-generated method stub
 		if(taskName.equals("SaveAndUploadImageAsyncTask") && result.getValue("result").equals("success")){
 			Intent intent = new Intent(this, HomeActivity.class);
 			startActivity(intent);

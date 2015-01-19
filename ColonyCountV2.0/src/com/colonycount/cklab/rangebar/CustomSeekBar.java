@@ -169,7 +169,7 @@ public class CustomSeekBar extends View {
             mFirstSetTickCount = bundle.getBoolean("FIRST_SET_TICK_COUNT");
 
 //            setThumbIndices(mLeftIndex, mRightIndex);
-            setThumbIndices(mIndex);
+            setThumbIndex(mIndex);
 
             super.onRestoreInstanceState(bundle.getParcelable("instanceState"));
 
@@ -532,7 +532,7 @@ public class CustomSeekBar extends View {
 //
 //    }
     
-    public void setThumbIndices(int thumbIndex){
+    public void setThumbIndex(int thumbIndex){
     	if (indexOutOfRange(mIndex)){
     		Log.e(TAG, "A thumb index is out of bounds. Check that it is between 0 and mTickCount - 1");
     		throw new IllegalArgumentException("A thumb index is out of bounds. Check that it is between 0 and mTickCount - 1");

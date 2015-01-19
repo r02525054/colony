@@ -1,5 +1,7 @@
 package com.colonycount.cklab.activity;
 
+import java.util.Set;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -11,27 +13,26 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.AsyncTaskPayload;
+import com.colonycount.cklab.asynctask.GetImgAsyncTask;
 import com.colonycount.cklab.base.GPlusClientActivity;
 import com.colonycount.cklab.fragment.FragmentDialog;
-import com.colonycount.cklab.fragment.FragmentHome;
-import com.colonycount.cklab.fragment.FragmentSetting;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.plus.Plus;
 
-public class HomeActivity extends GPlusClientActivity {
+public class HomeActivity extends GPlusClientActivity implements AsyncTaskCompleteListener<Boolean> {
 	private DrawerLayout layDrawer;
     private ListView lstDrawer;
     
@@ -59,7 +60,6 @@ public class HomeActivity extends GPlusClientActivity {
     
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mOpenCVCallBack)){
@@ -77,12 +77,17 @@ public class HomeActivity extends GPlusClientActivity {
         initDrawerList();
         
         if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new FragmentHome(loadPrefStringData(USER_ID))).commit();
+        	if(fragmentHome == null)
+        		fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this); 
+        	
+			getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmentHome).commit();
 			String title = getResources().getStringArray(R.array.drawer_menu)[0];
 			mTitle = title;
 		    getActionBar().setTitle(title);
 		    nowPage = 0;
 		}
+        
+        new GetImgAsyncTask(this, "", "", this, GetImgAsyncTask.class, false).execute();
         
         /*int wantedPosition = 0; // Whatever position you're looking for
         int firstPosition = lstDrawer.getFirstVisiblePosition() - lstDrawer.getHeaderViewsCount(); // This is the same as child #0
@@ -184,7 +189,6 @@ public class HomeActivity extends GPlusClientActivity {
 
 	
 	private void selectItem(int position) {
-//		Fragment fragment = null;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		String title = getResources().getStringArray(R.array.drawer_menu)[position];
@@ -195,9 +199,8 @@ public class HomeActivity extends GPlusClientActivity {
 	    switch (position) {
 	    case 0:
 	    	if(nowPage != 0){
-	    		Log.d("Test2", "fragmentHome == null: " + (fragmentHome == null));
 	    		if(fragmentHome == null)
-	    			fragmentHome = new FragmentHome(loadPrefStringData(USER_ID));
+	    			fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this);
 			    // -----
 			    fragmentTransaction.replace(R.id.content_frame, fragmentHome);
 //			    fragmentTransaction.addToBackStack("home");
@@ -214,7 +217,6 @@ public class HomeActivity extends GPlusClientActivity {
 	    	break;
 	    case 1:
 	    	if(nowPage != 1){
-	    		Log.d("Test2", "fragmentSettings == null: " + (fragmentSettings == null));
 	    		if(fragmentSettings == null)
 	    			fragmentSettings = new FragmentSetting();
 		        
@@ -232,8 +234,8 @@ public class HomeActivity extends GPlusClientActivity {
 	    	}
 	    	break;
 	    case 2:
-	    	Log.d("test", "user account = " + loadPrefStringData(USER_ACCOUNT));
-	    	Log.d("test", "user id = " + loadPrefStringData(USER_ID));
+//	    	Log.d("test", "user account = " + loadPrefStringData(USER_ACCOUNT));
+//	    	Log.d("test", "user id = " + loadPrefStringData(USER_ID));
 	    	
 	    	Resources resources = getResources();
 	    	new FragmentDialog(resources.getString(R.string.logout_title), 
@@ -281,10 +283,31 @@ public class HomeActivity extends GPlusClientActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
 		return super.onCreateOptionsMenu(menu);
 	}
-
+	
+	public Set<String> loadPrefStringSetData(String key){
+		return super.loadPrefStringSetData(key);
+	}
+	
+	@Override
+	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
+		String resultStr = result.getValue("result");
+		if(taskName.equals("GetImgAsyncTask")){
+			if(resultStr.equals("success")){
+				
+				// TODO: add gridView data after selecting DB
+				// 
+				
+//				fragmentHome.setGridViewData(date, type, dilution_num, exp_param, colony_num, images);
+				
+				fragmentHome.setGridViewData(null, null, null, null, null, null);
+				fragmentHome.setGridView();
+			}
+			else
+				fragmentHome.setHomeMsg("您尚未擁有任何菌落資料，請選擇「拍攝菌落」或「選取照片」開始計算菌落!");
+		}
+	}
 	
 	
 //	class CustomArrayAdapter extends ArrayAdapter<String> {

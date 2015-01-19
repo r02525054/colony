@@ -1,8 +1,12 @@
 package com.colonycount.cklab.base;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,6 +16,8 @@ public class BaseActivity extends FragmentActivity {
 	 * Debug name for logcat
 	 */
 	protected String TAG = getClass().getSimpleName();
+	
+	protected static final String PREF = "my_sharedpreference";
 	/**
 	 * Save user login state
 	 * Value: boolean
@@ -28,8 +34,16 @@ public class BaseActivity extends FragmentActivity {
 	 */
 	protected static final String USER_ID = "user_id";
 	
+	protected static final String COLONY_TYPE_LIST = "colony_type_list";
+	
+	protected static final String COLONY_EXP_PARAM_LIST = "colony_exp_param_list";
+	
+	protected static final String COLONY_TYPE = "colony_type";
+	
+	protected static final String COLONY_EXP_PARAM = "colony_exp_param";
+	
 	private static SharedPreferences settings;
-	private static SharedPreferences.Editor editor;
+	private static Editor editor;
 	
 	/**
 	 * �N����x�s�bSharedPreferences
@@ -54,6 +68,20 @@ public class BaseActivity extends FragmentActivity {
 	
 	protected void savePrefData(String key, int value) {
 		editor.putInt(key, value);
+		editor.commit();
+	}
+	
+	protected void savePrefStringSetData(String type, String value){
+		if(type.equals(COLONY_TYPE)){
+			Set<String> colonyTypeList = settings.getStringSet(COLONY_TYPE_LIST, new HashSet<String>());
+			colonyTypeList.add(value);
+			editor.putStringSet(COLONY_TYPE_LIST, colonyTypeList);
+		} else if(type.equals(COLONY_EXP_PARAM)){
+			Set<String> colonyExpParamList = settings.getStringSet(COLONY_EXP_PARAM_LIST, new HashSet<String>());
+			colonyExpParamList.add(value);
+			editor.putStringSet(COLONY_EXP_PARAM_LIST, colonyExpParamList);
+		}
+		
 		editor.commit();
 	}
 	
@@ -85,6 +113,15 @@ public class BaseActivity extends FragmentActivity {
 		return settings.getInt(key, defValue);
 	}
 	
+	/**
+	 * 
+	 * @param key
+	 * @return string set if exist, else return null
+	 */
+	protected Set<String> loadPrefStringSetData(String key){
+		return settings.getStringSet(key, null);
+	}
+	
 	protected void removePrefData(String key){
 		editor.remove(key);
 		editor.commit();
@@ -103,7 +140,9 @@ public class BaseActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onStart();
 		
-		settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//		settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		
+		settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
 		editor = settings.edit();
 	}
 
@@ -112,6 +151,4 @@ public class BaseActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 	}
-	
-	
 }

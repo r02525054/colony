@@ -7,12 +7,15 @@ import java.util.Map;
 import android.graphics.Bitmap;
 
 import com.colonycount.cklab.model.Component;
+import com.colonycount.cklab.model.Pixel;
 
 public class AsyncTaskPayload {
 	private Map<String, String> params;
 	private byte[] imgData;
 	private Bitmap rawImg;
 	private List<Component> components;
+	private Component component;
+	private Pixel hitPixel;
 	
 	public AsyncTaskPayload(){
 		this.params = new HashMap<String, String>();
@@ -48,5 +51,21 @@ public class AsyncTaskPayload {
 
 	public void setComponents(List<Component> components) {
 		this.components = components;
+	}
+
+	public void setComponent(Component component){
+		this.component = component;
+	}
+	
+	public Component getComponent(){
+		return component;
+	}
+
+	public Pixel getHitPixel() {
+		return hitPixel;
+	}
+
+	public void setHitPixel(Pixel hitPixel) {
+		this.hitPixel = hitPixel;
 	}
 }

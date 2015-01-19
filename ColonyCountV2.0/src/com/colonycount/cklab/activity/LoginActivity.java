@@ -1,18 +1,16 @@
 package com.colonycount.cklab.activity;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
 import com.colonycount.cklab.asynctask.AsyncTaskPayload;
@@ -39,7 +37,6 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 		setListeners();
 
 		
-		// TODO: �ھ�mSignInProgress�P�_���A
 		if (savedInstanceState != null) {
 			mSignInProgress = savedInstanceState.getInt(SAVED_PROGRESS, STATE_DEFAULT);
 		}
@@ -93,6 +90,7 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 		
 		// Retrieve some profile information to personalize our app for the user.
 		Person currentUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+		
 		Name name = currentUser.getName();
 		AgeRange ageRange = currentUser.getAgeRange();
 		Image image = currentUser.getImage();
@@ -109,19 +107,36 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 		String language        = currentUser.getLanguage();
 		String nickname		   = currentUser.getNickname();
 		String url 			   = currentUser.getUrl();
-		String familyName 	   = name.getFamilyName();
-		String givenName 	   = name.getGivenName();
-		int    ageMin 		   = ageRange.getMin();
-		int    ageMax 		   = ageRange.getMax();
-		String imageUrl 	   = image.getUrl();
-		String orgs            = "";
-		for(int i = 0; i < organizations.size(); i++){
-			if(i == organizations.size()-1)
-				orgs += organizations.get(i).toString();
-			else 
-				orgs += organizations.get(i).toString() + ",, ";
+		
+		String familyName	   = "";
+		String givenName	   = "";
+		if(name != null){
+			familyName = name.getFamilyName();
+			givenName = name.getGivenName();
 		}
-
+		
+		int ageMin = -1;
+		int ageMax = -1;
+		if(ageRange != null){
+			ageMin 		   = ageRange.getMin();
+			ageMax 		   = ageRange.getMax();
+		}
+		
+		String imageUrl = "";
+		if(image != null){
+			imageUrl = image.getUrl();
+		}
+		
+		String orgs            = "";
+		
+		if(organizations != null){
+			for(int i = 0; i < organizations.size(); i++){
+				if(i == organizations.size()-1)
+					orgs += organizations.get(i).toString();
+				else 
+					orgs += organizations.get(i).toString() + ",, ";
+			}
+		}
 		
 		Map<String, String> request = new HashMap<String, String>();
 		request.put("email", email);
@@ -144,15 +159,13 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 		// Indicate that the sign in process is complete.
 		mSignInProgress = STATE_DEFAULT;
 		
-		Log.d("test", "user account = " + loadPrefStringData(USER_ACCOUNT));
-    	Log.d("test", "user id = " + loadPrefStringData(USER_ID));
+//		Log.d("test", "user account = " + loadPrefStringData(USER_ACCOUNT));
+//    	Log.d("test", "user id = " + loadPrefStringData(USER_ID));
 		// save logged in information
 		savePrefData(LOGGED_IN, true);
 		savePrefData(USER_ACCOUNT, email);
 		savePrefData(USER_ID, id);
 		
-		// �ˬd�ϥΪ̬O�_�w�ϥιL��app
-		// �Y�S���A�N�ϥΪ̸�Ʀs�JDB
 		LoginAsyncTask dbTask = new LoginAsyncTask(this, "系統訊息", "登入中，請稍後...", this, LoginAsyncTask.class);
 		request.put("check_user", email);
 		dbTask.setRequest(request);
@@ -275,13 +288,17 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 
 	@Override
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
-		// TODO Auto-generated method stub
-		Log.d("Test2", result.getValue("result"));
-		Log.d("Test2", "taskName = " + taskName);
-		if(taskName.equals("LoginAsyncTask") && result.getValue("result").equals("success")){
-			Intent intent = new Intent(this, HomeActivity.class);
-			startActivity(intent);
-			finish();
+		String status = result.getValue("status");
+		String msg = result.getValue("msg");
+		
+		if(status.equals("success")){
+			if(taskName.equals("LoginAsyncTask") && msg.equals("success")){
+				Intent intent = new Intent(this, HomeActivity.class);
+				startActivity(intent);
+				finish();
+			}
+		} else {
+			Toast.makeText(this, "error: " + msg, Toast.LENGTH_LONG).show();
 		}
 	}
 }

@@ -105,7 +105,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 		        
 		        // Find the total number of cameras available
 		        numberOfCameras = Camera.getNumberOfCameras();
-
+		        
 		        // Find the ID of the default camera
 		        CameraInfo cameraInfo = new CameraInfo();
 		        for (int i = 0; i < numberOfCameras; i++) {
@@ -281,7 +281,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 						// TODO Auto-generated method stub
 						AsyncTaskPayload asyncTaskPayload = new AsyncTaskPayload();
 		    			asyncTaskPayload.setRawImg(rawImg);
-		    			new CountColonyAsyncTask(context, "系統訊息", "計算中，請稍後...", asyncTaskCompleteListener, CountColonyAsyncTask.class).execute(asyncTaskPayload);
+		    			new CountColonyAsyncTask(context, "系統訊息", "計算中，請稍後...", asyncTaskCompleteListener, CountColonyAsyncTask.class, true).execute(asyncTaskPayload);
 					}
 				});
 		    	
