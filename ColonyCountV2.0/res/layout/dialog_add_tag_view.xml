@@ -73,11 +73,11 @@
 	                    android:drawableRight="@android:drawable/ic_menu_more"
 	                    android:text="2014/12/8" />
 
-                    <Button
+                    <!-- <Button
                         android:id="@+id/button1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="三天前" />
+                        android:text="三天前" /> -->
                 </LinearLayout>
             </LinearLayout>
             
@@ -98,85 +98,19 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
 
+                <LinearLayout 
+                    android:id="@+id/colony_type_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="15dp"/>
+                
 				<LinearLayout
+				    android:id="@+id/container_add_colony_type"
 	                android:layout_width="match_parent"
 	                android:layout_height="match_parent"
 	                android:orientation="vertical"
-	                android:paddingLeft="10dp" >
-                    
-				    
-				    <!-- <RadioGroup
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" >
-                        
-                        <RadioButton
-	                        android:id="@+id/radioButton1"
-	                        android:layout_width="wrap_content"
-	                        android:layout_height="wrap_content"
-	                        android:text="酵母菌"
-	                        android:textColor="@color/white"
-	                        android:checked="true" />
-	
-	                    <RadioButton
-	                        android:id="@+id/radioButton2"
-	                        android:layout_width="wrap_content"
-	                        android:layout_height="wrap_content"
-	                        android:text="根瘤菌"
-	                        android:textColor="@color/white" />
-	
-	                    <RadioButton
-	                        android:id="@+id/radioButton3"
-	                        android:layout_width="wrap_content"
-	                        android:layout_height="wrap_content"
-	                        android:text="固氮菌"
-	                        android:textColor="@color/white" />
-	                </RadioGroup> -->
-				    
-	                <!-- <RelativeLayout
-		                android:layout_width="match_parent"
-		                android:layout_height="match_parent"
-		                android:orientation="horizontal"
-		                android:paddingLeft="10dp" >
-
-	                    <EditText
-	                        android:id="@+id/editText1"
-	                        android:layout_width="match_parent"
-	                        android:layout_height="wrap_content"
-	                        android:ems="10"
-	                        android:hint="新增菌種"
-	                        android:singleLine="true"
-	                        android:layout_toLeftOf="@+id/button2"
-	                        android:layout_alignBottom="@+id/button2">
-	                    </EditText>
-
-	                    <Button
-	                        android:id="@+id/button2"
-	                        android:layout_width="wrap_content"
-	                        android:layout_height="wrap_content"
-	                        android:layout_alignParentRight="true"
-	                        android:layout_alignParentTop="true"
-	                        android:text="新增" />
-	                </RelativeLayout> -->
-
-					<!-- <com.colonycount.cklab.swipemenulistview.SwipeMenuListView
-				        android:id="@+id/colony_type_list"
-				        android:layout_width="match_parent"
-				        android:layout_height="wrap_content" /> -->
-
-					<EditText
-                        android:id="@+id/et_add_colony_type"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="新增項目..."
-                        android:singleLine="true"
-                        android:drawableLeft="@drawable/btn_list_add"
-                        android:drawablePadding="20dp"
-                        android:background="@null">
-                    </EditText>
-	                
-				</LinearLayout>
+	                android:paddingLeft="15dp" />
             </LinearLayout>
             
             <!-- 條件3: 稀釋倍數 -->
@@ -342,25 +276,20 @@
                     android:text="實驗對照參數"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
+                
+                <LinearLayout 
+                    android:id="@+id/colony_exp_param_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="15dp" />
             	
                 <LinearLayout
+                    android:id="@+id/container_add_experiment_param"
 	                android:layout_width="match_parent"
 	                android:layout_height="match_parent"
 	                android:orientation="vertical"
-	                android:paddingLeft="10dp" >
-
-                   <EditText
-                       android:id="@+id/et_add_experiment_param"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:ems="10"
-                       android:hint="新增項目..."
-                       android:singleLine="true"
-                       android:drawableLeft="@drawable/btn_list_add"
-                       android:drawablePadding="20dp"
-                       android:background="@null">
-                   </EditText>
-               </LinearLayout>
+	                android:paddingLeft="15dp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -385,7 +314,7 @@
 	        android:layout_alignParentBottom="true">
             
             
-            <LinearLayout 
+            <!-- <LinearLayout 
                 android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
@@ -405,7 +334,7 @@
             <View 
 		        android:layout_width="1dp"
 		        android:layout_height="match_parent"
-		        android:background="@color/white"/>
+		        android:background="@color/white"/> -->
 	        
             <LinearLayout 
                 android:layout_width="wrap_content"

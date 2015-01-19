@@ -65,23 +65,23 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp" >
 
-                    <TextView
+                    <!-- <TextView
                         android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="從"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white" /> -->
 
                     <Button
-                        android:id="@+id/btn_search_start_date"
+                        android:id="@+id/btn_search_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableRight="@android:drawable/ic_menu_more"
-                        android:text="2014/11/30" />
+                        android:text="2014/11/30 - 2014/12/5" />
                 </LinearLayout>
 
-                <LinearLayout
+                <!-- <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp" >
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:drawableRight="@android:drawable/ic_menu_more"
                         android:text="2014/11/30" />
-                </LinearLayout>
+                </LinearLayout> -->
                 
                 <!-- <LinearLayout
                     android:layout_width="match_parent"
@@ -174,7 +174,40 @@
                     android:text="菌種"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
-
+				
+                <!-- first option: 不限 -->
+                <!-- <RelativeLayout 
+                    android:id="@+id/default_colony_search_type"
+				    android:layout_width="match_parent"
+				    android:layout_height="wrap_content"
+				    android:layout_marginLeft="15dp" >
+				
+				    <CheckBox
+				        android:id="@+id/checkBox2"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_alignParentLeft="true"
+				        android:layout_centerVertical="true" />
+				
+				    <TextView
+				        android:id="@+id/textView2"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_centerVertical="true"
+				        android:layout_toRightOf="@+id/checkBox2"
+				        android:text="不限"
+				        android:textAppearance="?android:attr/textAppearanceMedium" />
+				</RelativeLayout> -->
+                
+				
+                <LinearLayout 
+                    android:id="@+id/colony_type_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="15dp"/>
+                
+                
 				<!--  <LinearLayout
 	                android:layout_width="match_parent"
 	                android:layout_height="match_parent"
@@ -374,6 +407,37 @@
                     android:text="實驗對照參數"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
+                
+                <!-- first option: 不限 -->
+                <!-- <RelativeLayout 
+                    android:id="@+id/default_colony_search_exp_param"
+				    android:layout_width="match_parent"
+				    android:layout_height="wrap_content"
+				    android:layout_marginLeft="15dp" >
+				
+				    <CheckBox
+				        android:id="@+id/checkBox2"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_alignParentLeft="true"
+				        android:layout_centerVertical="true" />
+				
+				    <TextView
+				        android:id="@+id/textView2"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_centerVertical="true"
+				        android:layout_toRightOf="@+id/checkBox2"
+				        android:text="不限"
+				        android:textAppearance="?android:attr/textAppearanceMedium" />
+				</RelativeLayout> -->
+                
+                <LinearLayout 
+                    android:id="@+id/colony_exp_param_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="15dp" />
             	    
                 <!-- <LinearLayout
 	                android:layout_width="match_parent"

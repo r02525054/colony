@@ -22,4 +22,30 @@
         <attr name="thumbColorNormal" format="reference|color"/>
         <attr name="thumbColorPressed" format="reference|color"/>
     </declare-styleable>
+    
+    <!-- circle hint view style -->
+    <declare-styleable name="CircleHintView">
+	    <attr name="circleColor" format="color" />
+	</declare-styleable>
+	
+    <!-- calendarpicker -->
+    <declare-styleable name="CalendarPickerView">
+	  <attr name="android:background"/>
+	  <attr name="dividerColor" format="color"/>
+	  <attr name="dayBackground" format="reference"/>
+	  <attr name="dayTextColor" format="color"/>
+	  <attr name="titleTextColor" format="color"/>
+	  <attr name="displayHeader" format="boolean"/>
+	  <attr name="headerTextColor" format="color"/>
+	</declare-styleable>
+	
+	<declare-styleable name="calendar_cell">
+	  <attr name="state_selectable" format="boolean" />
+	  <attr name="state_current_month" format="boolean" />
+	  <attr name="state_today" format="boolean" />
+	  <attr name="state_range_first" format="boolean" />
+	  <attr name="state_range_middle" format="boolean" />
+	  <attr name="state_range_last" format="boolean" />
+	  <attr name="state_highlighted" format="boolean" />
+	</declare-styleable>
 </resources>

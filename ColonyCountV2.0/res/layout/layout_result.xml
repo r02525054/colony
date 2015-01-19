@@ -19,7 +19,7 @@
             android:background="@color/white" >
 
             <ImageButton
-                android:id="@+id/btn_result_cancel"
+                android:id="@+id/btn_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -319,7 +319,6 @@
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_alignParentTop="true"
             android:padding="1dp" />
-        <!-- android:drawableLeft="@drawable/selector_eye_clicked" -->
 
         <TextView
             android:id="@+id/show_green_colony"
@@ -327,7 +326,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_below="@+id/show_red_colony"
-            android:drawableLeft="@drawable/selector_eye04_click"
+            android:drawableLeft="@drawable/selector_eye_green_clicked"
             android:text="120個"
             android:textColor="@drawable/selector_text_green_clicked"
             android:padding="1dp" />
@@ -338,7 +337,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/align_left_text"
             android:layout_below="@+id/show_green_colony"
-            android:drawableLeft="@drawable/selector_eye05_click"
+            android:drawableLeft="@drawable/selector_eye_blue_clicked"
             android:text="0個"
             android:textColor="@drawable/selector_text_blue_clicked"
             android:padding="1dp" />

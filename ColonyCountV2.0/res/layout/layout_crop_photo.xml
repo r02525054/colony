@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- <com.colonycount.cklab.activity.CustomLayout -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
@@ -19,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="選取培養皿的範圍，開始計算菌落"
+            android:text="將培養皿對準圓框後，開始計算菌落"
             android:textColor="@color/white" />
 
         <LinearLayout
@@ -58,8 +57,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/relativeLayout_top"
-        android:background="#55000000" />
+        android:background="#55000000"
+        android:scaleType="matrix" />
     
+    <ImageView 
+        android:id="@+id/show_image_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/relativeLayout_top"
+        android:visibility="gone" />
     
     <RelativeLayout
         android:id="@+id/bot_layout"
