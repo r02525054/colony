@@ -4,6 +4,7 @@
     <color name="photo_mid_background">#545454</color>
     <color name="white">#FFFFFF</color>
     <color name="home_background">#B2D6F7</color>
+    <color name="home_background_clicked">#80B2D6F7</color>
     <color name="btn_background">#6A94CD</color>
     <color name="dialog_background">#B2D6F7</color>
     <color name="btn_clicked">#806A94CD</color>
@@ -32,4 +33,8 @@
 	<color name="calendar_text_active">#ff778088</color>
 	<color name="calendar_text_selected">#ffffffff</color>
 	<color name="calendar_text_unselectable">#7f778088</color>
+	
+	<!-- grid selector color -->
+	<color name="grid_state_pressed">#800000FF</color>
+    <color name="grid_state_focused">#800000FF</color>
 </resources>

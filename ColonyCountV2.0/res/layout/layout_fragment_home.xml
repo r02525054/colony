@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/home_background" >
+    android:background="@color/home_background">
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -50,7 +50,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/linearLayout1"
         android:numColumns="3"
-        android:stretchMode="columnWidth" >
+        android:stretchMode="columnWidth"
+        android:alwaysDrawnWithCache="true" >
     </GridView>
-
 </RelativeLayout>
