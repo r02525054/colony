@@ -161,6 +161,7 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 		
 //		Log.d("test", "user account = " + loadPrefStringData(USER_ACCOUNT));
 //    	Log.d("test", "user id = " + loadPrefStringData(USER_ID));
+		
 		// save logged in information
 		savePrefData(LOGGED_IN, true);
 		savePrefData(USER_ACCOUNT, email);

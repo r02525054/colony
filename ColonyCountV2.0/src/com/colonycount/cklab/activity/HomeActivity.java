@@ -10,6 +10,8 @@ import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -294,14 +296,24 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
 		String resultStr = result.getValue("result");
 		if(taskName.equals("GetImgAsyncTask")){
+			if(fragmentHome == null)
+				fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this);
+				
 			if(resultStr.equals("success")){
-				
 				// TODO: add gridView data after selecting DB
-				// 
+
+				String[] date = {"2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19"};
+				String[] type = {"酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌"};
+				int[] dilution_num = {-3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7};
+				String[] exp_param = {"時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度"};
+				int[] colony_num = {88, 92, 156, 88, 92, 156, 88, 92, 156, 88, 92, 156, 88, 92, 156};
 				
-//				fragmentHome.setGridViewData(date, type, dilution_num, exp_param, colony_num, images);
+				Bitmap img1 = BitmapFactory.decodeResource(getResources(), R.drawable.test4);
+				Bitmap img2 = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
+				Bitmap img3 = BitmapFactory.decodeResource(getResources(), R.drawable.test3);
+				Bitmap[] images = {img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3};
 				
-				fragmentHome.setGridViewData(null, null, null, null, null, null);
+				fragmentHome.setGridViewData(date, type, dilution_num, exp_param, colony_num, images);
 				fragmentHome.setGridView();
 			}
 			else

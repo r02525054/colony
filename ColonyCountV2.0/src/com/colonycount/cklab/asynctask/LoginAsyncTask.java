@@ -51,6 +51,7 @@ public class LoginAsyncTask extends BaseAsyncTask {
 		}
 
 		AsyncTaskPayload result = new AsyncTaskPayload();
+		// testing code
 		result.putValue("status", "success");
 		result.putValue("msg", "success");
 		
