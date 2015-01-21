@@ -70,7 +70,9 @@
 	                    android:id="@+id/btn_set_tag_date"
 	                    android:layout_width="wrap_content"
 	                    android:layout_height="wrap_content"
-	                    android:drawableRight="@android:drawable/ic_menu_more"
+	                    android:drawableLeft="@drawable/btn_date_icon"
+	                    android:drawableRight="@drawable/btn_menu_more"
+	                    android:background="@color/home_background"
 	                    android:text="2014/12/8" />
 
                     <!-- <Button
