@@ -3,6 +3,7 @@ package com.colonycount.cklab.crop;
 import java.util.ArrayList;
 
 import com.colonycount.cklab.activity.CropPhotoActivity;
+import com.colonycount.cklab.croptest.HighlightView;
 
 import android.content.Context;
 import android.graphics.Canvas;

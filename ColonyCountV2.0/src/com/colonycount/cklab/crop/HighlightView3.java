@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.colonycount.cklab.activity.R;
-import com.colonycount.cklab.crop.HighlightView.ModifyMode;
+import com.colonycount.cklab.croptest.HighlightView.ModifyMode;
 
 // 移動視窗畫面的highlightview
 public class HighlightView3 {
@@ -39,10 +39,10 @@ public class HighlightView3 {
 
     private void init() {
         android.content.res.Resources resources = mContext.getResources();
-        mResizeDrawableWidth =
-                resources.getDrawable(R.drawable.camera_crop_width);
-        mResizeDrawableHeight =
-                resources.getDrawable(R.drawable.camera_crop_height);
+//        mResizeDrawableWidth =
+//                resources.getDrawable(R.drawable.camera_crop_width);
+//        mResizeDrawableHeight =
+//                resources.getDrawable(R.drawable.camera_crop_height);
         mResizeDrawableDiagonal =
                 resources.getDrawable(R.drawable.indicator_autocrop);
     }

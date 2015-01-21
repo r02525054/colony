@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import com.colonycount.cklab.activity.CropPhotoActivity;
 import com.colonycount.cklab.activity.ResultActivity;
 import com.colonycount.cklab.activity.ResultActivity.State;
+import com.colonycount.cklab.croptest.HighlightView;
 import com.colonycount.cklab.model.CancelView;
 
 public class CropImageView2 extends ImageViewTouchBase {

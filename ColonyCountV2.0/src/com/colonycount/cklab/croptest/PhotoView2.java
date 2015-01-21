@@ -34,7 +34,6 @@ import android.view.GestureDetector;
 import android.widget.ImageView;
 
 import com.colonycount.cklab.activity.Test2.State;
-import com.colonycount.cklab.crop.HighlightView;
 import com.colonycount.cklab.croptest.PhotoViewAttacher2.OnMatrixChangedListener;
 import com.colonycount.cklab.croptest.PhotoViewAttacher2.OnPhotoTapListener;
 import com.colonycount.cklab.croptest.PhotoViewAttacher2.OnViewTapListener;
@@ -339,7 +338,6 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
 //		mAttacher.setMinimumScale();
 //	}
 
-	
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -349,12 +347,18 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
 		
 		for(int i = 0; i < colonyList.size(); i++){
 			HighlightView hv = colonyList.get(i);
+			if(hv.isHidden())
+				continue;
+			
             path.addCircle(hv.getX(), hv.getY(), hv.getR(), Path.Direction.CW);
             canvas.clipPath(path, Region.Op.DIFFERENCE);
 		}
 		
 		for(int i = 0; i < colonyAddTempList.size(); i++){
 			HighlightView hv = colonyAddTempList.get(i);
+			if(hv.isHidden())
+				continue;
+			
             path.addCircle(hv.getX(), hv.getY(), hv.getR(), Path.Direction.CW);
             canvas.clipPath(path, Region.Op.DIFFERENCE);
 		}
@@ -366,6 +370,25 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
 		
         canvas.restore();
         canvas.drawPath(path, mOutlinePaint);
+        
+        
+        // draw resize image 
+        for(int i = 0; i < colonyAddTempList.size(); i++){
+        	HighlightView hv = colonyAddTempList.get(i);
+            Drawable resizeDiagonal = hv.getResizeDrawableDiagonal();
+            Rect mDrawRect = hv.getDrawRect();
+            int width = hv.getR();
+            int height = hv.getR();
+            
+//            int width  = resizeDiagonal.getIntrinsicWidth();
+//			int height = resizeDiagonal.getIntrinsicHeight();
+			
+			int d  = (int) Math.round(Math.cos(/*45deg*/Math.PI / 4D) * (mDrawRect.width() / 2D));
+			int x  = mDrawRect.left + (mDrawRect.width() / 2) + d - width / 2;
+			int y  = mDrawRect.top + (mDrawRect.height() / 2) - d - height / 2;
+			resizeDiagonal.setBounds(x, y, x + resizeDiagonal.getIntrinsicWidth(), y + resizeDiagonal.getIntrinsicHeight());
+			resizeDiagonal.draw(canvas);
+        }
 	}
 	
 	public void addColonyView(){

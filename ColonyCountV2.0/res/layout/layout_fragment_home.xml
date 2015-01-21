@@ -50,7 +50,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/linearLayout1"
         android:numColumns="3"
-        android:stretchMode="columnWidth"
-        android:alwaysDrawnWithCache="true" >
+        android:stretchMode="columnWidth" >
     </GridView>
 </RelativeLayout>

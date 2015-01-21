@@ -128,27 +128,52 @@ public class BaseActivity extends FragmentActivity {
 	}
 	
 	/**
+	 * 
+	 * @param key
+	 * @return 
+	 */
+	// TODO: remove bug
+	protected void removePrefStringSetData(String type, String value){
+		if(type.equals(COLONY_TYPE)){
+			Set<String> colonyTypeList = settings.getStringSet(COLONY_TYPE_LIST, null);
+			if(colonyTypeList != null){
+				colonyTypeList.remove(value);
+				editor.putStringSet(COLONY_TYPE_LIST, colonyTypeList);
+			} 
+		} else if(type.equals(COLONY_EXP_PARAM)){
+			Set<String> colonyExpParamList = settings.getStringSet(COLONY_EXP_PARAM_LIST, null);
+			if(colonyExpParamList != null){
+				colonyExpParamList.remove(value);
+				editor.putStringSet(COLONY_EXP_PARAM_LIST, colonyExpParamList);
+			} 
+		}
+		
+		
+		editor.commit();
+	}
+	
+	/**
 	 * set activity to full screen
 	 */
 	protected void setFullScreen(){
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	}
+	
+	
 
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		
-//		settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		
-		settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-		editor = settings.edit();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
+		settings = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+		editor = settings.edit();
 	}
 }

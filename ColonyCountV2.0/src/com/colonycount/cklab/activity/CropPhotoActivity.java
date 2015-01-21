@@ -67,12 +67,12 @@ import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
 import com.colonycount.cklab.asynctask.AsyncTaskPayload;
 import com.colonycount.cklab.asynctask.CountColonyAsyncTask;
 import com.colonycount.cklab.crop.CropImageView;
-import com.colonycount.cklab.crop.HighlightView;
 import com.colonycount.cklab.crop.IImage;
 import com.colonycount.cklab.crop.IImageList;
 import com.colonycount.cklab.crop.ImageManager;
 import com.colonycount.cklab.crop.MonitoredActivity;
 import com.colonycount.cklab.crop.Util;
+import com.colonycount.cklab.croptest.HighlightView;
 import com.colonycount.cklab.model.DataWrapper;
 import com.google.android.gms.internal.hv;
 

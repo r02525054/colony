@@ -42,12 +42,8 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 import com.colonycount.cklab.activity.Test2.State;
-import com.colonycount.cklab.crop.HighlightView;
 
-public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener,
-        OnGestureListener,
-        ViewTreeObserver.OnGlobalLayoutListener {
-
+public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, OnGestureListener, ViewTreeObserver.OnGlobalLayoutListener {
     private static final String LOG_TAG = "PhotoViewAttacher";
 
     // let debug flag be dynamic, but still Proguard can be used to remove from
@@ -144,6 +140,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener,
     private OnScaleCallback mOnScaleCallbackListener;
     private boolean hitHighlightView = false;
     private HighlightView mHighlightView;
+    private int mMotionEdge;
     private State state = State.VIEW;
 
     private int mIvTop, mIvRight, mIvBottom, mIvLeft;
@@ -390,7 +387,13 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener,
         
         // my code
         if(hitHighlightView){
-        	mHighlightView.moveBy(dx, dy);
+//        	if(mMotionEdge == HighlightView.MOVE)
+//        		mHighlightView.moveBy(dx, dy);
+//        	else if(mMotionEdge != HighlightView.GROW_NONE)
+//        		mHighlightView.growBy(dx, dy);
+        	
+        	mHighlightView.handleMotion(mMotionEdge, dx, dy);
+        		
         	imageView.invalidate();
         	return;
         }
@@ -531,6 +534,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener,
                         	HighlightView hv = colonyAddTempList.get(i);
                         	if(hv.getHit(ev.getX(), ev.getY()) != HighlightView.GROW_NONE){
                         		mHighlightView = hv;
+                        		mMotionEdge = hv.getHit(ev.getX(), ev.getY());
                         		hitHighlightView = true;
                         		break;
                         	}

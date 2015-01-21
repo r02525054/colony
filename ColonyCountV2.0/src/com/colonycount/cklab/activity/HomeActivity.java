@@ -44,8 +44,8 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
     
     private int nowPage;
     
-    private FragmentHome    fragmentHome;
-    private FragmentSetting fragmentSettings; 
+    private static FragmentHome    fragmentHome;
+    private static FragmentSetting fragmentSettings; 
     
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {  
         @Override  
@@ -60,6 +60,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
         }  
     };  
     
+    
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -68,6 +69,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	        Log.d("debug", "Cannot connect to OpenCV Manager");
 	    } 
 	}
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +91,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 		    nowPage = 0;
 		}
         
-        new GetImgAsyncTask(this, "", "", this, GetImgAsyncTask.class, false).execute();
+        new GetImgAsyncTask(this, "", "", this, GetImgAsyncTask.class, false, loadPrefStringData(USER_ID)).execute();
         
         /*int wantedPosition = 0; // Whatever position you're looking for
         int firstPosition = lstDrawer.getFirstVisiblePosition() - lstDrawer.getHeaderViewsCount(); // This is the same as child #0

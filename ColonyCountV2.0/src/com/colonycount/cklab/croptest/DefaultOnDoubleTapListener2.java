@@ -2,7 +2,6 @@ package com.colonycount.cklab.croptest;
 
 import java.util.List;
 
-import com.colonycount.cklab.crop.HighlightView;
 
 import android.graphics.RectF;
 import android.util.Log;
