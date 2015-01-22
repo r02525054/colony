@@ -50,16 +50,19 @@ public class RangeBar extends View {
     // bar寬度
     private static final float DEFAULT_BAR_WEIGHT_PX = 2;
     // bar顏色
-    private static final int DEFAULT_BAR_COLOR = Color.LTGRAY;
+//    private static final int DEFAULT_BAR_COLOR = Color.LTGRAY;
+    private static final int DEFAULT_BAR_COLOR = 0xff1ab1e5;
+    
     // 連接線的寬度
     private static final float DEFAULT_CONNECTING_LINE_WEIGHT_PX = 4;
-    // 圓點一般樣子
+    // 圓點一般的樣子
     private static final int DEFAULT_THUMB_IMAGE_NORMAL = R.drawable.seek_thumb_normal;
     // 圓點按下去的樣子
     private static final int DEFAULT_THUMB_IMAGE_PRESSED = R.drawable.seek_thumb_pressed;
 
     // Corresponds to android.R.color.holo_blue_light.
-    private static final int DEFAULT_CONNECTING_LINE_COLOR = 0xff33b5e5;
+//    private static final int DEFAULT_CONNECTING_LINE_COLOR = 0xff33b5e5;
+    private static final int DEFAULT_CONNECTING_LINE_COLOR = 0xff1ab1e5;
 
     // Indicator value tells Thumb.java whether it should draw the circle or not
     private static final float DEFAULT_THUMB_RADIUS_DP = -1;
