@@ -60,18 +60,18 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
 
-                <LinearLayout
+                <!--<LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp" >
 
-                    <!-- <TextView
+                     <TextView
                         android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="從"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/white" /> -->
+                        android:textColor="@color/white" /> 
 
                     <Button
                         android:id="@+id/btn_search_date"
@@ -82,7 +82,42 @@
                         android:drawableRight="@drawable/btn_menu_more"
                         android:background="@drawable/selector_date_bg"
                         android:text="2014/11/30 - 2014/12/05" />
-                </LinearLayout>
+                </LinearLayout>-->
+               
+                <RelativeLayout
+                    android:id="@+id/layout" 
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:background="@drawable/selector_date_bg"
+                    android:layout_marginBottom="10dp">
+                    
+                     <ImageView 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/layout"
+                        android:src="@drawable/btn_date_icon"
+                        android:layout_centerVertical="true"/>
+                     
+                     <Button
+                        android:id="@+id/btn_search_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/home_background"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="2014/11/30 - 2014/12/05" />
+                    
+                    <ImageView 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/btn_menu_more"
+                        android:layout_centerVertical="true"/>
+                    
+                </RelativeLayout>
 
                 <!-- <LinearLayout
                     android:layout_width="match_parent"
@@ -138,25 +173,27 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="10dp" >
+                    android:paddingLeft="2dp" >
 
                     <Button
                         android:id="@+id/btn_search_3day"
-                        android:layout_width="83sp"
+                        android:layout_width="93sp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/selector_date_3day"
                         android:text="" />
 
                     <Button
                         android:id="@+id/btn_search_1week"
-                        android:layout_width="83sp"
+                        android:layout_width="93sp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/selector_date_1week"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
                         android:text="" />
 
                     <Button
                         android:id="@+id/btn_search_1month"
-                        android:layout_width="90sp"
+                        android:layout_width="100sp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/selector_date_1month"
                         android:text="" />
