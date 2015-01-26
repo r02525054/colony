@@ -82,8 +82,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/selector_btn_clicked"
-            android:src="@drawable/btn_count" />
+            android:background="@color/btn_background"
+            android:src="@drawable/selector_btn_count" />
     </RelativeLayout>
 
     <!-- 拍照片前出現的layout -->

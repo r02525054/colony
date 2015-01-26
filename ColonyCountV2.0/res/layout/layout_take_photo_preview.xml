@@ -110,8 +110,8 @@
 	            android:id="@+id/btn_capture"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:src="@drawable/btn_capture" />
+	            android:background="@color/btn_background"
+	            android:src="@drawable/selector_btn_capture" />
         </LinearLayout>
     </RelativeLayout>
 

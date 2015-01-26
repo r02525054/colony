@@ -87,13 +87,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
-                    android:background="@drawable/selector_date_bg_short"
                     android:layout_marginBottom="10dp">
                     
                      <ImageView 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/layout_date1"
+                        android:layout_alignLeft="@+id/btn_set_tag_date"
+                        android:layout_marginLeft="10dp"
                         android:src="@drawable/btn_date_icon"
                         android:layout_centerVertical="true"/>
                      
@@ -102,7 +102,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:background="@color/home_background"
+                        android:background="@drawable/selector_date_bg_short"
                         android:layout_centerVertical="true"
                         android:layout_centerHorizontal="true"
                         android:text="2014/12/8" />
@@ -110,7 +110,7 @@
                     <ImageView 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignRight="@+id/btn_set_tag_date"
                         android:layout_marginRight="10dp"
                         android:src="@drawable/btn_menu_more"
                         android:layout_centerVertical="true"/>

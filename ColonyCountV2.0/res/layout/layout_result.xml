@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector_btn_clicked"
-                android:padding="10dp"
+                android:padding="7dp"
                 android:src="@drawable/btn_save2" />
         </LinearLayout>
 
@@ -153,8 +153,8 @@
                 android:id="@+id/btn_add"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/selector_btn_clicked"
-                android:src="@drawable/btn_add_v2" />
+                android:background="@color/btn_background"
+                android:src="@drawable/selector_btn_add_v2" />
         </LinearLayout>
 
         <!-- <View
@@ -172,8 +172,8 @@
                 android:id="@+id/btn_sub"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/selector_btn_clicked"
-                android:src="@drawable/btn_sub_v2" />
+                android:background="@color/btn_background"
+                android:src="@drawable/selector_btn_sub_v2" />
         </LinearLayout>
 
         <!-- <View
@@ -191,8 +191,8 @@
                 android:id="@+id/btn_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/selector_btn_clicked"
-                android:src="@drawable/btn_edit_v2" />
+                android:background="@color/btn_background"
+                android:src="@drawable/selector_btn_edit_v2" />
         </LinearLayout>
     </LinearLayout>
     
