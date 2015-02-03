@@ -3,13 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/selector_gridview"
-    android:padding="3dp" >
+    android:padding="3dp" xmlns:app="http://schemas.android.com/apk/res/com.colonycount.cklab.activity">
 
-    <com.colonycount.cklab.view.SquareImageView
+    <!--  <com.colonycount.cklab.view.SquareImageView
         android:id="@+id/picture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop" />-->
+        
+    <com.colonycount.cklab.libs.webCacheeImageView.WebCachedImageView
+	    android:id="@+id/picture"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    app:cache_mode="memory"
+        app:memoryPercentToUse="20.0" />
 
     <!--
          <com.colonycount.cklab.view.AutoResizeTextView

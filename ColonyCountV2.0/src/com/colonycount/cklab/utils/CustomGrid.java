@@ -1,44 +1,37 @@
 package com.colonycount.cklab.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.colonycount.cklab.activity.R;
+import com.colonycount.cklab.callback.BitmapDecodedListener;
+import com.colonycount.cklab.libs.webCacheeImageView.WebCachedImageView;
 
 public class CustomGrid extends BaseAdapter {
-	private Context mContext;
-	
-	// colony info
-	private final String[] date;
-	private final String[] type;
-	private final int[] dilution_num;
-	private final String[] exp_param;
-	private final int[] colony_num;
-	private final Bitmap[] images;
+	private String[] date;
+	private String[] colony_num;
+	private String[] img_urls;
+	private LayoutInflater inflater;
+	private BitmapDecodedListener bitmapDecodedListener;
 
-	public CustomGrid(Context mContext, String[] date, String[] type, int[] dilution_num, String[] exp_param, int[] colony_num, Bitmap[] images) {
-		this.mContext = mContext;
+	public CustomGrid(Context mContext, String[] date, String[] colony_num, String[] img_urls, BitmapDecodedListener bitmapDecodedListener) {
 		this.date = date;
-		this.type = type;
-		this.dilution_num = dilution_num;
-		this.exp_param = exp_param;
 		this.colony_num = colony_num;
-		this.images = images;
+		this.img_urls = img_urls;
+		inflater = LayoutInflater.from(mContext);
+		this.bitmapDecodedListener = bitmapDecodedListener;
 	}
 
 	@Override
 	public int getCount() {
-		if(images == null)
+		if(img_urls == null)
 			return 0;
 		
-		return images.length;
+		return img_urls.length;
 	}
 
 	@Override
@@ -48,37 +41,44 @@ public class CustomGrid extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
-        ImageView picture;
-        TextView tNum;
-        TextView tDate;
-        TextView tType;
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        
-        if(v == null) {
-            v = inflater.inflate(R.layout.custom_grid, parent, false);
-            v.setTag(R.id.picture, v.findViewById(R.id.picture));
-//            v.setTag(R.id.text1, v.findViewById(R.id.text1));
-//            v.setTag(R.id.text2, v.findViewById(R.id.text2));
-//            v.setTag(R.id.text3, v.findViewById(R.id.text3));
+		GridItem gridItem;
+		
+        if(convertView == null) {
+        	convertView = inflater.inflate(R.layout.custom_grid, null);
+            
+        	WebCachedImageView img = (WebCachedImageView) convertView.findViewById(R.id.picture);
+        	TextView expDate = (TextView) convertView.findViewById(R.id.date);
+        	TextView num = (TextView) convertView.findViewById(R.id.colony_num);
+        	gridItem = new GridItem(img, expDate, num);
+        	
+        	img.setBitmapDecodedListener(bitmapDecodedListener);
+        	img.setImageUrl(img_urls[position]);
+        	num.setText(colony_num[position]);
+        	expDate.setText(date[position]);
+        	
+        	convertView.setTag(gridItem);
+        } else {
+        	gridItem = (GridItem) convertView.getTag();
         }
 
-        picture = (ImageView) v.getTag(R.id.picture);
-//        tNum = (TextView) v.getTag(R.id.text1);
-//        tDate = (TextView) v.getTag(R.id.text2);
-//        tType = (TextView) v.getTag(R.id.text3);
-        
-        picture.setImageBitmap(images[position]);
-//        tNum.setText(num[position]);
-//        tDate.setText(date[position]);
-//        tType.setText(type[position]);
-
-        return v;
+        return convertView;
+	}
+	
+	
+	class GridItem {
+		WebCachedImageView img;
+		TextView date;
+		TextView num;
+		
+		public GridItem(WebCachedImageView img, TextView date, TextView num){
+			this.img = img;
+			this.date = date;
+			this.num = num;
+		}
 	}
 }

@@ -308,7 +308,7 @@
 	                android:orientation="vertical">
 	                <!-- android:paddingLeft="10dp" > -->
 	                
-                    <com.colonycount.cklab.rangebar.RangeBar
+                    <com.colonycount.cklab.libs.rangebar.RangeBar
 					    xmlns:custom="http://schemas.android.com/apk/res-auto"
 					    android:id="@+id/rangebar"
 					    android:layout_width="match_parent"

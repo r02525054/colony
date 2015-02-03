@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.colonycount.cklab.calendarpicker.MonthView
+<com.colonycount.cklab.libs.calendarpicker.MonthView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -15,12 +15,12 @@
       android:gravity="center_horizontal"
       style="@style/CalendarTitle"
       />
-  <com.colonycount.cklab.calendarpicker.CalendarGridView
+  <com.colonycount.cklab.libs.calendarpicker.CalendarGridView
       android:id="@+id/calendar_grid"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       >
-    <com.colonycount.cklab.calendarpicker.CalendarRowView
+    <com.colonycount.cklab.libs.calendarpicker.CalendarRowView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/calendar_day_headers_paddingbottom"
@@ -60,12 +60,12 @@
           android:layout_height="wrap_content"
           style="@style/CalendarCell.DayHeader"
           />
-    </com.colonycount.cklab.calendarpicker.CalendarRowView>
+    </com.colonycount.cklab.libs.calendarpicker.CalendarRowView>
     <include layout="@layout/calendarpicker_week"/>
     <include layout="@layout/calendarpicker_week"/>
     <include layout="@layout/calendarpicker_week"/>
     <include layout="@layout/calendarpicker_week"/>
     <include layout="@layout/calendarpicker_week"/>
     <include layout="@layout/calendarpicker_week"/>
-  </com.colonycount.cklab.calendarpicker.CalendarGridView>
-</com.colonycount.cklab.calendarpicker.MonthView>
+  </com.colonycount.cklab.libs.calendarpicker.CalendarGridView>
+</com.colonycount.cklab.libs.calendarpicker.MonthView>

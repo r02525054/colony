@@ -168,7 +168,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/white" />
                 
-                <com.colonycount.cklab.rangebar.CustomSeekBar
+                <com.colonycount.cklab.libs.rangebar.CustomSeekBar
                     xmlns:custom="http://schemas.android.com/apk/res-auto"
 		            android:id="@+id/seek_bar"
 		            android:layout_width="fill_parent"

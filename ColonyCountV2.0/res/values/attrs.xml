@@ -48,4 +48,14 @@
 	  <attr name="state_range_last" format="boolean" />
 	  <attr name="state_highlighted" format="boolean" />
 	</declare-styleable>
+	
+	<!-- WebCachedImageView -->
+	<declare-styleable name="WebCachedImageView">
+        <attr name="cache_mode">
+            <enum name="no_cache" value="0" />
+            <enum name="memory" value="1" />
+            <enum name="disk" value="2" />
+        </attr>
+        <attr name="memoryPercentToUse" format="float" />
+    </declare-styleable>
 </resources>

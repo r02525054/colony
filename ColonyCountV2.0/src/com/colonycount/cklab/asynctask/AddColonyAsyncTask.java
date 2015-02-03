@@ -10,7 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.colonycount.cklab.base.BaseAsyncTask;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.asynctask.base.BaseAsyncTask;
 import com.colonycount.cklab.config.Config;
 import com.colonycount.cklab.model.Component;
 import com.colonycount.cklab.model.Pixel;

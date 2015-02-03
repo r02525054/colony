@@ -41,7 +41,7 @@
     <string name="drawer_close">close</string>
     
     <string-array name="drawer_menu">
-	    <item>主頁</item>
+	    <item>我的菌落</item>
 	    <item>設定</item>
 	    <item>登出</item>
 	</string-array>

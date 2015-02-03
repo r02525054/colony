@@ -1,7 +1,11 @@
 package com.colonycount.cklab.activity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -11,7 +15,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -19,22 +22,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
-import com.colonycount.cklab.asynctask.AsyncTaskPayload;
+import com.colonycount.cklab.activity.base.GPlusClientActivity;
 import com.colonycount.cklab.asynctask.GetImgAsyncTask;
-import com.colonycount.cklab.base.GPlusClientActivity;
-import com.colonycount.cklab.fragment.FragmentDialog;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.callback.BitmapDecodedListener;
+import com.colonycount.cklab.model.ImgSearchFilter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.plus.Plus;
 
-public class HomeActivity extends GPlusClientActivity implements AsyncTaskCompleteListener<Boolean> {
+public class HomeActivity extends GPlusClientActivity implements AsyncTaskCompleteListener<Boolean>, BitmapDecodedListener {
 	private DrawerLayout layDrawer;
     private ListView lstDrawer;
     
@@ -44,8 +47,15 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
     
     private int nowPage;
     
-    private static FragmentHome    fragmentHome;
-    private static FragmentSetting fragmentSettings; 
+    private FragmentHome    fragmentHome;
+    private FragmentSetting fragmentSettings;
+    
+    // gridview data
+    private String[] date;
+	private String[] colony_num;
+	private String[] img_urls;
+	private String[] img_ids;
+	private List<Bitmap> colony_thumbnails = new ArrayList<Bitmap>();
     
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {  
         @Override  
@@ -62,36 +72,14 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
     
     
 	@Override
-	protected void onResume() {
-		super.onResume();
-		
-		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mOpenCVCallBack)){
-	        Log.d("debug", "Cannot connect to OpenCV Manager");
-	    } 
-	}
-	
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		Log.d("test4", "HomeActivity onCreate");
 		
 		initActionBar();
         initDrawer();
         initDrawerList();
         
-        if (savedInstanceState == null) {
-        	if(fragmentHome == null)
-        		fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this); 
-        	
-			getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmentHome).commit();
-			String title = getResources().getStringArray(R.array.drawer_menu)[0];
-			mTitle = title;
-		    getActionBar().setTitle(title);
-		    nowPage = 0;
-		}
-        
-        new GetImgAsyncTask(this, "", "", this, GetImgAsyncTask.class, false, loadPrefStringData(USER_ID)).execute();
         
         /*int wantedPosition = 0; // Whatever position you're looking for
         int firstPosition = lstDrawer.getFirstVisiblePosition() - lstDrawer.getHeaderViewsCount(); // This is the same as child #0
@@ -105,6 +93,64 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
         // Could also check if wantedPosition is between listView.getFirstVisiblePosition() and listView.getLastVisiblePosition() instead.
         View wantedView = lstDrawer.getChildAt(wantedChild);*/
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mOpenCVCallBack)){
+	        Log.d("debug", "Cannot connect to OpenCV Manager");
+	    }
+		
+		Log.d("test4", "HomeActivity onResume");
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		Log.d("test4", "HomeActivity onPause");
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		mGoogleApiClient.connect();
+		
+		// create fragmentHome
+		fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this);
+		Log.d("test4", "HomeActivity: new fragmentHome");
+    	
+		getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmentHome).commit();
+		String title = getResources().getStringArray(R.array.drawer_menu)[0];
+		mTitle = title;
+	    getActionBar().setTitle(title);
+	    nowPage = 0;
+		
+		new GetImgAsyncTask(this, "", "", this, GetImgAsyncTask.class, false, loadPrefStringData(USER_ID)).execute();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		if (mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
+		}
+		
+		// release memory
+		for(int i = 0; i < colony_thumbnails.size(); i++){
+			Bitmap colony_thumbnail = colony_thumbnails.get(i);
+			if(colony_thumbnail != null && !colony_thumbnail.isRecycled()){
+				colony_thumbnail.recycle();
+				colony_thumbnail = null;
+			}
+		}
+		
+		Log.d("test4", "HomeActivity onStop");
+	}
+
 	
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	private void initActionBar(){
@@ -132,7 +178,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getActionBar().setTitle(mTitle);
-                FragmentHome.setMenuVisible(true);
+                fragmentHome.setMenuVisible(true);
                 
                 supportInvalidateOptionsMenu(); 
             }
@@ -141,7 +187,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getActionBar().setTitle(mDrawerTitle);
-                FragmentHome.setMenuVisible(false);
+                fragmentHome.setMenuVisible(false);
                 
                 supportInvalidateOptionsMenu();
             }
@@ -175,22 +221,6 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	    return super.onOptionsItemSelected(item);
 	}
 	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		mGoogleApiClient.connect();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		
-		if (mGoogleApiClient.isConnected()) {
-			mGoogleApiClient.disconnect();
-		}
-	}
-
 	
 	private void selectItem(int position) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
@@ -203,10 +233,9 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	    switch (position) {
 	    case 0:
 	    	if(nowPage != 0){
-	    		if(fragmentHome == null)
-	    			fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this);
-			    // -----
-			    fragmentTransaction.replace(R.id.content_frame, fragmentHome);
+    			fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this);
+    			
+    			fragmentTransaction.replace(R.id.content_frame, fragmentHome);
 //			    fragmentTransaction.addToBackStack("home");
 			    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			    fragmentTransaction.commit();
@@ -217,12 +246,13 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 			    layDrawer.closeDrawer(lstDrawer);
 			    
 			    setPage(0);
+			    Log.d("test4", "HomeActivity selected");
+			    fragmentHome.setSelected(true);
 	    	}
 	    	break;
 	    case 1:
 	    	if(nowPage != 1){
-	    		if(fragmentSettings == null)
-	    			fragmentSettings = new FragmentSetting();
+    			fragmentSettings = new FragmentSetting();
 		        
 			    fragmentTransaction.replace(R.id.content_frame, fragmentSettings);
 //			    fragmentTransaction.addToBackStack("home");
@@ -238,9 +268,6 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	    	}
 	    	break;
 	    case 2:
-//	    	Log.d("test", "user account = " + loadPrefStringData(USER_ACCOUNT));
-//	    	Log.d("test", "user id = " + loadPrefStringData(USER_ID));
-	    	
 	    	Resources resources = getResources();
 	    	new FragmentDialog(resources.getString(R.string.logout_title), 
 	    					   resources.getString(R.string.logout_msg),
@@ -285,44 +312,92 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 		nowPage = page;
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return super.onCreateOptionsMenu(menu);
-	}
 	
 	public Set<String> loadPrefStringSetData(String key){
 		return super.loadPrefStringSetData(key);
 	}
 	
+	public void searchColony(ImgSearchFilter searchFilter){
+		AsyncTaskPayload payload = new AsyncTaskPayload();
+		payload.putValue("search_colony", "true");
+		payload.setImgSearchFilter(searchFilter);
+		new GetImgAsyncTask(this, "", "", this, GetImgAsyncTask.class, false, loadPrefStringData(USER_ID)).execute(payload);
+	}
+	
 	@Override
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
 		String resultStr = result.getValue("result");
+		Log.d("test4", "resultStr = " + resultStr);
 		if(taskName.equals("GetImgAsyncTask")){
-			if(fragmentHome == null)
-				fragmentHome = new FragmentHome(loadPrefStringData(USER_ID), this);
-				
-			if(resultStr.equals("success")){
-				// TODO: add gridView data after selecting DB
-
-				String[] date = {"2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19"};
-				String[] type = {"酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌"};
-				int[] dilution_num = {-3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7};
-				String[] exp_param = {"時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度"};
-				int[] colony_num = {88, 92, 156, 88, 92, 156, 88, 92, 156, 88, 92, 156, 88, 92, 156};
-				
-				Bitmap img1 = BitmapFactory.decodeResource(getResources(), R.drawable.test4);
-				Bitmap img2 = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
-				Bitmap img3 = BitmapFactory.decodeResource(getResources(), R.drawable.test3);
-				Bitmap[] images = {img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3};
-				
-				fragmentHome.setGridViewData(date, type, dilution_num, exp_param, colony_num, images);
-				fragmentHome.setGridView();
+			setGridViewData(result.getImageInfoList());
+			// initial
+			if(result.getValue("search_colony") == null){
+				Log.d("test4", "initial");
+				if(resultStr.equals("success")){
+					setGridView();
+				} else {
+					setHomeMsg("您尚未擁有任何菌落資料，請選擇「拍攝菌落」或「選取照片」開始計算菌落!");
+				}
+			// search colony
+			} else {
+				Log.d("test4", "search colony");
+				if(resultStr.equals("success")){
+					setGridView();
+				} else {
+					setHomeMsg("沒有菌落符合搜尋條件!");
+				}
 			}
-			else
-				fragmentHome.setHomeMsg("您尚未擁有任何菌落資料，請選擇「拍攝菌落」或「選取照片」開始計算菌落!");
 		}
 	}
 	
+	public void setGridViewData(JSONArray jsonArray){
+		Log.d("test4", "setGridViewData");
+		String photoUrlPrefix = "http://140.112.26.221/~master11360/colony%20count";
+		try {
+			int len = jsonArray.length();
+			date = new String[len];
+			colony_num = new String[len];
+			img_urls = new String[len];
+			img_ids = new String[len];
+			
+			Log.d("test4", "jsonArray len = " + jsonArray.length());
+			for(int i = 0; i < jsonArray.length(); i++){
+				JSONObject image = jsonArray.getJSONObject(i);
+				String img_id = image.getString("img_id");
+				String img_url = image.getString("img_url");
+				String img_colony_num = image.getString("img_colony_num");
+				String img_upload_time = image.getString("img_upload_time");
+				img_url = photoUrlPrefix + img_url.substring(img_url.indexOf("/"));
+				
+//				Log.d("test4", "id = " + img_id + ", url = " + img_url + ", num = " + img_colony_num + ", time = " + img_upload_time);
+				
+				date[i] = img_upload_time;
+				colony_num[i] =  img_colony_num;
+				img_urls[i] = img_url;
+				img_ids[i] = img_id;
+			}
+		} catch(Exception e) {
+			
+		}
+	}
+	
+	public void setGridView(){
+		fragmentHome.setGridView(date, colony_num, img_urls, img_ids, this);
+	}
+	
+	public void setHomeMsg(String msg){
+		fragmentHome.setHomeMsg(msg);
+	}
+
+
+	@Override
+	public void onDecoded(Bitmap bitmap, String url) {
+//		if(!colony_thumbnails.contains(bitmap)){
+//			colony_thumbnails.add(bitmap);
+//			Log.d("test4", "colony_thumbnails size = " + colony_thumbnails.size() + ", url = " + url);
+//		}
+	}
+
 	
 //	class CustomArrayAdapter extends ArrayAdapter<String> {
 //
@@ -341,3 +416,20 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 //		}
 //	}
 }
+
+
+
+
+//String[] date = {"2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19"};
+//String[] type = {"酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌"};
+//int[] dilution_num = {-3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7};
+//String[] exp_param = {"時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度"};
+//String[] colony_num = {"88", "92", "156"};
+//
+//Bitmap img1 = BitmapFactory.decodeResource(getResources(), R.drawable.test4);
+//Bitmap img2 = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
+//Bitmap img3 = BitmapFactory.decodeResource(getResources(), R.drawable.test3);
+//Bitmap[] images = {img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3};
+//
+//fragmentHome.setGridViewData(date, colony_num, type, type);
+//fragmentHome.setGridView();

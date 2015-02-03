@@ -1,6 +1,5 @@
 package com.colonycount.cklab.activity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,12 +10,12 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
@@ -37,19 +36,18 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
-import com.colonycount.cklab.asynctask.AsyncTaskPayload;
+import com.colonycount.cklab.activity.base.GPlusClientActivity;
 import com.colonycount.cklab.asynctask.CountColonyAsyncTask;
-import com.colonycount.cklab.base.GPlusClientActivity;
-
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.config.Config;
+import com.colonycount.cklab.model.DataWrapper;
 
 public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHolder.Callback, AsyncTaskCompleteListener<Boolean>{
     Camera mCamera;
@@ -64,7 +62,6 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     private RelativeLayout relativeLayout_take_photo_bot_layout;
     private RelativeLayout relativeLayout_take_photo_done_bot_layout;
     
-    private ImageView imageView_bot;
     private ImageView photoPreview;
     private ImageButton btnClose;
     private ImageButton btnCapture;
@@ -81,8 +78,6 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     
     public static final int TAKE_PHOTO = 0;
     public static final int SELECT_PHOTO = 1;
-    public static final int REQUEST_WIDTH = 480;
-	public static final int REQUEST_HEIGHT = 640;
 	
     private CameraOrientationListener myOrientationListener;
     
@@ -90,6 +85,8 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     Size mPreviewSize;
     
     private Context context;
+    
+    private Activity activity;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +181,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     	mSurfaceView = (SurfaceView) findViewById(R.id.surfaceview);
     	context = this;
     	asyncTaskCompleteListener = this;
+    	activity = this;
     	
     	final Point windowSize = getWindowSize();
     	
@@ -196,8 +194,17 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 		        int rel_top_height = relativeLayout_top.getHeight();
 		        
 		    	// add surfaceView
+		        if(mCamera == null){
+			        mCamera = Camera.open(defaultCameraId);
+			        rotation = TakePhotoActivity.setCameraDisplayOrientation(activity, defaultCameraId, mCamera);
+		        }
+		        
+		        Camera.Parameters parameters = mCamera.getParameters();
+		        final Camera.Size optPicSize = getOptimalSize(parameters.getSupportedPictureSizes(), 1280, 960);
+	            Camera.Size optPreviewSize = getOptimalSize(parameters.getSupportedPreviewSizes(), optPicSize.width, optPicSize.height);
+	            
 		        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		    	double scale = 640.0 / 480.0;
+		        double scale = (double)optPreviewSize.width / (double)optPreviewSize.height;
 		    	params = new RelativeLayout.LayoutParams(windowSize.x, (int)(windowSize.x * scale));
 		    	params.leftMargin = 0;
 		    	params.topMargin = rel_top_height;
@@ -223,20 +230,40 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 									mCamera.takePicture(null, null, new PictureCallback() {
 										@Override
 										public void onPictureTaken(byte[] data, Camera camera) {
-											// TODO Auto-generated method stub
-											int[] pixels = new int[windowSize.x * windowSize.x];//the size of the array is the dimensions of the sub-photo
-									        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//									        Bitmap bitmap = BitmapFactory.decodeByteArray(data , 0, data.length);
-//									        bitmap.getPixels(pixels, 0, windowSize.x, 0, 0, windowSize.x, windowSize.x);//the stride value is (in my case) the width value
-//									        bitmap = Bitmap.createBitmap(pixels, 0, windowSize.x, windowSize.x, windowSize.x, Config.ARGB_8888);//ARGB_8888 is a good quality configuration
-									        
-									        rawImg = BitmapFactory.decodeByteArray(data , 0, data.length);
-									        rawImg.getPixels(pixels, 0, windowSize.x, 0, 0, windowSize.x, windowSize.x);//the stride value is (in my case) the width value
-									        rawImg = Bitmap.createBitmap(pixels, 0, windowSize.x, windowSize.x, windowSize.x, Config.ARGB_8888);//ARGB_8888 is a good quality configuration
-									        
-//									        bitmap.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
-//									        byte[] square = bos.toByteArray();
+//											int[] pixels = new int[windowSize.x * windowSize.x];//the size of the array is the dimensions of the sub-photo
+//									        rawImg = BitmapFactory.decodeByteArray(data , 0, data.length);
+//									        rawImg.getPixels(pixels, 0, windowSize.x, 0, 0, windowSize.x, windowSize.x);//the stride value is (in my case) the width value
+//									        rawImg = Bitmap.createBitmap(pixels, 0, windowSize.x, windowSize.x, windowSize.x, Config.ARGB_8888);//ARGB_8888 is a good quality configuration
 											
+											int stride = Math.min(optPicSize.width, optPicSize.height);
+											double radiusScale = stride / (double)windowSize.x;
+											stride = (int) (circleViewRadius * 2 * radiusScale);
+											int[] pixels = new int[stride * stride]; //the size of the array is the dimensions of the sub-photo
+									        rawImg = BitmapFactory.decodeByteArray(data , 0, data.length);
+									        rawImg.getPixels(pixels, 0, stride, (int)(5*radiusScale), (int)(5*radiusScale), stride, stride);//the stride value is (in my case) the width value
+									        rawImg.recycle();
+									        // create square bitmap
+									        Bitmap temp = Bitmap.createBitmap(pixels, 0, stride, stride, stride, Bitmap.Config.ARGB_8888);//ARGB_8888 is a good quality configuration
+									        // scale to 1024x1024
+									        Bitmap temp2 = Bitmap.createScaledBitmap(temp, Config.OUTPUT_IMAGE_WIDTH, Config.OUTPUT_IMAGE_HEIGHT, false);
+									        // release memory
+									        temp.recycle();
+									        temp = null;
+									        
+									        // crop to circle
+									        rawImg = Bitmap.createBitmap(temp2.getWidth(), temp2.getHeight(), Bitmap.Config.ARGB_8888);
+									        rawImg.eraseColor(Color.BLACK);
+									        Path path = new Path();
+									        path.addCircle(temp2.getWidth()/2, temp2.getHeight()/2, temp2.getWidth()/2, Path.Direction.CCW);
+									        Canvas canvas = new Canvas(rawImg);
+									        canvas.clipPath(path);
+									        canvas.drawBitmap(temp2, 0, 0, null);
+									        
+									        // release memory
+									        temp2.recycle();
+									        temp2 = null;
+//									        Log.d("test4", "rawImg width = " + rawImg.getWidth() + ", rawImg height = " + rawImg.getHeight());
+									        
 									        photoPreview.setImageBitmap(rawImg);
 									        photoPreview.setRotation(rotation);
 									        
@@ -247,7 +274,6 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 									        photoPreview.setVisibility(View.VISIBLE);
 									        relativeLayout_take_photo_done_bot_layout.setVisibility(View.VISIBLE);
 									        
-									    	
 									    	titleMsg.setText("選擇重新拍攝或開始計算菌落");
 										}
 									});
@@ -259,11 +285,12 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 					}
 				});
 		    	
-		    	
 		    	btnReCapture.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						rawImg.recycle();
+						rawImg = null;
+						
 						mSurfaceView.setVisibility(View.VISIBLE);
 				        circleHintView.setVisibility(View.VISIBLE);
 				        relativeLayout_take_photo_bot_layout.setVisibility(View.VISIBLE);
@@ -278,8 +305,11 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 		    	btnCount.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
 						AsyncTaskPayload asyncTaskPayload = new AsyncTaskPayload();
+						// rotate rawImg with value "rotation"
+						Matrix matrix = new Matrix();
+					    matrix.postRotate(rotation);
+					    rawImg = Bitmap.createBitmap(rawImg, 0, 0, rawImg.getWidth(), rawImg.getHeight(), matrix, true); 
 		    			asyncTaskPayload.setRawImg(rawImg);
 		    			new CountColonyAsyncTask(context, "系統訊息", "計算中，請稍後...", asyncTaskCompleteListener, CountColonyAsyncTask.class, true).execute(asyncTaskPayload);
 					}
@@ -360,9 +390,7 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 
 		@Override
 		public void draw(Canvas canvas) {
-			// TODO Auto-generated method stub
 			Paint paint = new Paint();
-//			paint.setColor(Color.RED);
 			paint.setColor(0xFFEF04D6);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setStrokeWidth(2);
@@ -380,7 +408,8 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     	return size;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void onResume() {
         super.onResume();
         
@@ -396,8 +425,10 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
         
         
         // Open the default i.e. the first rear facing camera.*/
-        mCamera = Camera.open(defaultCameraId);
-        rotation = TakePhotoActivity.setCameraDisplayOrientation(this, defaultCameraId, mCamera);
+        if(mCamera == null){
+	        mCamera = Camera.open(defaultCameraId);
+	        rotation = TakePhotoActivity.setCameraDisplayOrientation(this, defaultCameraId, mCamera);
+        }
         cameraCurrentlyLocked = defaultCameraId;
     }
 
@@ -432,7 +463,6 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-    	Log.d("Test2", "width = " + w + ", height = " + h);
         // Now that the size is known, set up the camera parameters and begin
         // the preview.
     	if(previewing){
@@ -443,16 +473,19 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
     	if(mCamera != null){
     		Camera.Parameters parameters = mCamera.getParameters();
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-            parameters.setPreviewSize(640, 480);
-            parameters.setPictureSize(640 ,480);
+            
+            Camera.Size optPicSize = getOptimalSize(parameters.getSupportedPictureSizes(), 1280, 960);
+            parameters.setPictureSize(optPicSize.width, optPicSize.height);
+            Camera.Size optPreviewSize = getOptimalSize(parameters.getSupportedPreviewSizes(), optPicSize.width, optPicSize.height);
+            parameters.setPreviewSize(optPreviewSize.width, optPreviewSize.height);
+            
             parameters.setJpegQuality(100);
             parameters.setRotation(90);
-
+            
             mCamera.setParameters(parameters);
             try {
 				mCamera.setPreviewDisplay(holder);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             mCamera.startPreview();
@@ -468,6 +501,32 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
             mCamera.stopPreview();
             previewing = false;
         }
+    }
+    
+    
+    private Camera.Size getOptimalSize(List<Camera.Size> sizes, int w, int h){
+    	double previewRatio = (double)w / (double)h;
+    	double minDiff = Double.MAX_VALUE;
+    	double minPixelDiff = Double.MAX_VALUE;
+    	
+    	Camera.Size curSize = null;
+    	for(Camera.Size s : sizes){
+    		double curRation = (double)s.width / (double)s.height;
+    		if(Math.abs(curRation - previewRatio) < minDiff){
+    			minDiff = Math.abs(curRation - previewRatio);
+    			curSize = s;
+    		} else if(Math.abs(curRation - previewRatio) == minDiff){
+    			if(Math.abs((s.width * s.height) - 1024*1024) < minPixelDiff){
+    				minPixelDiff = Math.abs((s.width * s.height) - 1024*1024);
+    				curSize = s;
+    			}
+    		}
+    		
+    		if(curSize != null)
+    			Log.d("test4", "size width = " + curSize.width + ", height = " + curSize.height);
+    	}
+    	
+    	return curSize;
     }
 
     
@@ -499,22 +558,32 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 
 	@Override
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
-		// TODO Auto-generated method stub
 		if(taskName.equals("CountColonyAsyncTask")){
-//			Bitmap b = result.getRawImg();
-//			photoPreview.setImageBitmap(b);
-			
-			Intent intent = new Intent(this, ResultActivity.class);
-			
-			Bitmap bitmap = result.getRawImg();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bitmap.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
-			byte[] square = bos.toByteArray();
-			intent.putExtra("pictureData", square);
-			intent.putExtra("pictureRotation", rotation);
-			
-			startActivity(intent);
-			finish();
+			if(result.getValue("result").equals("success")){
+				if(rawImg != null && !rawImg.isRecycled()){
+			    	rawImg.recycle();
+			    	rawImg = null;
+			    }
+				
+				Intent intent = new Intent(this, ResultActivity.class);
+				intent.putExtra("image", result.getValue("image"));
+				intent.putExtra("imageComponent",  new DataWrapper(result.getComponents()));
+				startActivity(intent);
+				finish();
+			} else {
+				Toast.makeText(this, "count colony error", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		if(rawImg != null && !rawImg.isRecycled()){
+			rawImg.recycle();
+			rawImg = null;
 		}
 	}
 }

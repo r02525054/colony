@@ -3,9 +3,12 @@ package com.colonycount.cklab.activity;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +18,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -25,8 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -38,24 +42,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
-import com.colonycount.cklab.asynctask.AsyncTaskPayload;
-import com.colonycount.cklab.asynctask.GetImgAsyncTask;
-import com.colonycount.cklab.calendarpicker.CalendarPickerView;
-import com.colonycount.cklab.calendarpicker.CalendarPickerView.SelectionMode;
-import com.colonycount.cklab.crop.MediaStoreUtils;
-import com.colonycount.cklab.croptest.PhotoView2;
-import com.colonycount.cklab.croptest.PhotoViewAttacher2;
+import com.colonycount.cklab.asynctask.GetImgDetailAsyncTask;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.callback.BitmapDecodedListener;
+import com.colonycount.cklab.config.Config;
+import com.colonycount.cklab.libs.calendarpicker.CalendarPickerView;
+import com.colonycount.cklab.libs.calendarpicker.CalendarPickerView.SelectionMode;
+import com.colonycount.cklab.libs.crop.HighlightView;
+import com.colonycount.cklab.libs.crop.PhotoView2;
+import com.colonycount.cklab.libs.crop.PhotoViewAttacher2;
+import com.colonycount.cklab.libs.rangebar.RangeBar;
 import com.colonycount.cklab.model.ImgSearchFilter;
-import com.colonycount.cklab.rangebar.RangeBar;
 import com.colonycount.cklab.utils.CustomGrid;
 
 public class FragmentHome extends Fragment implements View.OnClickListener {
 	public static final int TAKE_PHOTO = 0;
 	public static final int SELECT_PHOTO = 1;
-	
-	private static int REQUEST_PICTURE = 1;
-	private static int REQUEST_CROP_PICTURE = 2;
 	
 	public static int ACTION_BAR_GROUP = 0;
 	public static int MENU_SEARCH = 0;
@@ -70,30 +73,25 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
     private GridView gridView;
     private TextView homeMsg;
     
-    private String user_id;
-    private String[] urls;
- 
-    // gridview data
-    private String[] date;
-	private String[] type;
-	private int[] dilution_num;
-	private String[] exp_param;
-	private int[] colony_num;
-	private Bitmap[] images;
-    
+	// dialog detail data
+	private Bitmap colonyImg;
+	
     private ImgSearchFilter searchFilter;
     
-    private static boolean isMenuVisible;
+    private boolean isMenuVisible = true;
+    private boolean selected = false;
     
     private HomeActivity context;
+    private CustomGrid adapter;
     
     private LinearLayout layout_colony_type_list;
     private List<ListItem> colony_type_list;
     private LinearLayout layout_colony_exp_param_list;
     private List<ListItem> colony_exp_param_list;
     
+    private boolean isRedColonyShow = true;
+    
     public FragmentHome(String user_id, HomeActivity context){
-    	this.user_id = user_id;
     	this.context = context;
     	isMenuVisible = true;
     }
@@ -102,10 +100,30 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
     	super();
     }
     
-    @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void setSelected(boolean selected){
+    	this.selected = selected;
+    }
+    
+    public void setMenuVisible(boolean isMenuVisible){
+    	this.isMenuVisible = isMenuVisible;
+    }
+    
+    
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Log.d("test4", "fragmentHome onCreateView");
+		View view = inflater.inflate(R.layout.layout_fragment_home, container, false);
 		setHasOptionsMenu(true);
+		setViews(view);
+		setListeners();
+		
+		if(selected){
+			Log.d("test4", "fragmentHome selected");
+			context.setGridView();
+			selected = false;
+		}
+		
+		return view;
 	}
 
 	private void setViews(View view){
@@ -117,6 +135,11 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 		colony_type_list = new ArrayList<ListItem>();
 		colony_exp_param_list = new ArrayList<ListItem>();
 		searchFilter = new ImgSearchFilter();
+		
+		// 如果要過data
+//		if( != null){
+//			colony_num, img_urls, img_ids();
+//		} 
 	}
 	
 	private void setListeners(){
@@ -126,20 +149,13 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 	
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.layout_fragment_home, container, false);
-		setViews(view);
-		setListeners();
-		
-		return view;
-	}
-	
-	@Override
 	public void onClick(View view) {
 		switch(view.getId()){
 		case R.id.btn_take_photo:
 			if(hasCameraHardware(getActivity())){
 				Intent takePictureIntent = new Intent(getActivity(), TakePhotoActivity.class);
+				
+//				Intent takePictureIntent = new Intent(getActivity(), TestCamera.class);
 				takePictureIntent.putExtra("requestCode", TAKE_PHOTO);
 				startActivity(takePictureIntent);
 			} else {
@@ -147,7 +163,11 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 			}
 			break;
 		case R.id.btn_select_photo:
-			startActivityForResult(MediaStoreUtils.getPickImageIntent(getActivity()), REQUEST_PICTURE);
+//			startActivityForResult(MediaStoreUtils.getPickImageIntent(getActivity()), REQUEST_PICTURE);
+			Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PHOTO);
 			break;
 		}
 	}
@@ -168,84 +188,126 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		
-//		File croppedImageFile = new File(getActivity().getFilesDir(), "test.jpg");
-        if ((requestCode == REQUEST_PICTURE) && (resultCode == Activity.RESULT_OK)) {
-//        	Uri croppedImage = Uri.fromFile(croppedImageFile);
-//        	
-//        	CropImageIntentBuilder cropImage = new CropImageIntentBuilder(480, 480, croppedImage);
-//            cropImage.setSourceImage(intent.getData());
-//            cropImage.setCircleCrop(true);
-//            cropImage.setDoFaceDetection(false);
-//            
-//            startActivity(cropImage.getIntent(getActivity()));
-        	
-//        	Uri croppedImage = Uri.fromFile(croppedImageFile);
-        	intent.setClass(getActivity(), Test.class);
+        if ((requestCode == SELECT_PHOTO) && (resultCode == Activity.RESULT_OK)) {
+        	intent.setClass(getActivity(), CropPhotoActivity.class);
         	startActivity(intent);
         }
 	}
 	
 	public void setHomeMsg(String msg){
 		homeMsg.setText(msg);
+		homeMsg.setVisibility(View.VISIBLE);
+		gridView.setVisibility(View.GONE);
 	}
 	
-	public void setGridView(){
-		final Context context = getActivity();
-		CustomGrid adapter = new CustomGrid(context, date, type, dilution_num, exp_param, colony_num, images);
+	public void setGridView(String[] date, String[] colony_num, String[] img_urls, final String[] img_ids, BitmapDecodedListener listener){
+//		if(adapter == null){
+			adapter = new CustomGrid(context, date, colony_num, img_urls, listener);
+//		}
 		
-		// TODO: nullpointer exception
 		if(homeMsg != null)
 			homeMsg.setVisibility(View.GONE);
 		
 		if(gridView != null){
+			gridView.setVisibility(View.VISIBLE);
 			gridView.setAdapter(adapter);
 			gridView.setOnItemClickListener(new GridView.OnItemClickListener(){
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					String imgId = img_ids[position];
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					View dialogContent = getActivity().getLayoutInflater().inflate(R.layout.dialog_gridview, null);
+					final TextView showRedColony = (TextView) dialogContent.findViewById(R.id.show_red_colony);
+					Button dialogBtnClose = (Button) dialogContent.findViewById(R.id.btn_close);
+					final PhotoView2 image = (PhotoView2) dialogContent.findViewById(R.id.cropimageview);
+					final TextView tag_date = (TextView) dialogContent.findViewById(R.id.date);
+					final TextView tag_type = (TextView) dialogContent.findViewById(R.id.type);
+					final TextView tag_dilution_num = (TextView) dialogContent.findViewById(R.id.dilution_num);
+					final TextView tag_exp_param = (TextView) dialogContent.findViewById(R.id.exp_param);
+					final TextView image_colony_num = (TextView) dialogContent.findViewById(R.id.colony_num);
+					
+					showRedColony.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							isRedColonyShow = !isRedColonyShow;
+							if(isRedColonyShow){
+								showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_clicked, 0, 0, 0);
+								image.setHideColony(false);
+							} else{
+								showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_close_clicked, 0, 0, 0);
+								image.setHideColony(true);
+							}
+							image.invalidate();
+						}
+					});
+					
+				    AsyncTaskCompleteListener<Boolean> listener = new AsyncTaskCompleteListener<Boolean>(){
+						@Override
+						public void onTaskComplete(AsyncTaskPayload result, String taskName) {
+							if(result != null){
+								String resultVal = result.getValue("result");
+								if(resultVal != null && resultVal.equals("success")){
+									try {
+										// get request data
+										JSONObject resultObj = result.getImageInfoObj();
+										colonyImg = result.getRawImg();
+										String tag_date_str = resultObj.getString("tag_date");
+										String tag_type_str = resultObj.getString("tag_type");
+										String tag_dilution_num_str = resultObj.getString("tag_dilution_num");
+										String tag_exp_param_str = resultObj.getString("tag_exp_param");
+										int colony_num = resultObj.getInt("colony_num");
+										JSONArray colonies = resultObj.getJSONArray("colonies");
+										for(int i = 0; i < colonies.length(); i++){
+											JSONObject colony = colonies.getJSONObject(i);
+											image.addColony(getHighlightView(colony.getInt("x"), colony.getInt("y"), colony.getInt("r"), colony.getInt("type"), image, Config.OUTPUT_IMAGE_WIDTH, Config.OUTPUT_IMAGE_HEIGHT));
+										}
+										
+										// set to display
+										image.setImageBitmap(colonyImg);
+										
+										PhotoViewAttacher2 mAttacher = new PhotoViewAttacher2(image);
+									    // my code
+								        mAttacher.setOnDragCallback(image);
+								        mAttacher.setOnScaleCallback(image);
+								        
+										tag_date.setText(tag_date_str);
+										tag_type.setText(tag_type_str.equals("") ? "未設定" : tag_type_str);
+										tag_dilution_num.setText(Html.fromHtml("10<sup><small>" + tag_dilution_num_str + "</small></sup>"));
+										tag_exp_param.setText(tag_exp_param_str.equals("") ? "未設定" : tag_exp_param_str);
+										image_colony_num.setText(colony_num+"");
+										showRedColony.setText(colony_num+"個");
+										showRedColony.setVisibility(View.VISIBLE);
+									} catch (JSONException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+					};
+					
+				    // get image detail
+					new GetImgDetailAsyncTask(context, null, null, listener, GetImgDetailAsyncTask.class, false, imgId).execute();
+					
 					builder.setView(dialogContent);
 					builder.setCancelable(false);
-					
-//					WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-//				    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-//				    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-//				    lp.horizontalMargin = 0.0f;
-//				    lp.verticalMargin = 0.0f;
-				    
 				    final Dialog d = builder.create();
 				    d.show();
-//				    d.getWindow().setAttributes(lp);
-				    
-				    Button dialogBtnClose = (Button) dialogContent.findViewById(R.id.btn_close);
-				    PhotoView2 image = (PhotoView2) dialogContent.findViewById(R.id.cropimageview);
-				    image.setImageBitmap(images[0]);
-				    PhotoViewAttacher2 mAttacher = new PhotoViewAttacher2(image);
-				    // my code
-			        mAttacher.setOnDragCallback(image);
-			        mAttacher.setOnScaleCallback(image);
 				    
 					dialogBtnClose.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
 							d.dismiss();
+							if(colonyImg != null && !colonyImg.isRecycled()){
+								colonyImg.recycle();
+								colonyImg = null;
+							}
 						}
 					});
 				}
 			});
 		}
-		
 	}
 	
-	public void setGridViewData(String[] date, String[] type, int[] dilution_num, String[] exp_param, int[] colony_num, Bitmap[] images){
-		this.date = date;
-		this.type = type;
-		this.dilution_num = dilution_num;
-		this.exp_param = exp_param;
-		this.colony_num = colony_num;
-		this.images = images;
-	}
-
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
@@ -254,10 +316,6 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 		item.setIcon(R.drawable.btn_magnifier);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		item.setVisible(isMenuVisible);
-	}
-	
-	public static void setMenuVisible(boolean isVisible){
-		isMenuVisible = isVisible;
 	}
 	
 	public void setSearchDateRange(Calendar cal1, Calendar cal2){
@@ -270,6 +328,22 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 	
 	public void setDisplaySearchDateRange(Button btn){
 		btn.setText(searchFilter.getDateRangeString());
+	}
+	
+	public HighlightView getHighlightView(int x, int y, int r, int type, PhotoView2 image, int width, int height){
+		HighlightView hv = new HighlightView(image);
+		
+//		int width = mBitmap.getWidth();
+//        int height = mBitmap.getHeight();
+        
+        Rect imageRect = new Rect(0, 0, width, height);
+        boolean mCircleCrop = true;
+        Matrix mImageMatrix = image.getImageMatrix();
+        
+        RectF colonyRect = new RectF(x-r, y-r, x+r, y+r);
+        hv.setup(mImageMatrix, imageRect, colonyRect, mCircleCrop, true, type);
+        
+        return hv;
 	}
 	
 	@Override
@@ -431,23 +505,7 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 		    btnSearchOK.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					String date = searchFilter.getDateRangeString();
-					Set<String> types = searchFilter.getColonyType();
-					List<Integer> nums = searchFilter.getDilutionNumberRange();
-					Set<String> params = searchFilter.getExpParam();
-					
-					Log.d("test4", "date = " + date);
-					Iterator<String> ite = types.iterator();
-					while(ite.hasNext()){
-						Log.d("test4", "type = " + ite.next());
-					}
-					for(Integer i : nums){
-						Log.d("test4", "number = " + i);
-					}
-					ite = params.iterator();
-					while(ite.hasNext()){
-						Log.d("test4", "param = " + ite.next());
-					}
+					context.searchColony(searchFilter);
 					
 					cleanList();
 					d.dismiss();
@@ -546,13 +604,11 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 		private String value;
 		private CheckBox cbx;
 		private TextView tv;
-//		private View view;
 		
 		public ListItem(String value, View view, String type){
 			cbx = (CheckBox) view.findViewById(R.id.checkBox2);
 			tv = (TextView) view.findViewById(R.id.textView2);
 			tv.setText(value);
-//			this.view = view;
 			this.value = value;
 			this.type = type;
 			

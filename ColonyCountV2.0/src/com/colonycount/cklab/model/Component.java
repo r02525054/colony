@@ -5,30 +5,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import com.colonycount.cklab.config.Config;
+
 import android.util.Log;
 
 public class Component implements Serializable {
-	// �P�_colony���D�nfeature
-	// 1.���n
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// 判斷colony的主要feature
+	// 1.面積
 	private int area = 0;
-	// 2.�Ϊ����
+	// 2.形狀指數
 	private double shapeFactor;
-	// 3.�����G��
+	// 3.平均亮度
 	private double meanIntensity;
-	// 4.����R, ����G, ����B
+	// 4.平均R, 平均G, 平均B
 	private double meanR;
 	private double meanG;
 	private double meanB;
 	
-	// ��L��T
-	// �P��
+	// 其他資訊
+	// 周長
 	private int perimeter = 0;
-	// ���|, �b�|
-	private double diameter;
-	private double radius;
-	// �����IX, �����IY
+	// 直徑, 半徑
+	private int diameter;
+	private int radius;
+	// 中心點X, 中心點Y
 	private int centerX;
 	private int centerY;
 	
@@ -37,12 +41,11 @@ public class Component implements Serializable {
 	private int yMin;
 	private int yMax;
 	
-	// ����component�̪�pixel
-	// ���pixel
+	// 紀錄此component裡的pixel
+	// 邊界pixel
 	private List<Map<String, Integer>> boundPixels = new ArrayList<Map<String,Integer>>();
-	// �Ҧ�pixel
+	// 所有pixel
 	private List<Pixel> pixels = new ArrayList<Pixel>();
-	
 	
 	
 	public void incrementArea(){
@@ -53,10 +56,6 @@ public class Component implements Serializable {
 		return area;
 	}
 	
-//	public int getArea(){
-//		return pixels.size();
-//	}
-	
 	public void addPerimeter(int periNumber){
 		this.perimeter += periNumber;
 	}
@@ -66,33 +65,42 @@ public class Component implements Serializable {
 	}
 	
 	public void setProperties(){
-		area = pixels.size();
-		diameter = 2 * Math.sqrt(area / Math.PI); 
-		diameter = (double)Math.round(diameter * 100) / 100.0;
-		radius = diameter / 2;
+//		area = pixels.size();
+
+		// 因為output image size = 1024x1024
+		// count image size = 512x512
+		// 要把所有長度資訊x2, 面積資訊x4才正確
+		int scale = Config.OUTPUT_IMAGE_WIDTH / Config.COUNT_IMAGE_WIDTH; 
+		
+		// 面積x4
+		area *= scale * scale;
+		// 半徑
+		double radiusTemp = Math.sqrt(area / Math.PI);
+		radius = (int) Math.round(radiusTemp);
+		Log.d("test4", "radius = " + radius);
+		// 直徑
+		diameter = radius * 2;
+		// 周長x2
+		perimeter *= scale;
+		// x, y x2
+		centerX *= scale;
+		centerY *= scale;
+		
 		shapeFactor = 4 * Math.PI * area / Math.pow(perimeter, 2);
 		shapeFactor = (double)Math.round(shapeFactor * 100) / 100.0;
 		
-		Log.d("test", "area = " + area + ", diameter = " + diameter + ", perimeter = " + perimeter + ", shapeFactor = " + shapeFactor);
-//		setMeanValues();
+		Log.d("test4", "x = " + centerX + ", y = " + centerY + ", r = " + radius);
 	}
 	
-	public double getDiameter() {
+	public int getDiameter() {
 		return diameter;
 	}
 	
-//	public double getDiameter(){
-//		double d = 2 * Math.sqrt(getArea() / Math.PI);
-//		d = (double)Math.round(diameter * 100) / 100.0;
-//		
-//		return d;
-//	}
-	
-	public void setRadius(double radius){
+	public void setRadius(int radius){
 		this.radius = radius;
 	}
 	
-	public double getRadius(){
+	public int getRadius(){
 		return radius;
 	}
 	

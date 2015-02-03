@@ -1,21 +1,20 @@
 package com.colonycount.cklab.model;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import android.util.Log;
-
+import com.colonycount.cklab.libs.crop.HighlightView;
 
 public class ImgInfo {
+	private int colonyCount;
 	private Calendar calendar;
 	private String type;
 	private int dilutionNumber;
 	private String expParam;
-	private ArrayList<Map<String, Integer>> colonies; 
+	private List<HighlightView> colonyList;
+	private List<HighlightView> colonyRemovedList;
 	
 	
 	public ImgInfo() {
@@ -23,7 +22,6 @@ public class ImgInfo {
 		this.type = "";
 		this.dilutionNumber = -1;
 		this.expParam = "";
-		colonies = new ArrayList<Map<String, Integer>>();
 	}
 	
 	public String getType() {
@@ -84,21 +82,45 @@ public class ImgInfo {
 		this.expParam = expParam;
 	}
 	
-	public void addColony(float x, float y, float r, int type){
-		Map<String, Integer> colony = new HashMap<String, Integer>();
-		
-		if(Math.round(r) < 1)
-			Log.d("Test2", x + "," + y + "," + r + "," + type);
-			
-		colony.put("x", (int)x);
-		colony.put("y", (int)y);
-		colony.put("r", Math.round(r));
-		colony.put("type", type);
-		
-		colonies.add(colony);
+//	public void addColony(float x, float y, float r, int type){
+//		Map<String, Integer> colony = new HashMap<String, Integer>();
+//		
+//		if(Math.round(r) < 1)
+//			Log.d("Test2", x + "," + y + "," + r + "," + type);
+//			
+//		colony.put("x", (int)x);
+//		colony.put("y", (int)y);
+//		colony.put("r", Math.round(r));
+//		colony.put("type", type);
+//		
+//		colonies.add(colony);
+//	}
+//	
+//	public ArrayList<Map<String, Integer>> getColonies(){
+//		return colonies;
+//	}
+	
+	public int getColonyCount() {
+		return colonyCount;
+	}
+
+	public void setColonyCount(int colonyCount) {
+		this.colonyCount = colonyCount;
 	}
 	
-	public ArrayList<Map<String, Integer>> getColonies(){
-		return colonies;
+	public List<HighlightView> getColonyList() {
+		return colonyList;
+	}
+
+	public void setColonyList(List<HighlightView> colonyList) {
+		this.colonyList = colonyList;
+	}
+
+	public List<HighlightView> getColonyRemovedList() {
+		return colonyRemovedList;
+	}
+
+	public void setColonyRemovedList(List<HighlightView> colonyRemovedList) {
+		this.colonyRemovedList = colonyRemovedList;
 	}
 }

@@ -24,7 +24,7 @@
 		    android:id="@+id/colony_num"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:text="58"
+		    android:text=""
 		    android:textAppearance="?android:attr/textAppearanceLarge"
 		    android:textColor="@color/white"
 		    android:layout_marginLeft="5dp"
@@ -40,7 +40,8 @@
 		    android:textColor="@color/white"
 		    android:layout_marginTop="10dp"/>
     </LinearLayout>
-        
+    
+    
 	<LinearLayout 
 	    android:id="@+id/mid_layout"
 	    android:layout_width="match_parent"
@@ -48,12 +49,13 @@
 	    android:layout_above="@+id/bot_layout"
 	    android:layout_below="@+id/top_layout"
 	    android:orientation="vertical">
-
-		<com.colonycount.cklab.croptest.PhotoView2
+		
+		<com.colonycount.cklab.libs.crop.PhotoView2
 	        android:id="@+id/cropimageview"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:adjustViewBounds="true" />
+	        android:adjustViewBounds="true"
+	        android:src="@drawable/loading" />
 		
 		<!-- <LinearLayout 
 		    android:layout_width="match_parent"
@@ -153,9 +155,10 @@
 		                android:text="日期:"/>
 		            
 		            <TextView 
+		                android:id="@+id/date"
 		                android:layout_width="wrap_content"
 		                android:layout_height="wrap_content"
-		                android:text="2014-12-03"/>
+		                android:text="讀取中"/>
 		        </LinearLayout>
 		        
 		        <!-- 菌種-->
@@ -171,9 +174,10 @@
 		                android:text="菌種:"/>
 		            
 		            <TextView 
+		                android:id="@+id/type"
 		                android:layout_width="wrap_content"
 		                android:layout_height="wrap_content"
-		                android:text="Thermophiles"/>
+		                android:text="讀取中"/>
 		        </LinearLayout>
 		        
 		        <!-- 稀釋倍數 -->
@@ -189,9 +193,10 @@
 		                android:text="稀釋倍數:"/>
 		            
 		            <TextView 
+		                android:id="@+id/dilution_num"
 		                android:layout_width="wrap_content"
 		                android:layout_height="wrap_content"
-		                android:text="10-3"/>
+		                android:text="讀取中"/>
 		        </LinearLayout>
 		        
 		        <!-- 實驗參數 -->
@@ -204,16 +209,29 @@
 		            <TextView 
 		                android:layout_width="wrap_content"
 		                android:layout_height="wrap_content"
-		                android:text="實驗參數 :"/>
+		                android:text="實驗參數:"/>
 		            
 		            <TextView 
+		                android:id="@+id/exp_param"
 		                android:layout_width="wrap_content"
 		                android:layout_height="wrap_content"
-		                android:text="時間 VS 酸鹼性"/>
+		                android:text="讀取中"/>
 		        </LinearLayout>
 		    </LinearLayout>
 	    </ScrollView>
 	</LinearLayout>    
+	
+	<TextView
+	    android:id="@+id/show_red_colony"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="50個"
+	    android:textColor="@drawable/selector_text_red_clicked"
+	   	android:drawableLeft="@drawable/selector_eye_red_clicked"
+	    android:layout_alignParentRight="true"
+	    android:layout_below="@+id/top_layout"
+	    android:padding="1dp"
+	    android:visibility="gone" />
     
     <LinearLayout 
         android:id="@+id/bot_layout"

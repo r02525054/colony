@@ -1,11 +1,11 @@
 package com.colonycount.cklab.asynctask;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,11 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.colonycount.cklab.base.BaseAsyncTask;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.asynctask.base.BaseAsyncTask;
+import com.colonycount.cklab.model.ImgSearchFilter;
 
 public class GetImgAsyncTask extends BaseAsyncTask {
 	private String userId;
@@ -36,10 +37,20 @@ public class GetImgAsyncTask extends BaseAsyncTask {
 	@Override
 	protected AsyncTaskPayload doInBackground(AsyncTaskPayload... params) {
 		String postUrl = "http://140.112.26.221/~master11360/colony%20count/php/db_connect.php";
-		String photoUrlPrefix = "http://140.112.26.221/~master11360/colony%20count";
 		HttpPost httpRequest = new HttpPost(postUrl);
 		List<NameValuePair> reqParams = new ArrayList<NameValuePair>();
-		addRequest(reqParams);
+		
+		AsyncTaskPayload result = new AsyncTaskPayload();
+		
+		if(params.length > 0){
+			if(params[0].getValue("search_colony").equals("true")){
+				addRequest(reqParams, params[0].getImgSearchFilter());
+				result.putValue("search_colony", "true");
+			}
+		} else {
+			addRequest(reqParams);
+		}
+		
 		String strResult = null;
 		
 		try {
@@ -53,79 +64,92 @@ public class GetImgAsyncTask extends BaseAsyncTask {
 				String status = jsonObject.getString("status");
 				
 				Log.d("test4", "status = " + status);
+				
+				try {
+					String test = jsonObject.getString("sql");
+					Log.d("test4", "sql = " + test);
+				} catch(Exception e){
+					Log.d("test4", "sql = no sql result");
+				}
 				if(status.equals("success")){
 					JSONArray jsonArray = jsonObject.getJSONArray("result");
-					
-//					urls = new String[jsonArray.length()];
-//					photos = new Bitmap[jsonArray.length()];
-//					num = new String[jsonArray.length()];
-//					date = new String[jsonArray.length()];
-//					type = new String[jsonArray.length()];
-					
-					// TODO: change the url
-					for(int i = 0; i < jsonArray.length(); i++){
-						JSONObject colony = jsonArray.getJSONObject(i);
-						
-						String url = photoUrlPrefix + colony.getString("img_url").substring(colony.getString("img_url").indexOf("/"));
-						
-//						Log.d("test4", "url = " + url);
-						
-						Log.d("test4", colony.toString());
-						
-						
-//						urls[i] = photoUrlPrefix + colony.getString("img_url").substring(colony.getString("img_url").indexOf("/"));
-//						num[i] = colony.getString("tag_number");
-//						date[i] = colony.getString("tag_date");
-//						type[i] = colony.getString("tag_type");
-					}
+					result.putValue("result", "success");
+					result.setImageInfoList(jsonArray);
 				} else if(status.equals("error")){
-					
+					result.putValue("result", "error");
 				}
 			} else {
-				Log.d("Test2", "not 200");
-				Log.d("Test2", "getStatusCode = " + httpResponse.getStatusLine().getStatusCode());
+				result.putValue("result", "error");
+				result.putValue("msg", "httpResponse status code = " + httpResponse.getStatusLine().getStatusCode());
 			}
-			
-			// get images from urls
-//			if(urls != null){
-//				for(int i = 0; i < photos.length; i++){
-//					Bitmap bmImg = null;
-//					try {
-//					    HttpURLConnection conn= (HttpURLConnection) new URL(urls[i]).openConnection();
-//					    conn.setDoInput(true);
-//					    conn.connect();
-//					    InputStream is = conn.getInputStream();
-//
-//					    bmImg = BitmapFactory.decodeStream(is);
-//				    } catch (IOException e) {
-//				        // TODO Auto-generated catch block
-//				        e.printStackTrace();
-//				        return null;
-//			        }
-//					
-//					if(bmImg != null)
-//						photos[i] = bmImg;
-//				}
-//			}
 		} catch(Exception e) {
-			Log.d(TAG, "exception: " + e.toString());
+			result.putValue("result", "error");
 		}
-		
-//		try {
-//			Thread.sleep(2000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-		
-		AsyncTaskPayload result = new AsyncTaskPayload();
-		result.putValue("result", "success");
 		
 		return result;
 	}
 
 	public void addRequest(List<NameValuePair> reqParams){
 		reqParams.add(new BasicNameValuePair("get_img_data", "true"));
-		Log.d("test4", "userid = " + userId);
 		reqParams.add(new BasicNameValuePair("user_id", userId));
+	}
+	
+	public void addRequest(List<NameValuePair> reqParams, ImgSearchFilter searchFilter){
+		List<Date> dates = searchFilter.getDateRange();
+		Set<String> types = searchFilter.getColonyType();
+		List<Integer> nums = searchFilter.getDilutionNumberRange();
+		Set<String> expParams = searchFilter.getExpParam();
+		
+		// build date string
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < dates.size(); i++){
+			if(i == dates.size() - 1)
+				builder.append(format.format(dates.get(i)));
+			else
+				builder.append(format.format(dates.get(i)) + ",");
+		}
+		String dateStr = builder.toString();
+		
+		// build type string
+		builder = new StringBuilder();
+		Iterator<String> ite = types.iterator();
+		while(ite.hasNext()){
+			builder.append(ite.next() + ",");
+		}
+		builder.deleteCharAt(builder.length()-1);
+		String typeStr = builder.toString();
+		
+		// build nums string
+		builder = new StringBuilder();
+		for(int i = 0; i < nums.size(); i++){
+			if(i == nums.size() - 1)
+				builder.append(nums.get(i));
+			else
+				builder.append(nums.get(i) + ",");
+		}
+		String numStr = builder.toString();
+		
+		// build exp param string
+		builder = new StringBuilder();
+		ite = expParams.iterator();
+		while(ite.hasNext()){
+			builder.append(ite.next() + ",");
+		}
+		builder.deleteCharAt(builder.length()-1);
+		String expParamStr = builder.toString();
+		
+		Log.d("test4", "dateStr = " + dateStr);
+		Log.d("test4", "typeStr = " + typeStr);
+		Log.d("test4", "numStr = " + numStr);
+		Log.d("test4", "expParamStr = " + expParamStr);
+		
+		reqParams.add(new BasicNameValuePair("get_img_data", "true"));
+		reqParams.add(new BasicNameValuePair("user_id", userId));
+		reqParams.add(new BasicNameValuePair("search_colony", "true"));
+		reqParams.add(new BasicNameValuePair("search_date", dateStr));
+		reqParams.add(new BasicNameValuePair("search_type", typeStr));
+		reqParams.add(new BasicNameValuePair("search_dilution_num", numStr));
+		reqParams.add(new BasicNameValuePair("search_exp_param", expParamStr));
 	}
 }

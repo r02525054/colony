@@ -1,497 +1,647 @@
 package com.colonycount.cklab.activity;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
-import android.annotation.SuppressLint;
+import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.WindowManager;
-import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.colonycount.cklab.activity.R.id;
-import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
-import com.colonycount.cklab.asynctask.AsyncTaskPayload;
+import com.colonycount.cklab.activity.base.GPlusClientActivity;
 import com.colonycount.cklab.asynctask.SaveImgAsyncTask;
-import com.colonycount.cklab.base.GPlusClientActivity;
-import com.colonycount.cklab.crop.CropImageView2;
-import com.colonycount.cklab.crop.HighlightView2;
-import com.colonycount.cklab.crop.HighlightView3;
-import com.colonycount.cklab.crop.HighlightView4;
-import com.colonycount.cklab.crop.HighlightView5;
-import com.colonycount.cklab.croptest.HighlightView;
-import com.colonycount.cklab.model.CancelView;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.config.Config;
+import com.colonycount.cklab.libs.calendarpicker.CalendarPickerView;
+import com.colonycount.cklab.libs.crop.HighlightView;
+import com.colonycount.cklab.libs.crop.PhotoView2;
+import com.colonycount.cklab.libs.crop.PhotoViewAttacher2;
+import com.colonycount.cklab.libs.crop.PhotoViewAttacher2.OnMatrixChangedListener;
+import com.colonycount.cklab.libs.crop.PhotoViewAttacher2.OnPhotoTapListener;
+import com.colonycount.cklab.libs.rangebar.CustomSeekBar;
 import com.colonycount.cklab.model.Component;
 import com.colonycount.cklab.model.DataWrapper;
 import com.colonycount.cklab.model.ImgInfo;
-import com.colonycount.cklab.rangebar.CustomSeekBar;
 
-public class ResultActivity extends GPlusClientActivity implements View.OnClickListener, AsyncTaskCompleteListener<Boolean> {
-	private RelativeLayout rel_top;
-	private RelativeLayout rel_root;
+public class ResultActivity extends GPlusClientActivity implements View.OnClickListener, CustomSeekBar.OnSeekBarChangeListener, AsyncTaskCompleteListener<Boolean> {
+	static final String PHOTO_TAP_TOAST_STRING = "(x, y): (%d, %d)";
+    static final int DEFAULT_COLONY_RADIUS = 20;
+    
+    static final int ORIGINAL_COLONY = 1;
+    static final int ADDED_COLONY = 2;
+    static final int REMOVED_COLONY = 3;
+    
 	private Context context;
 	
-	private ImageButton btn_close;
-	private ImageButton btn_set_tag;
-	private ImageButton btn_circle_add;
-	private ImageButton btn_circle_sub;
+	private PhotoViewAttacher2 mAttacher;
+	
+	private ImgInfo imgInfo;
+	
+	private Bitmap mBitmap;
+	private PhotoView2 image;
 	
 	private TextView text_result;
 	private TextView text_action_msg;
-	private RelativeLayout text_info;
-	private RelativeLayout text_msg;
+	private TextView title_bar_msg;
+	private TextView showRedColony;
+    private TextView imgInfoDate;
+    private TextView imgInfoType;
+    private TextView imgInfoDilutionNum;
+    private TextView imgInfoExpParam;
+    private boolean isRedColonyShow = true;
+    private ImageButton btn_close;
+	private ImageButton btn_set_tag;
+	private ImageButton btn_circle_add;
+	private ImageButton btn_circle_sub;
+	private ImageButton btn_save_or_ok;
 	private LinearLayout action_bot_bar;
 	private RelativeLayout msg_bot_bar;
+	private Dialog dialogSetTag;
+	private RelativeLayout layout_img_info;
+	private RelativeLayout layout_img_info2;
+	private LinearLayout layout_title_bar;
+	private LinearLayout layout_title_bar2;
 	
-	private CropImageView2 image;
-	private Bitmap mBitmap;
-	private Bitmap mBitmapShow;
-	private Bitmap mBitmapShowSub;
-	public HighlightView mCrop;
-	public boolean mWaitingToPick; // Whether we are wait the user to pick a face.
-    public boolean mSaving;  // Whether the "save" button is already clicked.
-    
-    public int hvCount;
-    public State state = State.VIEW;
-    
-    private TextView showRedColony;
-    private TextView showGreenColony;
-    private TextView showPurpleColony;
-    private boolean isRedColonyShow = true;
-    private boolean isGreenColonyShow = true;
-    private boolean isPurpleColonyShow = true;
-    
-    public enum State {
-    	VIEW, ADD, SUB, SET_TAG
+	// for colony type list
+	private LinearLayout container_add_colony_type;
+	private LinearLayout layout_colony_type_list;
+	private List<AppendListItem> colonyTypeListItems = new ArrayList<AppendListItem>();
+	private List<ShowListItem> colonyTypeList = new ArrayList<ShowListItem>();
+	
+	// for colony exp params
+	private LinearLayout container_add_experiment_param;
+	private LinearLayout layout_colony_exp_param_list;
+	private List<AppendListItem> colonyExpParamListItems = new ArrayList<AppendListItem>();
+	private List<ShowListItem> colonyExpParamList = new ArrayList<ShowListItem>();
+	
+	private int colonyCount;
+	
+	private Button btn_set_tag_date;
+	
+	public State state = State.VIEW;
+	
+	public enum State {
+    	VIEW, ADD, SUB
     }
-	
-    public HighlightView2 mCrop2;
-//    private ZoomControls zoomControls;
-    private ImgInfo imgInfo;
-    private ImageButton btn_save_or_ok;
-    
-    private int areaThreshold = 4;
-	private double shapeFactorThreshold = 0.5;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		setFullScreen();
 		setContentView(R.layout.layout_result);
 		setViews();
 		setListeners();
+		
+		String filename = getIntent().getStringExtra("image");
+		try {
+		    FileInputStream is = this.openFileInput(filename);
+		    mBitmap = BitmapFactory.decodeStream(is);
+		    is.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
 		setColony();
-	}
-	
-	
-	private void setViews(){
-//		imgInfo = new ImgInfo(loadPrefIntData("imgNumber", 1));
-		btn_close = (ImageButton) findViewById(R.id.btn_close);
+		setImgInfoText();
+		// draw colony
+		image.setImageBitmap(mBitmap);
 		
-		btn_save_or_ok = (ImageButton) findViewById(R.id.btn_save_or_ok);
-		btn_circle_add = (ImageButton) findViewById(R.id.btn_add);
-		btn_circle_sub = (ImageButton) findViewById(R.id.btn_sub);
-		btn_set_tag    = (ImageButton) findViewById(R.id.btn_edit);
-		
-		image = (CropImageView2) findViewById(R.id.cropimageview);
-		rel_top = (RelativeLayout) findViewById(R.id.relativeLayout_top2);
-		rel_root = (RelativeLayout) findViewById(R.id.rel_root2);
-		text_info = (RelativeLayout) findViewById(R.id.text_info);
-		text_msg = (RelativeLayout) findViewById(R.id.text_msg);
-		action_bot_bar = (LinearLayout) findViewById(R.id.action_bot_bar);
-		msg_bot_bar = (RelativeLayout) findViewById(R.id.msg_bot_bar);
-		text_action_msg = (TextView) findViewById(R.id.text_action_msg);
-		
-//		zoomControls = (ZoomControls) findViewById(R.id.zoomControls1);
-//		zoomControls.setVisibility(View.INVISIBLE);
-		context = this;
-		
-		showRedColony = (TextView) findViewById(R.id.show_red_colony);
-		showGreenColony = (TextView) findViewById(R.id.show_green_colony);
-		showPurpleColony = (TextView) findViewById(R.id.show_purple_colony);
-		text_result = (TextView) findViewById(R.id.text_result);
-		
-		byte[] data = getIntent().getByteArrayExtra("pictureData");
-		int rotation = getIntent().getIntExtra("pictureRotation", -1);
-		mBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-		// the bitmap able to write
-		mBitmapShow = mBitmap.copy(Config.ARGB_8888, true);
-		
-		if(mBitmapShow != null)
-			image.setImageBitmapResetBase(mBitmapShow, true);
-		
-		Log.d("test", "rotation = " + rotation);
-		if(rotation != -1)
-			image.setRotation(rotation);
-		
-		ViewTreeObserver observer = rel_top.getViewTreeObserver();
-		observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void onGlobalLayout() {
-				// TODO Auto-generated method stub
-				final Point windowSize = getWindowSize();
-				int rel_top_height = rel_top.getHeight();
-				
-				// my code
-				image.setTopPadding(rel_top_height);
-				
-		    	btn_circle_add.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						state = State.ADD;
-						setTitleBar();
-						setBotBar();
-						setTextMsg();
-						
-//						setSaveDoneBtn();
-//						addHighlightView();
-//	                    image.invalidate();
-//						
-//	                    mCrop = image.mHighlightViews.get(image.mHighlightViews.size()-1);
-//                        mCrop.setFocus(true);
-//                        setDisabledBtn();
-					}
-				});
-		    	
-		    	btn_circle_sub.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						state = State.SUB;
-						setTitleBar();
-						setBotBar();
-						setTextMsg();
-						
-//						zoomControls.setVisibility(View.VISIBLE);
-//						addHighlightView3(0, 0, mBitmapShow.getWidth(), mBitmapShow.getHeight());
-//						setSaveDoneBtn();
-//						setDisabledBtn();
-//						drawHighlightImage();
-					}
-				});
-		    	
-		    	btn_set_tag.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-//						Log.d("test", "button save");
-//						if(state == State.ADD || state == State.SUB){
-//							doDone();
-//						} else if(state == State.VIEW){
-//							saveImg();
-//						}
-						
-						AlertDialog.Builder builder = new AlertDialog.Builder(context);
-						View dialogContent = getLayoutInflater().inflate(R.layout.dialog_add_tag_view, null);
-						builder.setView(dialogContent);
-					    
-//					    Button btnSearchStartDate = (Button) dialogContent.findViewById(R.id.btn_search_start_date);
-//					    Button btnSearchEndDate = (Button) dialogContent.findViewById(R.id.btn_search_end_date);
-//					    btnSearchStartDate.setOnClickListener(new View.OnClickListener() {
-//							@Override
-//							public void onClick(View v) {
-//								// TODO Auto-generated method stub
-//								Calendar c = Calendar.getInstance();
-//								
-//								final DatePickerDialog dateDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-//								    boolean fired = false;
-//								    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-//								        if (fired == true) {
-//								            return;
-//								        } else {
-//								            fired = true;
-//								        }
-//								    }
-//								}, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-//								dateDialog.show();
-//							}
-//						});
-//					    btnSearchEndDate.setOnClickListener(new View.OnClickListener() {
-//							@Override
-//							public void onClick(View v) {
-//								// TODO Auto-generated method stub
-//								
-//							}
-//						});
-					    
-					    CustomSeekBar seekbar = (CustomSeekBar) dialogContent.findViewById(R.id.seek_bar);
-					    TextView seekbarValue1 = (TextView) dialogContent.findViewById(R.id.seekbar_value_1);
-					    TextView seekbarValue2 = (TextView) dialogContent.findViewById(R.id.seekbar_value_2);
-					    TextView seekbarValue3 = (TextView) dialogContent.findViewById(R.id.seekbar_value_3);
-					    TextView seekbarValue4 = (TextView) dialogContent.findViewById(R.id.seekbar_value_4);
-					    TextView seekbarValue5 = (TextView) dialogContent.findViewById(R.id.seekbar_value_5);
-					    TextView seekbarValue6 = (TextView) dialogContent.findViewById(R.id.seekbar_value_6);
-					    TextView seekbarValue7 = (TextView) dialogContent.findViewById(R.id.seekbar_value_7);
-					    TextView seekbarValue8 = (TextView) dialogContent.findViewById(R.id.seekbar_value_8);
-					    TextView seekbarValue9 = (TextView) dialogContent.findViewById(R.id.seekbar_value_9);
-					    TextView seekbarValue10 = (TextView) dialogContent.findViewById(R.id.seekbar_value_10);
-					    seekbarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
-					    seekbarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
-					    seekbarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
-					    seekbarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
-					    seekbarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
-					    seekbarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
-					    seekbarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
-					    seekbarValue8.setText(Html.fromHtml("10<sup><small>-8</small></sup>"));
-					    seekbarValue9.setText(Html.fromHtml("10<sup><small>-9</small></sup>"));
-					    seekbarValue10.setText(Html.fromHtml("10<sup><small>-10</small></sup>"));
-					    seekbar.setOnRangeBarChangeListener(new CustomSeekBar.OnSeekBarChangeListener() {
-							@Override
-							public void onIndexChangeListener(CustomSeekBar seekBar, int index) {
-								
-							}
-						});
-					    
-//					    Button btnSetTagCancel = (Button) dialogContent.findViewById(R.id.btn_set_tag_cancel);
-					    Button btnSetTagOK = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
-					    Button btn_set_tag_date = (Button) dialogContent.findViewById(id.btn_set_tag_date);
-					    
-					    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-					    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-					    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-					    
-					    final Dialog d = builder.create();
-					    d.show();
-					    d.getWindow().setAttributes(lp);
-					    
-//					    btnSetTagCancel.setOnClickListener(new View.OnClickListener() {
-//							@Override
-//							public void onClick(View v) {
-//								d.dismiss();
-//							}
-//						});
-					    
-					    btnSetTagOK.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								d.dismiss();
-							}
-						});
-					    
-					    CustomSeekBar seekBar = (CustomSeekBar) dialogContent.findViewById(R.id.seek_bar);
-					    seekBar.setOnRangeBarChangeListener(new CustomSeekBar.OnSeekBarChangeListener() {
-							@Override
-							public void onIndexChangeListener(CustomSeekBar seekBar, int index) {
-								Log.d("Test2", "index = " + index);
-							}
-						});
-					    
-					    
-//					    final Calendar calendar = Calendar.getInstance();
-//					    final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
-//					    final String DATEPICKER_TAG = "datepicker";
-//					    btn_set_tag_date.setOnClickListener(new View.OnClickListener() {
-//							@Override
-//							public void onClick(View v) {
-//								datePickerDialog.setVibrate(false);
-//				                datePickerDialog.setYearRange(1985, 2028);
-//				                datePickerDialog.setCloseOnSingleTapDay(isCloseOnSingleTapDay());
-//				                datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
-//							}
-//						});
-					}
-		    	});
-		    	
-		    	rel_root.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-			}
-		});
-	}
-	
-	
-	private void setListeners(){
-		btn_close.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-		});
-		
-//		zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				// TODO: 設定每一個highlight circle的scale
-//				float nowScale = image.getScale();
-//				float maxZoom = image.getMaxZoom();
-//				float target = (float)(nowScale * 1.25);
-//				
-//				if(nowScale == 3F)
-//					return;
-//				
-//				if(target > maxZoom)
-//					target = 3F;
-//				
-//				image.zoomTo(target, image.showView.getCenterX(), image.showView.getCenterY(), 200F);
-//				
-//				// TODO:修正位置
-//				addHighlightView3(image.showView.getCenterX()-mBitmapShow.getWidth()/target/2,
-//								  image.showView.getCenterY()-mBitmapShow.getHeight()/target/2,
-//								  image.showView.getCenterX()+mBitmapShow.getWidth()/target/2,
-//								  image.showView.getCenterY()+mBitmapShow.getHeight()/target/2);
-//			}
-//		});
+		// The MAGIC happens here!
+        mAttacher = new PhotoViewAttacher2(image);
+        mAttacher.setOnPhotoTapListener(new PhotoTapListener());
+        mAttacher.setOnMatrixChangeListener(new MatrixChangeListener());
+        
+        // my code
+        mAttacher.setOnDragCallback(image);
+        mAttacher.setOnScaleCallback(image);
+        
+//        DataWrapper dw = (DataWrapper) getIntent().getSerializableExtra("imageComponent");
+//		List<Component> components = dw.getParliaments();
+//		colonyCount = mAttacher.setColony(components, mBitmap);
+//        
+//        // 按圖片比例乘回去
+//		double countScale = (double)(Config.COUNT_IMAGE_WIDTH/2) * (double)(Config.COUNT_IMAGE_WIDTH/2) / (double)Config.TEST_RADIUS / (double)Config.TEST_RADIUS;
+//		colonyCount = (int) Math.round(colonyCount * countScale);
+//		Log.d("test4", "colonyCount = " + colonyCount);
 //		
-//		zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				float nowScale = image.getScale();
-//				float target = (float)(nowScale * 0.8);
-//				
-//				if(nowScale == 1F)
-//					return;
-//				
-//				if(target < 1F)
-//					target = 1F;
-//					
-//				
-//				image.zoomTo(target, image.showView.getCenterX(), image.showView.getCenterY(), 200F);
-//				
-//				// TODO:修正位置
-//				addHighlightView3(image.showView.getCenterX()-mBitmapShow.getWidth()/target/2,
-//								  image.showView.getCenterY()-mBitmapShow.getHeight()/target/2,
-//								  image.showView.getCenterX()+mBitmapShow.getWidth()/target/2,
-//								  image.showView.getCenterY()+mBitmapShow.getHeight()/target/2);
-//			}
-//		});
-		
-		showRedColony.setOnClickListener(this);
-		showGreenColony.setOnClickListener(this);
-		showPurpleColony.setOnClickListener(this);
 	}
+	
 	
 	public void setColony(){
-		DataWrapper dw = (DataWrapper) getIntent().getSerializableExtra("pictureComponent");
-		// TODO: check bug - nullpointerexception
+		DataWrapper dw = (DataWrapper) getIntent().getSerializableExtra("imageComponent");
+		// TODO: nullpointer
 		List<Component> components = dw.getParliaments();
 		
 		for(int i = 0; i < components.size(); i++){
 			Component component = components.get(i);
-			if(component.getArea() >= areaThreshold && component.getShapeFactor() >= shapeFactorThreshold){
-				addHighlightView4((float)component.getCenterX(), (float)component.getCenterY(), (float)component.getRadius());
-			} else {
-				addHighlightView5((float)component.getCenterX(), (float)component.getCenterY(), (float)component.getRadius());
+			if(component.getArea() >= Config.T_AREA && component.getShapeFactor() >= Config.T_SHAPE_FACTOR){
+				HighlightView hv = getHighlightView(component.getCenterX(), component.getCenterY(), component.getRadius(), ORIGINAL_COLONY);
+				image.addColony(hv);
 			}
-			
-			Log.d("test", "x, y = " + component.getCenterX() + ", " + component.getCenterY() + ", r = " + component.getRadius());
 		}
+		
+		colonyCount = image.getColonyList().size();
+		
+		// 按圖片比例乘回去
+		double countScale = (double)(Config.COUNT_IMAGE_WIDTH/2) * (double)(Config.COUNT_IMAGE_WIDTH/2) / (double)Config.TEST_RADIUS / (double)Config.TEST_RADIUS;
+		colonyCount = (int) Math.round(colonyCount * countScale);
+		
+		// set colonyList, colonyRemovedList
+		imgInfo.setColonyList(image.getColonyList());
+		imgInfo.setColonyRemovedList(image.getColonyRemovedList());
+	}
+	
+	public void setTextResult(){
+		text_result.setText(colonyCount+"");
+		showRedColony.setText(colonyCount+"個");
+		imgInfo.setColonyCount(colonyCount);
+	}
+	
+	private class MatrixChangeListener implements OnMatrixChangedListener {
+        @Override
+        public void onMatrixChanged(RectF rect) {
+//        	float left = rect.left;
+//        	float top = rect.top;
+//        	float right = rect.right;
+//        	float bottom = rect.bottom;
+//        	Log.d("test4", "left = " + left + ", top = " + top + ", right = " + right + ", bottom = " + bottom);
+        }
+    }
+	
+	public void setViews(){
+		context 		 = this;
+		image 			 = (PhotoView2) 	findViewById(R.id.cropimageview);
+		showRedColony    = (TextView) 		findViewById(R.id.show_red_colony);
+//		showGreenColony  = (TextView) 		findViewById(R.id.show_green_colony);
+//		showPurpleColony = (TextView) 		findViewById(R.id.show_purple_colony);
+		btn_close        = (ImageButton)    findViewById(R.id.btn_close);
+		btn_save_or_ok   = (ImageButton)    findViewById(R.id.btn_save_or_ok);
+		btn_circle_add   = (ImageButton)    findViewById(R.id.btn_add);
+		btn_circle_sub   = (ImageButton)    findViewById(R.id.btn_sub);
+		btn_set_tag      = (ImageButton)    findViewById(R.id.btn_edit);
+		action_bot_bar   = (LinearLayout)   findViewById(R.id.action_bot_bar);
+		msg_bot_bar      = (RelativeLayout) findViewById(R.id.msg_bot_bar);
+//		text_info 		 = (RelativeLayout) findViewById(R.id.text_info);
+//		text_msg 		 = (RelativeLayout) findViewById(R.id.text_msg);
+		text_action_msg  = (TextView) 		findViewById(R.id.text_action_msg);
+		text_result 	 = (TextView) 		findViewById(R.id.text_result);
+		showRedColony    = (TextView)       findViewById(R.id.show_red_colony);
+		imgInfoDate      = (TextView)       findViewById(R.id.img_info_date);
+		imgInfoType      = (TextView)       findViewById(R.id.img_info_type);
+		imgInfoDilutionNum = (TextView)     findViewById(R.id.img_info_dilution_num);
+		imgInfoExpParam  = (TextView)       findViewById(R.id.img_info_exp_param);
+		layout_img_info  = (RelativeLayout) findViewById(R.id.layout_img_info);
+		layout_img_info2 = (RelativeLayout) findViewById(R.id.layout_img_info2);
+		layout_title_bar = (LinearLayout)   findViewById(R.id.layout_title_bar);
+		layout_title_bar2 = (LinearLayout)  findViewById(R.id.layout_title_bar2);
+		title_bar_msg    = (TextView) 		findViewById(R.id.title_bar_msg);
+		
+		imgInfo = new ImgInfo();
+	}
+	
+	public void setImgInfoText(){
+		imgInfoDate.setText(imgInfo.getDateString());
+		imgInfoType.setText(imgInfo.getType().equals("") ? "未設定" : imgInfo.getType());
+		imgInfoDilutionNum.setText(Html.fromHtml("10<sup><small>" + imgInfo.getDilutionNumber() + "</small></sup>"));
+		imgInfoExpParam.setText(imgInfo.getExpParam().equals("") ? "未設定" : imgInfo.getExpParam());
+		// set colony count display
+		setTextResult();
+	}
+	
+	private void setListeners(){
+		btn_close.setOnClickListener(this);
+		btn_save_or_ok.setOnClickListener(this);
+		btn_circle_add.setOnClickListener(this);
+		btn_circle_sub.setOnClickListener(this);
+		btn_set_tag.setOnClickListener(this);
+		showRedColony.setOnClickListener(this);
+	}
+	
+	public void checkSingleChoice(View view, LinearLayout showLayout, List<ShowListItem> showList){
+		if(view != null){
+			int index = showLayout.indexOfChild(view);
+			
+			for(int i = 0; i < showList.size(); i++){
+				if(i == index){
+					continue;
+				}
+				
+				showList.get(i).cbx.setChecked(false);
+			}
+		}
+	}
+	
+	public void removeShowListItem(LinearLayout showLayout, List<ShowListItem> showList, View view, String type, String value){
+		int index = showLayout.indexOfChild(view);
+		showLayout.removeView(view);
+		showList.remove(index);
+		removePrefStringSetData(type, value);
+	}
+	
+	public void setImgColonyType(String colonyType){
+		imgInfo.setType(colonyType);
+	}
+	
+	public void setImgExpParam(String expParam){
+		imgInfo.setExpParam(expParam);
+	}
+	
+	public void setImgExpDate(int year, int month, int day){
+		imgInfo.setDate(year, month, day);
+	}
+	
+	public void setImgExpDate(Calendar c){
+		imgInfo.setDate(c);
+	}
+	
+	public void setImgDilution(int number){
+		imgInfo.setDilutionNumber(number);
+	}
+	
+//	private class ViewTapListener implements OnViewTapListener {
+//		@Override
+//		public void onViewTap(View view, float x, float y) {
+//			Log.d("test4", "x = " + x + ", y = " + y);
+//		}
+//	}
+	
+	private class PhotoTapListener implements OnPhotoTapListener {
+        @Override
+        public void onPhotoTap(View view, float xPerc, float yPerc, float x, float y) {
+        	int xx = (int)(xPerc * mBitmap.getWidth());
+        	int yy = (int)(yPerc * mBitmap.getHeight());
+//        	int color = mBitmap.getPixel(xx, yy);
+        	
+        	int centerX = Config.OUTPUT_IMAGE_WIDTH / 2;
+        	int centerY = Config.OUTPUT_IMAGE_HEIGHT / 2;
+        	int distance = (int) Math.sqrt(Math.pow(xx - centerX, 2) + Math.pow(yy - centerY, 2));
+        	if(distance <= Config.OUTPUT_IMAGE_WIDTH / 2){
+        		
+        		if(state == State.ADD){
+//        			Pixel hitPixel = new Pixel(xx, yy, Color.red(color), Color.green(color), Color.blue(color));
+//            		AsyncTaskPayload payload = new AsyncTaskPayload();
+//            		payload.setRawImg(mBitmap);
+//            		payload.setHitPixel(hitPixel);
+//            		new AddColonyAsyncTask(context, "", "新增菌落，請稍後...", asyncTaskListener, AddColonyAsyncTask.class).execute(payload);
+        			
+        			addColonyTempView(xx, yy, DEFAULT_COLONY_RADIUS, ADDED_COLONY);
+            	} else if(state == State.SUB){
+            		List<HighlightView> colonyList = image.getColonyList();
+            		for(int i = 0; i < colonyList.size(); i++){
+            			HighlightView hv = colonyList.get(i);
+            			if(hv.getHit(x, y) != HighlightView.GROW_NONE){
+            				addRemoveColonyTempView(hv);
+            				break;
+            			}
+            		}
+            	}
+        	}
+        }
+    }
+	
+	public void addColonyTempView(int x, int y, int r, int type){
+		HighlightView hv = getHighlightView(x, y, r, type);
+        image.addColonyTempView(hv);
+	}
+	
+	public void addRemoveColonyTempView(HighlightView hv){
+		image.addRemoveColonyTempView(hv);
+	}
+	
+	public void cancelAddColonyView(){
+		image.cancelAddColonyView();
+	}
+	
+	public void cancelRemoveColonyView(){
+		image.cancelRemoveColonyView();
+	}
+	
+	public void addColonyView(){
+		colonyCount += image.getColonyAddTempList().size();
+		image.addColonyView();
+	}
+	
+	public void removeColonyView(){
+		colonyCount -= image.getColonyRemoveTempList().size();
+		image.removeColonyView();
+	}
+	
+	public HighlightView getHighlightView(int x, int y, int r, int type){
+		HighlightView hv = new HighlightView(image);
+		
+		int width = mBitmap.getWidth();
+        int height = mBitmap.getHeight();
+        
+        Rect imageRect = new Rect(0, 0, width, height);
+        boolean mCircleCrop = true;
+        Matrix mImageMatrix = image.getImageMatrix();
+        
+        RectF colonyRect = new RectF(x-r, y-r, x+r, y+r);
+        hv.setup(mImageMatrix, imageRect, colonyRect, mCircleCrop, true, type);
+        
+        return hv;
+	}
+
+	
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()){
+		case R.id.btn_close:
+			if(state == State.ADD || state == State.SUB){
+				if(state == State.ADD){
+					cancelAddColonyView();
+				} else {
+					cancelRemoveColonyView();
+				}
+				
+				state = State.VIEW;
+				updateUI();
+			} else if(state == State.VIEW){
+				finish();
+			}
+			break;
+		case R.id.btn_save_or_ok:
+			if(state == State.ADD || state == State.SUB){
+				if(state == State.ADD){
+					addColonyView();
+				} else {
+					removeColonyView();
+				}
+				
+				state = State.VIEW;
+				updateUI();
+			} else if(state == State.VIEW){
+				saveImg();
+			}
+			break;
+		case R.id.btn_add:
+			state = State.ADD;
+			updateUI();
+			break;
+		case R.id.btn_sub:
+			state = State.SUB;
+			updateUI();
+			break;
+		case R.id.btn_edit:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			View dialogContent = getLayoutInflater().inflate(R.layout.dialog_add_tag_view, null);
+			builder.setView(dialogContent);
+			builder.setCancelable(false);
+			
+//		    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+//		    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+//		    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+		    
+		    dialogSetTag = builder.create();
+		    setDialogDetails(dialogContent);
+		    dialogSetTag.show();
+//		    dialogSetTag.getWindow().setAttributes(lp);
+			break;
+		case R.id.btn_set_tag_ok:
+			Log.d("test4", "date = " + imgInfo.getDateString());
+			Log.d("test4", "type = " + imgInfo.getType());
+			Log.d("test4", "dilution = " + imgInfo.getDilutionNumber());
+			Log.d("test4", "exp param = " + imgInfo.getExpParam());
+			Log.d("test4", "colony count = " + imgInfo.getColonyCount());
+			setImgInfoText();
+			cleanList();
+			dialogSetTag.dismiss();
+			break;
+		case R.id.btn_set_tag_date:
+			final CalendarPickerView dialogView = (CalendarPickerView) getLayoutInflater().inflate(R.layout.calendarpicker_dialog, null, false);
+			final Calendar next1Month = Calendar.getInstance();
+			next1Month.add(Calendar.MONTH, 1);
+		    final Calendar last3Month = Calendar.getInstance();
+		    last3Month.add(Calendar.MONTH, -3);
+			
+	        dialogView.init(last3Month.getTime(), next1Month.getTime()).withSelectedDate(imgInfo.getDate());
+	        AlertDialog theDialog = new AlertDialog.Builder(this)
+	        	.setTitle("設定實驗日期")
+	            .setView(dialogView)
+	            .setNeutralButton("確定", new DialogInterface.OnClickListener() {
+	                @Override 
+	                public void onClick(DialogInterface dialogInterface, int i) {
+	                    Calendar cal = Calendar.getInstance();
+	                    cal.setTime(dialogView.getSelectedDate());
+	                    
+//	                    int year = cal.get(Calendar.YEAR);
+//	                    int month = cal.get(Calendar.MONTH);
+//	                    int day = cal.get(Calendar.DAY_OF_MONTH);
+	                    
+	                    setImgExpDate(cal);
+	                    setDisplayExpDay();
+	                    dialogInterface.dismiss();
+	                }
+	            }).create();
+	        theDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+	            @Override
+	            public void onShow(DialogInterface dialogInterface) {
+//	                Log.d("test4", "onShow: fix the dimens!");
+	                dialogView.fixDialogDimens();
+	            }
+	        });
+	        theDialog.show();
+			break;
+		case R.id.show_red_colony:
+			isRedColonyShow = !isRedColonyShow;
+			if(isRedColonyShow){
+				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_clicked, 0, 0, 0);
+				image.setHideColony(false);
+			} else{
+				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_close_clicked, 0, 0, 0);
+				image.setHideColony(true);
+			}
+			image.invalidate();
+			
+			break;
+		}
+	}
+	
+	public void cleanList(){
+		colonyTypeListItems.clear();
+		colonyTypeList.clear();
+		colonyExpParamListItems.clear();
+		colonyExpParamList.clear();
+	}
+	
+	private void setDialogDetails(View dialogContent) {
+		container_add_colony_type = (LinearLayout) dialogContent.findViewById(R.id.container_add_colony_type);
+		container_add_experiment_param = (LinearLayout) dialogContent.findViewById(R.id.container_add_experiment_param);
+		layout_colony_type_list   = (LinearLayout) dialogContent.findViewById(R.id.colony_type_list);
+		layout_colony_exp_param_list = (LinearLayout) dialogContent.findViewById(R.id.colony_exp_param_list);
+		CustomSeekBar seekbar = (CustomSeekBar) dialogContent.findViewById(R.id.seek_bar);
+	    TextView seekbarValue1 = (TextView) dialogContent.findViewById(R.id.seekbar_value_1);
+	    TextView seekbarValue2 = (TextView) dialogContent.findViewById(R.id.seekbar_value_2);
+	    TextView seekbarValue3 = (TextView) dialogContent.findViewById(R.id.seekbar_value_3);
+	    TextView seekbarValue4 = (TextView) dialogContent.findViewById(R.id.seekbar_value_4);
+	    TextView seekbarValue5 = (TextView) dialogContent.findViewById(R.id.seekbar_value_5);
+	    TextView seekbarValue6 = (TextView) dialogContent.findViewById(R.id.seekbar_value_6);
+	    TextView seekbarValue7 = (TextView) dialogContent.findViewById(R.id.seekbar_value_7);
+	    TextView seekbarValue8 = (TextView) dialogContent.findViewById(R.id.seekbar_value_8);
+	    TextView seekbarValue9 = (TextView) dialogContent.findViewById(R.id.seekbar_value_9);
+	    TextView seekbarValue10 = (TextView) dialogContent.findViewById(R.id.seekbar_value_10);
+	    seekbarValue1.setText(Html.fromHtml("10<sup><small>-1</small></sup>"));
+	    seekbarValue2.setText(Html.fromHtml("10<sup><small>-2</small></sup>"));
+	    seekbarValue3.setText(Html.fromHtml("10<sup><small>-3</small></sup>"));
+	    seekbarValue4.setText(Html.fromHtml("10<sup><small>-4</small></sup>"));
+	    seekbarValue5.setText(Html.fromHtml("10<sup><small>-5</small></sup>"));
+	    seekbarValue6.setText(Html.fromHtml("10<sup><small>-6</small></sup>"));
+	    seekbarValue7.setText(Html.fromHtml("10<sup><small>-7</small></sup>"));
+	    seekbarValue8.setText(Html.fromHtml("10<sup><small>-8</small></sup>"));
+	    seekbarValue9.setText(Html.fromHtml("10<sup><small>-9</small></sup>"));
+	    seekbarValue10.setText(Html.fromHtml("10<sup><small>-10</small></sup>"));
+	    Button btn_set_tag_ok = (Button) dialogContent.findViewById(R.id.btn_set_tag_ok);
+	    btn_set_tag_date = (Button) dialogContent.findViewById(id.btn_set_tag_date);
+	    
+	    seekbar.setOnRangeBarChangeListener(this);
+	    btn_set_tag_ok.setOnClickListener(this);
+	    btn_set_tag_date.setOnClickListener(this);
+	    
+	    // get saved value from image info
+	    int dilutionNumber = imgInfo.getDilutionNumber();
+	    String savedColonyType = imgInfo.getType();
+	    String savedColonyExpParam = imgInfo.getExpParam();
+	    
+	    // set value to views
+	    seekbar.setThumbIndex(-1 * dilutionNumber - 1);
+	    setDisplayExpDay();
+	    
+	    // set type
+	    Set<String> colonyTypeStringList = loadPrefStringSetData(COLONY_TYPE_LIST);
+	    addSavedListItem(COLONY_TYPE, colonyTypeStringList, savedColonyType, layout_colony_type_list, colonyTypeList);
+	    addListItem(new AppendListItem(getLayoutInflater(), COLONY_TYPE), container_add_colony_type, colonyTypeListItems);
+	    
+	    // set exp params
+	    Set<String> colonyExpParamStringList = loadPrefStringSetData(COLONY_EXP_PARAM_LIST);
+	    addSavedListItem(COLONY_EXP_PARAM, colonyExpParamStringList, savedColonyExpParam, layout_colony_exp_param_list, colonyExpParamList);
+	    addListItem(new AppendListItem(getLayoutInflater(), COLONY_EXP_PARAM), container_add_experiment_param, colonyExpParamListItems);
+	}
+	
+	public void addSavedListItem(String type, Set<String> stringSet, String cmpString, LinearLayout showLayout, List<ShowListItem> showList){
+		if(stringSet != null){
+		    for(String s : stringSet){
+		    	View view = getLayoutInflater().inflate(R.layout.dialog_add_tag_listview_item, null);
+		    	ShowListItem item = new ShowListItem(s, view, type);
+		    	
+		    	Log.d("test4", "s = " + s);
+		    	if(cmpString.equals(s))
+		    		item.cbx.setChecked(true);
+		    	
+		    	showLayout.addView(view);
+		    	showList.add(item);
+		    }
+	    }
+	}
+	
+	public void setDisplayExpDay(){
+		btn_set_tag_date.setText(imgInfo.getDateString());		
+	}
+	
+	public void addListItem(AppendListItem item, LinearLayout layout, List<AppendListItem> list){
+		layout.addView(item.getView());
+		list.add(item);
+	}
+	
+	public void removeListItem(LinearLayout layout, List<AppendListItem> list, LinearLayout showLayout, List<ShowListItem> showList, ShowListItem showListItem, View showView){
+		if(showView != null){
+			list.remove(0);
+			layout.removeViewAt(0);
+			
+	    	showLayout.addView(showView);
+	    	showList.add(showListItem);
+		} else {
+			list.remove(list.size()-1);
+			layout.removeViewAt(list.size()-1);
+		}
+	}
+	
+	public void updateUI(){
+		setTitleBar();
+		setBotBar();
+		setTextMsg();
+		setTextResult();
+		setImageState();
 		image.invalidate();
-		
-		Log.d("test4", "red count = " + image.rViews.size());
-		Log.d("test4", "green count = " + image.gViews.size());
-		Log.d("test4", "purple count = " + image.myViews.size());
-		int rCount = 0, gCount = 0, pCount = 0;
-		for(int i = 0; i < image.cViews.size(); i++){
-			if(image.cViews.get(i).getType() == CancelView.Type.RED)
-				rCount++;
-			if(image.cViews.get(i).getType() == CancelView.Type.GREEN)
-				gCount++;
-			if(image.cViews.get(i).getType() == CancelView.Type.PURPLE)
-				pCount++;
-		}
-		Log.d("test4", "cancelView red count = " + rCount);
-		Log.d("test4", "cancelView green count = " + gCount);
-		Log.d("test4", "cancelView purple count = " + pCount);
-		
-		setTextInfo(image.rViews.size(), image.gViews.size(), image.myViews.size());
 	}
 	
-	
-	public void setTextInfo(int rCount, int gCount, int pCount){
-		text_result.setText("菌落總數:" + rCount + "個");
-		showRedColony.setText("菌落:" + rCount);
-		showGreenColony.setText("非菌落:" + gCount);
-		showPurpleColony.setText("新增:" + pCount);
+	public void setImageState() {
+		image.setState(state);
+		mAttacher.setState(state);
 	}
-	
-	public void setTitleBar(){
+
+	public void saveImg(){
+		// raw image
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		mBitmap.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
+		byte[] data_raw = bos.toByteArray();
+		
+//		int type1 = 0;
+//		int type2 = 0;
+//		int type3 = 0;
+//		for(int i = 0; i < imgInfo.getColonyList().size(); i++){
+//			HighlightView c = imgInfo.getColonyList().get(i);
+//			if(c.getType() == ORIGINAL_COLONY)
+//				type1++;
+//			else if(c.getType() == ADDED_COLONY)
+//				type2++;
+//		}
+//		type3 = imgInfo.getColonyRemovedList().size();
+//		Log.d("test4", "type1 = " + type1 + ", type2 = " + type2 + ", type3 = " + type3);
+		
+		new SaveImgAsyncTask(context, "系統訊息", "儲存中，請稍後...", this, SaveImgAsyncTask.class, true, data_raw, loadPrefStringData(USER_ACCOUNT), loadPrefStringData(USER_ID), imgInfo).execute();
+	}
+
+	private void setTitleBar() {
 		if(state == State.ADD || state == State.SUB){
+			layout_title_bar.setVisibility(View.GONE);
+			layout_title_bar2.setVisibility(View.VISIBLE);
 			if(state == State.ADD){
-				text_result.setText("新增菌落");
+				title_bar_msg.setText("新增標記");
 			} else if(state == State.SUB){
-				text_result.setText("刪除菌落");
+				title_bar_msg.setText("刪除標記");
 			}
 			
-			// set cancel button
-			btn_close.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					state = State.VIEW;
-					setTitleBar();
-					setBotBar();
-					setTextMsg();
-				}
-			});
-			
-			// set ok button
 			btn_save_or_ok.setImageResource(R.drawable.btn_check);
-			btn_save_or_ok.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					state = State.VIEW;
-					setTitleBar();
-					setBotBar();
-					setTextMsg();
-					// TODO: save change
-				}
-			});
 		} else if(state == State.VIEW){
-			text_result.setText("菌落總數:" + image.rViews.size() + "個");
-			// set cancel button
-			btn_close.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					finish();
-				}
-			});
-			
-			// set save button
+			layout_title_bar.setVisibility(View.VISIBLE);
+			layout_title_bar2.setVisibility(View.GONE);
 			btn_save_or_ok.setImageResource(R.drawable.btn_save2);
-			btn_save_or_ok.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					saveImg();
-				}
-			});
 		}
 	}
 	
-	public void setBotBar(){
+	private void setBotBar() {
 		if(state == State.ADD || state == State.SUB){
 			action_bot_bar.setVisibility(View.INVISIBLE);
 			msg_bot_bar.setVisibility(View.VISIBLE);
@@ -501,542 +651,207 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		}
 	}
 	
-	public void setTextMsg(){
+	private void setTextMsg() {
 		if(state == State.ADD || state == State.SUB){
-			text_info.setVisibility(View.INVISIBLE);
-			text_msg.setVisibility(View.INVISIBLE);
+			layout_img_info.setVisibility(View.INVISIBLE);
+			layout_img_info2.setVisibility(View.INVISIBLE);
 			
 			if(state == State.ADD)
-				text_action_msg.setText("點擊螢幕上未標示到的菌落來新增菌落");
+				text_action_msg.setText("點擊螢幕上未標示到的菌落來新增標記");
 			else
-				text_action_msg.setText("點擊螢幕上標示錯誤的菌落來刪除菌落");
+				text_action_msg.setText("點擊螢幕上標示錯誤的菌落來刪除標記");
 		} else if(state == State.VIEW){
-			text_info.setVisibility(View.VISIBLE);
-			text_msg.setVisibility(View.VISIBLE);
+			layout_img_info.setVisibility(View.VISIBLE);
+			layout_img_info2.setVisibility(View.VISIBLE);
 		}
 	}
-	
-	public void saveImg(){
-		// save the image number to sharedpref
-//		savePrefData("imgNumber", imgInfo.getNumber());
-		
-		// upload raw image
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		mBitmap.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
-		byte[] data_raw = bos.toByteArray();
-		
-		// upload counted image
-		// draw counted image
-		Canvas canvas = new Canvas(mBitmapShow);
-		Paint purplePaint = new Paint();
-		purplePaint.setStrokeWidth(2F);
-		purplePaint.setStyle(Paint.Style.STROKE);
-		purplePaint.setAntiAlias(true);
-		purplePaint.setColor(0xFFEF04D6);
-		
-		Paint greenPaint = new Paint();
-		greenPaint.setStrokeWidth(2F);
-		greenPaint.setStyle(Paint.Style.STROKE);
-		greenPaint.setAntiAlias(true);
-		greenPaint.setColor(Color.GREEN);
-		
-		Paint redPaint = new Paint();
-		redPaint.setStrokeWidth(2F);
-		redPaint.setStyle(Paint.Style.STROKE);
-		redPaint.setAntiAlias(true);
-		redPaint.setColor(Color.RED);
-		
-		// TODO: add enum for colony type
-		// colony type:
-		// 1: red
-		// 2: green
-		// 3: purple
-		// 4: cancel red
-		// 5: cancel green
-		// 6: cancel purple
-		for(HighlightView2 hv2 : image.myViews){
-			canvas.drawCircle(hv2.getCenterX(), hv2.getCenterY(), hv2.getRadius(), purplePaint);
-			imgInfo.addColony(hv2.getCenterX(), hv2.getCenterY(), hv2.getRadius(), 3);
-		}
-		
-		for(HighlightView4 hv4 : image.rViews){
-			canvas.drawCircle(hv4.getCenterX(), hv4.getCenterY(), hv4.getRadius(), redPaint);
-			imgInfo.addColony(hv4.getCenterX(), hv4.getCenterY(), hv4.getRadius(), 1);
-		}
-		
-		for(HighlightView5 hv5 : image.gViews){
-			canvas.drawCircle(hv5.getCenterX(), hv5.getCenterY(), hv5.getRadius(), greenPaint);
-			imgInfo.addColony(hv5.getCenterX(), hv5.getCenterY(), hv5.getRadius(), 2);
-		}
-		
-		Log.d("test4", "red count = " + image.rViews.size());
-		Log.d("test4", "green count = " + image.gViews.size());
-		Log.d("test4", "purple count = " + image.myViews.size());
-		int rCount = 0, gCount = 0, pCount = 0;
-		for(CancelView cv: image.cViews){
-			int type = 0;
-			if(cv.getType() == CancelView.Type.RED){
-				type = 4;
-				rCount++;
-			}
-			else if(cv.getType() == CancelView.Type.GREEN){
-				type = 5;
-				gCount++;
-			}
-			else if(cv.getType() == CancelView.Type.PURPLE){
-				type = 6;
-				pCount++;
-			}
-			
-			imgInfo.addColony(cv.getX(), cv.getY(), cv.getR(), type);
-		}
-		Log.d("test4", "cancelView red count = " + rCount);
-		Log.d("test4", "cancelView green count = " + gCount);
-		Log.d("test4", "cancelView purple count = " + pCount);
-		
-		bos = new ByteArrayOutputStream();
-		mBitmapShow.compress(CompressFormat.JPEG, 100, bos);//100 is the best quality possibe
-		byte[] data_counted = bos.toByteArray();
-		new SaveImgAsyncTask(context, "系統訊息", "儲存中，請稍後...", this, SaveImgAsyncTask.class, true, data_raw, data_counted, loadPrefStringData(USER_ACCOUNT), loadPrefStringData(USER_ID), imgInfo).execute();
-	}
-	
-	
-	// TODO: how to display after clicking "Done" and restore the highlightViews
-	public void doDone(){
-		if(state == State.ADD){
-			for(int i = 0; i < image.mHighlightViews.size(); i++){
-				HighlightView hv = image.mHighlightViews.get(i);
-//				float centerX = hv.getCenterX();
-//				float centerY = hv.getCenterY();
-//				float radius = hv.getRadius();
-				
-				int centerX = hv.getX();
-				int centerY = hv.getY();
-				int radius = hv.getR();
-				
-				addHighlightView2(centerX, centerY, radius);
-			}
-			
-			image.mHighlightViews.clear();
-			image.invalidate();
-			image.zoomTo(1F, image.getWidth()/2, image.getHeight()/2, 300F);
-			setTextInfo(image.rViews.size(), image.gViews.size(), image.myViews.size());
-		} else if(state == State.SUB){
-//			zoomControls.setVisibility(View.INVISIBLE);
-			image.removeHighlightView3();
-			drawNormalImage();
-			setTextInfo(image.rViews.size(), image.gViews.size(), image.myViews.size());
-		}
-		
-		state = State.VIEW;
-		setSaveDoneBtn();
-		
-		Log.d("test4", "red count = " + image.rViews.size());
-		Log.d("test4", "green count = " + image.gViews.size());
-		Log.d("test4", "purple count = " + image.myViews.size());
-		int rCount = 0, gCount = 0, pCount = 0;
-		for(int i = 0; i < image.cViews.size(); i++){
-			if(image.cViews.get(i).getType() == CancelView.Type.RED)
-				rCount++;
-			if(image.cViews.get(i).getType() == CancelView.Type.GREEN)
-				gCount++;
-			if(image.cViews.get(i).getType() == CancelView.Type.PURPLE)
-				pCount++;
-		}
-		Log.d("test4", "cancelView red count = " + rCount);
-		Log.d("test4", "cancelView green count = " + gCount);
-		Log.d("test4", "cancelView purple count = " + pCount);
-	}
-	
-	
-	@SuppressLint("NewApi")
-	private Point getWindowSize(){
-    	Display display = getWindowManager().getDefaultDisplay();
-    	Point size = new Point();
-    	display.getSize(size);
-    	
-    	return size;
-    }
 
 	@Override
-	public void onClick(View v) {
-		Log.d("Test2", "id = " + v.getId());
-		switch(v.getId()){
-		case R.id.show_red_colony:
-			isRedColonyShow = !isRedColonyShow;
-			for(int i = 0; i < image.rViews.size(); i++){
-				HighlightView4 rView = image.rViews.get(i);
-				rView.setHidden(!rView.getHidden());
-			}
-			if(isRedColonyShow){
-				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_clicked, 0, 0, 0);
-			} else{
-				showRedColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_red_close_clicked, 0, 0, 0);
-			}
-			
-			image.invalidate();
-			break;
-		case R.id.show_green_colony:
-			isGreenColonyShow = !isGreenColonyShow;
-			for(int i = 0; i < image.gViews.size(); i++){
-				HighlightView5 gView = image.gViews.get(i);
-				gView.setHidden(!gView.getHidden());
-			}
-			if(isGreenColonyShow){
-				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_green_clicked, 0, 0, 0);
-			} else{
-				showGreenColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_green_close_clicked, 0, 0, 0);
-			}
-			
-			image.invalidate();
-			break;
-		case R.id.show_purple_colony:
-			isPurpleColonyShow = !isPurpleColonyShow; 
-			for(int i = 0; i < image.myViews.size(); i++){
-				HighlightView2 myView = image.myViews.get(i);
-				myView.setHidden(!myView.getHidden());
-			}
-			if(isPurpleColonyShow){
-				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_blue_clicked, 0, 0, 0);
-			} else{
-				showPurpleColony.setCompoundDrawablesWithIntrinsicBounds(R.drawable.selector_eye_blue_close_clicked, 0, 0, 0);
-			}
-			
-			image.invalidate();
-			break;
-		}
+	public void onIndexChangeListener(CustomSeekBar seekBar, int index) {
+		setImgDilution(-1 * (index+1));
 	}
-	
-	
-	public void setTextColor(){
-		
-	}
-	
-    
-    public void setSaveDoneBtn(){
-    	if(state == State.ADD || state == State.SUB){
-//    		btn_save.setText("Done");
-    	} else if(state == State.VIEW){
-//    		btn_save.setText("Save");
-    	}
-    	setEnabledBtn();
-    }
-    
-    public void setDisabledBtn(){
-    	btn_circle_add.setEnabled(false);
-    	btn_circle_sub.setEnabled(false);
-    }
-    
-    public void setEnabledBtn(){
-    	btn_circle_add.setEnabled(true);
-    	btn_circle_sub.setEnabled(true);
-    }
-    
-    public void addHighlightView(){
-    	HighlightView hv = new HighlightView(image);
-    	
-    	int width = mBitmapShow.getWidth();
-        int height = mBitmapShow.getHeight();
-        // 2.
-        Rect imageRect = new Rect(0, 0, width, height);
-        
-        // make the default size about 4/5 of the width or height
-        int cropWidth = Math.min(width, height) * 4 / 5;
-        int cropHeight = cropWidth;
-        
-        // TODO: our change
-        // some config change
-        int mAspectX = 1;
-        int mAspectY = 1;
-        boolean mCircleCrop = true;
-        
-        // 1.
-        Matrix mImageMatrix = image.getImageMatrix();
-        
-        if (mAspectX != 0 && mAspectY != 0) {
-            if (mAspectX > mAspectY) {
-                cropHeight = cropWidth * mAspectY / mAspectX;
-            } else {
-                cropWidth = cropHeight * mAspectX / mAspectY;
-            }
-        }
-        
-        float x = (width - cropWidth) / 2;
-        float y = (height - cropHeight) / 2;
-        
-        // 3.
-        RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-        hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
-        
-        // my code
-//        hv.setCenterX(x + cropWidth / 2);
-//        hv.setCenterY(y + cropHeight / 2);
-//        float radius = cropWidth / 2;
-//        hv.setRadius(radius);
-        
-        image.add(hv);
-    }
-    
-    
-    public void addHighlightView2(float centerX, float centerY, float radius){
-    	HighlightView2 hv = new HighlightView2(image);
-    	
-    	int width = mBitmapShow.getWidth();
-        int height = mBitmapShow.getHeight();
-        Rect imageRect = new Rect(0, 0, width, height);
-        
-        // make the default size about 4/5 of the width or height
-        int cropWidth = Math.min(width, height) * 4 / 5;
-        int cropHeight = cropWidth;
-        
-        // TODO: our change
-        // some config change
-        int mAspectX = 1;
-        int mAspectY = 1;
-        boolean mCircleCrop = true;
-        Matrix mImageMatrix = image.getImageMatrix();
-        if (mAspectX != 0 && mAspectY != 0) {
-            if (mAspectX > mAspectY) {
-                cropHeight = cropWidth * mAspectY / mAspectX;
-            } else {
-                cropWidth = cropHeight * mAspectX / mAspectY;
-            }
-        }
-        
-        if(!isPurpleColonyShow)
-        	hv.setHidden(true);
-        
-        RectF cropRect = new RectF(centerX-radius, centerY-radius, centerX+radius, centerY+radius);
-        hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
-        hv.setCenterX(centerX);
-        hv.setCenterY(centerY);
-        hv.setRadius(radius);
-        
-        image.add(hv);
-    }
-    
-    // HighlightView3 for display show view
-    public void addHighlightView3(float left, float top, float right, float bottom){
-    	HighlightView3 hv3 = new HighlightView3(image);
-    	
-    	int width = mBitmapShow.getWidth();
-        int height = mBitmapShow.getHeight();
-        Rect imageRect = new Rect(0, 0, width, height);
-        
-        // make the default size about 4/5 of the width or height
-//        int cropWidth = width;
-//        int cropHeight = cropWidth;
-        
-        int mAspectX = 1;
-        int mAspectY = 1;
-        boolean mCircleCrop = false;
-        Matrix mImageMatrix = image.getImageMatrix();
-//        if (mAspectX != 0 && mAspectY != 0) {
-//            if (mAspectX > mAspectY) {
-//                cropHeight = cropWidth * mAspectY / mAspectX;
-//            } else {
-//                cropWidth = cropHeight * mAspectX / mAspectY;
-//            }
-//        }
-        
-//        float centerX = (width - cropWidth) / 2;
-//        float y = (height - cropHeight) / 2;
-        
-        RectF cropRect = new RectF(left, top, right, bottom);
-        hv3.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
-        
-        // my code
-        hv3.setCenterX((left+right)/2);
-        hv3.setCenterY((top+bottom)/2);
-        
-        image.add(hv3);
-//        image.invalidate();
-//        image.showView.setFocus(true);
-    }
-    
-    public void addHighlightView4(float centerX, float centerY, float radius){
-    	HighlightView4 hv = new HighlightView4(image);
-    	
-    	int width = mBitmapShow.getWidth();
-        int height = mBitmapShow.getHeight();
-        Rect imageRect = new Rect(0, 0, width, height);
-        
-        // make the default size about 4/5 of the width or height
-        int cropWidth = Math.min(width, height) * 4 / 5;
-        int cropHeight = cropWidth;
-        
-        // TODO: our change
-        // some config change
-        int mAspectX = 1;
-        int mAspectY = 1;
-        boolean mCircleCrop = true;
-        Matrix mImageMatrix = image.getImageMatrix();
-        if (mAspectX != 0 && mAspectY != 0) {
-            if (mAspectX > mAspectY) {
-                cropHeight = cropWidth * mAspectY / mAspectX;
-            } else {
-                cropWidth = cropHeight * mAspectX / mAspectY;
-            }
-        }
-        
-        RectF cropRect = new RectF(centerX-radius, centerY-radius, centerX+radius, centerY+radius);
-        hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
-        hv.setCenterX(centerX);
-        hv.setCenterY(centerY);
-        hv.setRadius(radius);
-        
-        image.add(hv);
-    }
-    
-    public void addHighlightView5(float centerX, float centerY, float radius){
-    	HighlightView5 hv = new HighlightView5(image);
-    	
-    	int width = mBitmapShow.getWidth();
-        int height = mBitmapShow.getHeight();
-        Rect imageRect = new Rect(0, 0, width, height);
-        
-        // make the default size about 4/5 of the width or height
-        int cropWidth = Math.min(width, height) * 4 / 5;
-        int cropHeight = cropWidth;
-        
-        // TODO: our change
-        // some config change
-        int mAspectX = 1;
-        int mAspectY = 1;
-        boolean mCircleCrop = true;
-        Matrix mImageMatrix = image.getImageMatrix();
-        if (mAspectX != 0 && mAspectY != 0) {
-            if (mAspectX > mAspectY) {
-                cropHeight = cropWidth * mAspectY / mAspectX;
-            } else {
-                cropWidth = cropHeight * mAspectX / mAspectY;
-            }
-        }
-        
-        RectF cropRect = new RectF(centerX-radius, centerY-radius, centerX+radius, centerY+radius);
-        hv.setup(mImageMatrix, imageRect, cropRect, mCircleCrop, mAspectX != 0 && mAspectY != 0);
-        hv.setCenterX(centerX);
-        hv.setCenterY(centerY);
-        hv.setRadius(radius);
-        
-        image.add(hv);
-    }
-
-	public State getState() {
-		return state;
-	}
-	
-	public void drawHighlightImage(){
-		if(mBitmapShowSub != null)
-			mBitmapShowSub.recycle();
-		
-		mBitmapShowSub = mBitmap.copy(Config.ARGB_8888, true);
-		Canvas canvas = new Canvas(mBitmapShowSub);
-		canvas.save();
-		
-		Path path = new Path();
-		for(int i = 0; i < image.myViews.size(); i++){
-			HighlightView2 hv2 = image.myViews.get(i);
-			float centerX = hv2.getCenterX();
-			float centerY = hv2.getCenterY();
-			float radius = hv2.getRadius();
-			path.addCircle(centerX, centerY, radius, Path.Direction.CW);
-		}
-		Paint outlinePaint = new Paint();
-		outlinePaint.setStrokeWidth(2F);
-		outlinePaint.setStyle(Paint.Style.STROKE);
-		outlinePaint.setAntiAlias(true);
-		outlinePaint.setColor(0xFFEF04D6);
-		
-		Paint mFocusPaint = new Paint();
-		mFocusPaint.setARGB(125, 50, 50, 50);
-		
-		Rect viewDrawingRect = new Rect(0, 0, mBitmapShow.getWidth(), mBitmapShow.getHeight());
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
-        
-		
-		path.reset();
-        outlinePaint.setColor(Color.RED);
-//        canvas.save();
-		for(int i = 0; i < image.rViews.size(); i++){
-			HighlightView4 hv4 = image.rViews.get(i);
-			float centerX = hv4.getCenterX();
-			float centerY = hv4.getCenterY();
-			float radius = hv4.getRadius();
-			path.addCircle(centerX, centerY, radius, Path.Direction.CW);
-		}
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
-//        canvas.drawRect(viewDrawingRect, mFocusPaint);
-//        canvas.restore();
-//        canvas.drawPath(path, outlinePaint);
-		
-        
-        path.reset();
-        outlinePaint.setColor(Color.GREEN);
-//        canvas.save();
-		for(int i = 0; i < image.gViews.size(); i++){
-			HighlightView5 hv5 = image.gViews.get(i);
-			float centerX = hv5.getCenterX();
-			float centerY = hv5.getCenterY();
-			float radius = hv5.getRadius();
-			path.addCircle(centerX, centerY, radius, Path.Direction.CW);
-		}
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
-//        canvas.drawRect(viewDrawingRect, mFocusPaint);
-//        canvas.restore();
-		canvas.drawRect(viewDrawingRect, mFocusPaint);
-        canvas.restore();
-//        canvas.drawPath(path, outlinePaint);
-		
-		
-        mBitmapShow = mBitmapShowSub.copy(Config.ARGB_8888, true);
-//        image.setImageBitmapResetBase(mBitmapShow, true);
-        image.setImageBitmap(mBitmapShow);
-		image.invalidate();
-	}
-	
-	public void drawNormalImage(){
-		image.zoomTo(1F, image.getWidth()/2, image.getHeight()/2, 300F);
-		
-		if(mBitmapShowSub != null)
-			mBitmapShowSub.recycle();
-		
-		mBitmapShowSub = mBitmap.copy(Config.ARGB_8888, true);
-		Canvas canvas = new Canvas(mBitmapShowSub);
-		canvas.save();
-		
-		Path path = new Path();
-		for(int i = 0; i < image.myViews.size(); i++){
-			HighlightView2 hv2 = image.myViews.get(i);
-			float centerX = hv2.getCenterX();
-			float centerY = hv2.getCenterY();
-			float radius = hv2.getRadius();
-			path.addCircle(centerX, centerY, radius, Path.Direction.CW);
-		}
-
-		Paint outlinePaint = new Paint();
-		outlinePaint.setStrokeWidth(2F);
-		outlinePaint.setStyle(Paint.Style.STROKE);
-		outlinePaint.setAntiAlias(true);
-		outlinePaint.setColor(0xFFEF04D6);
-		
-        canvas.restore();
-        canvas.drawPath(path, outlinePaint);
-		
-        mBitmapShow = mBitmapShowSub.copy(Config.ARGB_8888, true);
-        image.setImageBitmapResetBase(mBitmapShow, true);
-		image.invalidate();
-	}
-
 
 	@Override
 	public void onTaskComplete(AsyncTaskPayload result, String taskName) {
-		if(taskName.equals("SaveAndUploadImageAsyncTask") && result.getValue("result").equals("success")){
-			Intent intent = new Intent(this, HomeActivity.class);
-			startActivity(intent);
-			finish();
-		} else {
-			Toast.makeText(this, "上傳圖片失敗，請重試一次", Toast.LENGTH_SHORT).show();
+		if(taskName.equals("AddColonyAsyncTask")){
+//			Component component = result.getComponent();
+			
+//			int area = component.getArea();
+//			int centerX = component.getCenterX();
+//			int centerY = component.getCenterY();
+//			int r = (int) component.getRadius();
+//			Log.d("test4", "area = " + area + ", centerX = " + centerX + ", centerY = " + centerY + ", r = " + r);
+//			
+//			Canvas canvas = new Canvas(mCopyBitmap);
+//			Paint paint = new Paint();
+//			paint.setColor(Color.RED);
+//			paint.setStyle(Style.STROKE);
+//			paint.setAntiAlias(true);
+//			canvas.drawCircle(centerX, centerY, r, paint);
+			
+//			image.addColonyView(new RedColonyView(component.getCenterX(), component.getCenterY(), (int) component.getRadius()));
+//			image.addColonyTempView(new HighlightView(ctx));
+//			image.invalidate();
+		} else if(taskName.equals("SaveImgAsyncTask")){
+			String resultStr = result.getValue("result");
+			String msg = result.getValue("msg");
+			if(resultStr.equals("success")){
+				// TODO: redundant activity
+				Intent intent = new Intent(this, HomeActivity.class);
+				startActivity(intent);
+				finish();
+			} else {
+				Toast.makeText(this, "儲存失敗， 錯誤訊息：" + msg, Toast.LENGTH_LONG);
+			}
+		}
+	}
+
+	
+	/**
+	 * 
+	 * @author ming
+	 * colony type list item to accept user's input options and append new list to enter another option
+	 */
+	class AppendListItem {
+		private String type;
+		private EditText et;
+		private boolean hasAddedList = false;
+		private AppendEditTextWatcher textWatcher;
+		private EditTextFocusChangeListener focusChangeListener;
+		
+		public AppendListItem(LayoutInflater layoutInflater, String type){
+			this.type = type;
+			
+			// add edittext
+			et = (EditText) layoutInflater.inflate(R.layout.edittext_add_colony_type, null);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			params.setMargins(0, 0, 0, 10);
+			et.setLayoutParams(params);
+			
+			// add textwatcher
+			textWatcher = new AppendEditTextWatcher();
+			et.addTextChangedListener(textWatcher);
+			
+			// add focus change listener
+			focusChangeListener = new EditTextFocusChangeListener();
+			et.setOnFocusChangeListener(focusChangeListener);
+		}
+		
+		class AppendEditTextWatcher implements TextWatcher {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(!s.toString().equals("") && !hasAddedList){
+					if(type.equals(COLONY_TYPE))
+						addListItem(new AppendListItem(getLayoutInflater(), COLONY_TYPE), container_add_colony_type, colonyTypeListItems);
+					else if(type.equals(COLONY_EXP_PARAM))
+						addListItem(new AppendListItem(getLayoutInflater(), COLONY_EXP_PARAM), container_add_experiment_param, colonyExpParamListItems);
+					
+					hasAddedList = true;
+				} else if(s.toString().equals("") && hasAddedList){
+					if(type.equals(COLONY_TYPE))
+						removeListItem(container_add_colony_type, colonyTypeListItems, null, null, null, null);
+					else if(type.equals(COLONY_EXP_PARAM))
+						removeListItem(container_add_experiment_param, colonyExpParamListItems, null, null, null, null);
+					
+					hasAddedList = false;
+				}
+			}
+		}
+		
+		class EditTextFocusChangeListener implements View.OnFocusChangeListener {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(!hasFocus && !et.getText().toString().equals("")) {
+					String value = et.getText().toString();
+					View view = getLayoutInflater().inflate(R.layout.dialog_add_tag_listview_item, null);
+					ShowListItem showListItem = new ShowListItem(value, view, type);
+					
+					savePrefStringSetData(type, value);
+					if(type.equals(COLONY_TYPE))
+						removeListItem(container_add_colony_type, colonyTypeListItems, layout_colony_type_list, colonyTypeList, showListItem, view);
+					else if(type.equals(COLONY_EXP_PARAM))
+						removeListItem(container_add_experiment_param, colonyExpParamListItems, layout_colony_exp_param_list, colonyExpParamList, showListItem, view);
+					
+			    }
+			}
+		}
+		
+		public EditText getView(){
+			return et;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author ming
+	 *
+	 */
+	class ShowListItem {
+		private View view;
+		private String type;
+		private String value;
+		private CheckBox cbx;
+		private TextView tv;
+		private Button delete;
+		
+		public ShowListItem(String value, View view, String type){
+			cbx = (CheckBox) view.findViewById(R.id.checkBox1);
+			tv = (TextView) view.findViewById(R.id.textView1);
+			delete = (Button) view.findViewById(R.id.button1);
+			tv.setText(value);
+			this.view = view;
+			this.value = value;
+			this.type = type;
+			
+			cbx.setOnCheckedChangeListener(new CheckedChangeListener());
+			delete.setOnClickListener(new BtnClickListener());
+		}
+		
+		class CheckedChangeListener implements OnCheckedChangeListener {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked){
+					if(type.equals(COLONY_TYPE)){
+						checkSingleChoice(view, layout_colony_type_list, colonyTypeList);
+						setImgColonyType(tv.getText().toString());
+					} else if(type.equals(COLONY_EXP_PARAM)){
+						checkSingleChoice(view, layout_colony_exp_param_list, colonyExpParamList);
+						setImgExpParam(tv.getText().toString());
+					}
+				} else {
+					if(type.equals(COLONY_TYPE))
+						setImgColonyType("");
+					else if(type.equals(COLONY_EXP_PARAM))
+						setImgExpParam("");
+				}
+			}
+		}
+		
+		class BtnClickListener implements View.OnClickListener {
+			@Override
+			public void onClick(View v) {
+				if(type.equals(COLONY_TYPE))
+					removeShowListItem(layout_colony_type_list, colonyTypeList, view, type, value);
+				else if(type.equals(COLONY_EXP_PARAM)){
+					removeShowListItem(layout_colony_exp_param_list, colonyExpParamList, view, type, value);
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		if(mBitmap != null && !mBitmap.isRecycled()){
+			mBitmap.recycle();
+			mBitmap = null;
 		}
 	}
 }

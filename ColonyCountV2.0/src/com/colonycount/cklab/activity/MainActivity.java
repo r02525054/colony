@@ -1,6 +1,6 @@
 package com.colonycount.cklab.activity;
 
-import com.colonycount.cklab.base.BaseActivity;
+import com.colonycount.cklab.activity.base.BaseActivity;
 
 import android.content.Intent;
 import android.util.Log;

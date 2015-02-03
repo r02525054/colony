@@ -20,7 +20,9 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.Log;
 
-import com.colonycount.cklab.base.BaseAsyncTask;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.asynctask.base.BaseAsyncTask;
 
 public class LoginAsyncTask extends BaseAsyncTask {
 	private String postUrl = "http://140.112.26.221/~master11360/colony%20count/php/db_connect.php";
@@ -52,18 +54,18 @@ public class LoginAsyncTask extends BaseAsyncTask {
 
 		AsyncTaskPayload result = new AsyncTaskPayload();
 		// testing code
-		result.putValue("status", "success");
-		result.putValue("msg", "success");
+//		result.putValue("status", "success");
+//		result.putValue("msg", "success");
 		
-//		try {
-//			JSONObject jsonObject = new JSONObject(strResult);
-//			String status = jsonObject.getString("status");
-//			String msg = jsonObject.getString("msg");
-//			result.putValue("status", status);
-//			result.putValue("msg", msg);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			JSONObject jsonObject = new JSONObject(strResult);
+			String status = jsonObject.getString("status");
+			String msg = jsonObject.getString("msg");
+			result.putValue("status", status);
+			result.putValue("msg", msg);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		
 		return result;
 	}

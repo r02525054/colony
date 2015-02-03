@@ -25,7 +25,7 @@ public class Label2 {
 	private List<Component> components;
 	
 	public Label2(Bitmap kmeansImg, int radius){
-		this.kmeansImg = kmeansImg.copy(Bitmap.Config.ARGB_8888, false);
+		this.kmeansImg = kmeansImg;
 		this.width = this.kmeansImg.getWidth();
 		this.height = this.kmeansImg.getHeight();
 		this.yMargin = this.height / 2 - radius;
@@ -50,10 +50,10 @@ public class Label2 {
 					// for set component property
 					int neighborNumber = 4;
 					int whiteNeighborNumber = 0;
-					int xMin = 1000000;
-					int xMax = 0;
-					int yMin = 1000000;
-					int yMax = 0;
+					int xMin = Integer.MAX_VALUE;
+					int xMax = Integer.MIN_VALUE;
+					int yMin = Integer.MAX_VALUE;
+					int yMax = Integer.MIN_VALUE;
 					if(x < xMin)
 						xMin = x;
 					if(x > xMax)
@@ -64,11 +64,10 @@ public class Label2 {
 						yMax = y;
 					
 					
-					Map<String, Integer> pixel = getPixel(x, y, color);
-					boolean isBound = false;
+//					Map<String, Integer> pixel = getPixel(x, y, color);
+//					boolean isBound = false;
 					
 					while(!L.isEmpty()){
-//						Map<String, Integer> neighbor = L.remove(0);
 						Map<String, Integer> neighbor = L.remove(L.size()-1);
 						int neighborX = neighbor.get("x");
 						int neighborY = neighbor.get("y");
@@ -90,9 +89,9 @@ public class Label2 {
 									yMax = neighborY;
 							}
 						} else {
-							if(!isBound){
-								component.addBoundPixel(pixel);
-							}
+//							if(!isBound){
+//								component.addBoundPixel(pixel);
+//							}
 						}
 						
 						neighborNumber--;
@@ -103,8 +102,8 @@ public class Label2 {
 							neighborNumber = 4;
 							whiteNeighborNumber = 0;
 							
-							pixel = neighbor;
-							isBound = false;
+//							pixel = neighbor;
+//							isBound = false;
 						}
 						
 						// when L size equal to 0, end this component and add to components 
@@ -118,8 +117,6 @@ public class Label2 {
 				}
 			}
 		}
-		kmeansImg.recycle();
-		kmeansImg = null;
 		
 		return K;
 	}

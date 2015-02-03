@@ -12,11 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.colonycount.cklab.asynctask.AsyncTaskCompleteListener;
-import com.colonycount.cklab.asynctask.AsyncTaskPayload;
+import com.colonycount.cklab.activity.base.GPlusClientActivity;
 import com.colonycount.cklab.asynctask.LoginAsyncTask;
-import com.colonycount.cklab.base.GPlusClientActivity;
-import com.colonycount.cklab.fragment.FragmentDialog;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.plus.Plus;
@@ -128,7 +127,6 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 		}
 		
 		String orgs            = "";
-		
 		if(organizations != null){
 			for(int i = 0; i < organizations.size(); i++){
 				if(i == organizations.size()-1)

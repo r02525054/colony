@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -22,29 +21,29 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.colonycount.cklab.base.BaseAsyncTask;
+import com.colonycount.cklab.asynctask.base.AsyncTaskCompleteListener;
+import com.colonycount.cklab.asynctask.base.AsyncTaskPayload;
+import com.colonycount.cklab.asynctask.base.BaseAsyncTask;
+import com.colonycount.cklab.libs.crop.HighlightView;
 import com.colonycount.cklab.model.ImgInfo;
 
 public class SaveImgAsyncTask extends BaseAsyncTask {
-	private String filePath_raw;
-	private String filePath_count;
 	private String fileName_raw;
-	private String fileName_conut;
+//	private String fileName_conut;
 	
 	private byte[] data_raw;
-	private byte[] data_count;
 	private String user_account;
 	private String user_id;
 	private ImgInfo imgInfo;
 	
-	public SaveImgAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls, boolean showDialog, byte[] data_raw, byte[] data_counted, String user_account, String user_id, ImgInfo imgInfo) {
+	public SaveImgAsyncTask(Context context, String progressDialogTitle, String progressDialogMsg, AsyncTaskCompleteListener<Boolean> listener, Class<?> cls, boolean showDialog, byte[] data_raw, String user_account, String user_id, ImgInfo imgInfo) {
 		super(context, progressDialogTitle, progressDialogMsg, listener, cls, showDialog);
 		this.data_raw = data_raw;
-		this.data_count = data_counted;
 		this.user_account = user_account;
 		this.user_id = user_id;
 		this.imgInfo = imgInfo;
@@ -55,18 +54,17 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 		AsyncTaskPayload result = new AsyncTaskPayload();
 		result.putValue("result", "success");
 		
-//		if(data_raw != null){
-//			if(!saveColonyImage(data_raw, "raw"))
-//				result.putValue("result", "fail");
-//			if(!saveColonyImage(data_count, "count"));
-//				result.putValue("result", "fail");
-//		}
-		
-		if(!uploadColonyImage(data_raw, data_count))
-			result.putValue("result", "fail");
+		if(!uploadColonyImage(data_raw, result)){
+			result.putValue("result", "error");
+			result.putValue("msg", "upload image fail");
+			return result;
+		}
 			
-		if(!insertData2DB())
-			result.putValue("result", "fail");
+		if(!insertData2DB(result)){
+			result.putValue("result", "error");
+			result.putValue("msg", "insert data to DB fail");
+			return result;
+		}
 		
 		return result;
 	}
@@ -111,10 +109,10 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 //        return true;
 //	}
 	
-	private boolean uploadColonyImage(byte[] data_raw, byte[] date_count){
-		String uploadServerUri = "http://140.112.26.221/~master11360/colony%20count/php/upload_test.php";
+	private boolean uploadColonyImage(byte[] data_raw, AsyncTaskPayload payload){
+//		String uploadServerUri = "http://140.112.26.221/~master11360/colony%20count/php/upload_test.php";
 		
-//		String uploadServerUri = "http://140.112.26.221/~master11360/colony%20count/php/db_connect.php";
+		String uploadServerUri = "http://140.112.26.221/~master11360/colony%20count/php/db_connect.php";
         
         HttpURLConnection conn = null;
         DataOutputStream dos = null;  
@@ -124,7 +122,7 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
         
         try {
         	ByteArrayInputStream baInputStream_raw = new ByteArrayInputStream(data_raw);
-        	ByteArrayInputStream baInputStream_count = new ByteArrayInputStream(data_count);
+//        	ByteArrayInputStream baInputStream_count = new ByteArrayInputStream(data_count);
         	
         	// open a URL connection to server
 			URL url = new URL(uploadServerUri);
@@ -135,24 +133,28 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 			// set post field
 			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.TAIWAN).format(new Date());
 			fileName_raw = timeStamp + "_raw.jpg";
-			fileName_conut = timeStamp + "_count.jpg";
+//			fileName_conut = timeStamp + "_count.jpg";
 			
 			addFormPart("upload_image", "upload_image", delimiter, boundary, lineEnd, dos);
 			addFormPart("user_account", user_account, delimiter, boundary, lineEnd, dos);
 			addFormPart("user_id", user_id, delimiter, boundary, lineEnd, dos);
 			addFilePart("file_raw", fileName_raw, delimiter, boundary, lineEnd, dos, baInputStream_raw);
-			addFilePart("file_count", fileName_conut, delimiter, boundary, lineEnd, dos, baInputStream_count);
+//			addFilePart("file_count", fileName_conut, delimiter, boundary, lineEnd, dos, baInputStream_count);
 			
 			// Responses from the server (code and message)
 			int serverResponseCode = conn.getResponseCode();
 			String serverResponseMessage = conn.getResponseMessage();
 			
-			Log.d(TAG, "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
+			Log.d("test4", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
 			if (serverResponseCode == 200) {
 				String serverResponse = convertResponseToString(conn);
-				Log.d(TAG, "success, response: " + serverResponse);
+				JSONObject jsonObject = new JSONObject(serverResponse);
+				String status = jsonObject.getString("status");
+				Log.d("test4", "server response: " + serverResponse);
+				if(!status.equals("success")){
+					Log.d("test4", "error, msg = " + jsonObject.getString("msg"));
+				}
 			} else {
-				
 				return false;
 			}
 			
@@ -161,19 +163,19 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 //			fileInputStream_count.close();
 			
 			baInputStream_raw.close();
-			baInputStream_count.close();
+//			baInputStream_count.close();
 			dos.flush();
 			dos.close();
         } catch (MalformedURLException ex) {  
-            Log.e(TAG, "Upload file to server error: " + ex.getMessage(), ex);  
+            Log.e("test4", "Upload file to server error: " + ex.getMessage(), ex);  
         } catch (Exception e) {
-            Log.e(TAG, "Upload file to server Exception : " + e.getMessage(), e);  
+            Log.e("test4", "Upload file to server Exception : " + e.getMessage(), e);  
         }
         
 		return true;
 	}
 	
-	private boolean insertData2DB(){
+	private boolean insertData2DB(AsyncTaskPayload payload){
 		String postUrl = "http://140.112.26.221/~master11360/colony%20count/php/db_connect.php";
 		HttpPost httpRequest = new HttpPost(postUrl);
 		List<NameValuePair> reqParams = new ArrayList<NameValuePair>();
@@ -209,27 +211,38 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 	}
 	
 	public void addRequest(List<NameValuePair> reqParams){
+		// total: 1 check param + 8 params
 		reqParams.add(new BasicNameValuePair("insert_data", "true"));
 		
 		// image params
 		reqParams.add(new BasicNameValuePair("user_id", user_id));
-		reqParams.add(new BasicNameValuePair("img_name_count", fileName_conut));
 		reqParams.add(new BasicNameValuePair("img_name_raw", fileName_raw));
+		reqParams.add(new BasicNameValuePair("img_colony_num", imgInfo.getColonyCount()+""));
 		
 		// tag params
-//		reqParams.add(new BasicNameValuePair("tag_number", imgInfo.getNumber()+""));
-		reqParams.add(new BasicNameValuePair("tag_date", imgInfo.getDateString()));
-		reqParams.add(new BasicNameValuePair("tag_type", imgInfo.getType()));
+		reqParams.add(new BasicNameValuePair("tag_date", imgInfo.getDateString())); //日期
+		reqParams.add(new BasicNameValuePair("tag_type", imgInfo.getType()));		//菌種
+		reqParams.add(new BasicNameValuePair("tag_dilution_num", imgInfo.getDilutionNumber()+"")); //稀釋倍數
+		reqParams.add(new BasicNameValuePair("tag_exp_param", imgInfo.getExpParam()));	//實驗參數
 		
 		// colony params
-		ArrayList<Map<String, Integer>> colonies = imgInfo.getColonies();
+		List<HighlightView> colonyList = imgInfo.getColonyList();
+		List<HighlightView> colonyRemovedList = imgInfo.getColonyRemovedList();
 		StringBuilder colonyParam = new StringBuilder();
-		for(int i = 0; i < colonies.size(); i++){
-			Map<String, Integer> colony = colonies.get(i);
-			if(i != colonies.size() - 1)
-				colonyParam.append(colony.get("x") + "," + colony.get("y") + "," + colony.get("r") + "," + colony.get("type") + ";");
+		// add colony type 1, 2
+		for(int i = 0; i < colonyList.size(); i++){
+			HighlightView colony = colonyList.get(i);
+			colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + colony.getType() + ";");
+			Log.d("test4", "colony type = " + colony.getType());
+		}
+		// add colony type 3
+		for(int i = 0; i < colonyRemovedList.size(); i++){
+			HighlightView colony = colonyRemovedList.get(i);
+			if(i != colonyRemovedList.size() - 1)
+				colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + 3 + ";");
 			else
-				colonyParam.append(colony.get("x") + "," + colony.get("y") + "," + colony.get("r") + "," + colony.get("type"));
+				colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + 3);
+			Log.d("test4", "colony type = " + 3);
 		}
 		reqParams.add(new BasicNameValuePair("colony_param", colonyParam.toString()));
 	}
@@ -299,11 +312,10 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
         bufferSize = Math.min(bytesAvailable, maxBufferSize);
         buffer = new byte[bufferSize];
 		
-     // read file and write it into form...
+        // read file and write it into form...
         bytesRead = byteArrayInputStream.read(buffer, 0, bufferSize);
         
         while (bytesRead > 0) {
-        	Log.d("Test2", "white bytes");
             dos.write(buffer, 0, bufferSize);
             bytesAvailable = byteArrayInputStream.available();
             bufferSize = Math.min(bytesAvailable, maxBufferSize);

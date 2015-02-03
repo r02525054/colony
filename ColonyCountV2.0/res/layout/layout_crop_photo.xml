@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:id="@+id/relativeLayout_root" >
+    android:layout_height="match_parent" >
     
     <RelativeLayout
         android:id="@+id/relativeLayout_top"
@@ -27,17 +26,16 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:background="@color/white" >
+            android:background="@color/white"
+            android:orientation="vertical" >
 
             <ImageButton
 	            android:id="@+id/btn_close"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:layout_alignParentLeft="true"
-	            android:layout_alignParentTop="true"
 	            android:src="@drawable/btn_cancel"
 	            android:background="@drawable/selector_btn_clicked"
-	            android:padding="10dp" />
+	            android:padding="10dp" /> 
         </LinearLayout>
         
         <View
@@ -48,25 +46,7 @@
             android:layout_toRightOf="@+id/linearLayout3"
             android:layout_alignBottom="@+id/linearLayout3"
             android:background="@color/home_background" />
-
     </RelativeLayout>
-	
-    <com.colonycount.cklab.crop.CropImageView
-        android:id="@+id/cropImageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/relativeLayout_top"
-        android:background="#55000000"
-        android:scaleType="matrix" />
-    
-    <ImageView 
-        android:id="@+id/show_image_test"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/relativeLayout_top"
-        android:visibility="gone" />
     
     <RelativeLayout
         android:id="@+id/bot_layout"
@@ -86,80 +66,10 @@
             android:src="@drawable/selector_btn_count" />
     </RelativeLayout>
 
-    <!-- 拍照片前出現的layout -->
-    <!-- <RelativeLayout
-        android:id="@+id/take_photo_bot_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/square_view"
-        android:background="@color/btn_background" >
-
-        <LinearLayout 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true">
-            
-            <ImageButton
-	            android:id="@+id/btn_capture"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@drawable/selector_btn_clicked"
-	            android:src="@drawable/btn_capture" />
-        </LinearLayout>
-    </RelativeLayout> -->
-
-    <!-- 拍完照片後出現的layout -->
-    <!-- <RelativeLayout
-        android:id="@+id/take_photo_done_bot_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/square_view"
-        android:background="@color/btn_background"
-        android:visibility="gone" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:weightSum="2" >
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" >
-
-                <ImageButton
-                    android:id="@+id/btn_recapture"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/selector_btn_clicked"
-                    android:src="@drawable/btn_retaking_photo" />
-            </RelativeLayout>
-            
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" >
-                
-                <ImageButton
-                    android:id="@+id/btn_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/selector_btn_clicked"
-                    android:src="@drawable/btn_count" />
-            </RelativeLayout>
-        </LinearLayout>
-    </RelativeLayout> -->
-
-    
-
+    <com.colonycount.cklab.libs.crop.PhotoView
+        android:id="@+id/iv_photo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/relativeLayout_top"
+        android:layout_above="@+id/bot_layout" />
 </RelativeLayout>
