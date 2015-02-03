@@ -20,7 +20,7 @@ public class GPlusClientActivity extends BaseActivity implements ConnectionCallb
 	protected static final int STATE_IN_PROGRESS = 2;
 	
 	protected static final int RC_SIGN_IN = 0;
-
+	
 	protected static final int DIALOG_PLAY_SERVICES_ERROR = 0;
 
 	protected static final String SAVED_PROGRESS = "sign_in_progress";
