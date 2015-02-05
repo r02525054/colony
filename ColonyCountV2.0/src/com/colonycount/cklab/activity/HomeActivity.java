@@ -57,6 +57,38 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	private String[] img_ids;
 	private List<Bitmap> colony_thumbnails = new ArrayList<Bitmap>();
     
+//    private String[] date = {"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05",
+//    		"2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05","2015-02-05"};
+//	private String[] colony_num = {"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123"};
+//	private String[] img_urls;
+//	private String[] img_ids = {"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123",
+//			"123","123","123","123","123","123","123","123","123","123"};
+    
     private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {  
         @Override  
         public void onManagerConnected(int status) {  
@@ -75,6 +107,11 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("test4", "HomeActivity onCreate");
+		
+//		img_urls = new String[100];
+//		for(int i = 0; i < 100; i++){
+//			img_urls[i] = "http://140.112.26.221/~master11360/colony%20count/test/" + (i+1) + ".jpg";
+//		}
 		
 		initActionBar();
         initDrawer();
@@ -139,16 +176,16 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 			mGoogleApiClient.disconnect();
 		}
 		
-		// release memory
-		for(int i = 0; i < colony_thumbnails.size(); i++){
-			Bitmap colony_thumbnail = colony_thumbnails.get(i);
-			if(colony_thumbnail != null && !colony_thumbnail.isRecycled()){
-				colony_thumbnail.recycle();
-				colony_thumbnail = null;
-			}
-		}
-		
 		Log.d("test4", "HomeActivity onStop");
+		
+//		// release memory
+//		for(int i = 0; i < colony_thumbnails.size(); i++){
+//			Bitmap colony_thumbnail = colony_thumbnails.get(i);
+//			if(colony_thumbnail != null && !colony_thumbnail.isRecycled()){
+//				colony_thumbnail.recycle();
+//				colony_thumbnail = null;
+//			}
+//		}
 	}
 
 	
@@ -333,6 +370,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 			// initial
 			if(result.getValue("search_colony") == null){
 				Log.d("test4", "initial");
+				Log.d("test4", "resultStr = " + resultStr);
 				if(resultStr.equals("success")){
 					setGridView();
 				} else {
@@ -370,7 +408,7 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 				img_url = photoUrlPrefix + img_url.substring(img_url.indexOf("/"));
 				
 //				Log.d("test4", "id = " + img_id + ", url = " + img_url + ", num = " + img_colony_num + ", time = " + img_upload_time);
-				
+
 				date[i] = img_upload_time;
 				colony_num[i] =  img_colony_num;
 				img_urls[i] = img_url;
@@ -416,20 +454,3 @@ public class HomeActivity extends GPlusClientActivity implements AsyncTaskComple
 //		}
 //	}
 }
-
-
-
-
-//String[] date = {"2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19", "2014-12-01", "2014-11-24", "2015-01-19"};
-//String[] type = {"酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌", "酵母菌", "細菌", "黴菌"};
-//int[] dilution_num = {-3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7, -3, -5, -7};
-//String[] exp_param = {"時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度", "時間vs濃度", "時間vs酸鹼性", "濃度"};
-//String[] colony_num = {"88", "92", "156"};
-//
-//Bitmap img1 = BitmapFactory.decodeResource(getResources(), R.drawable.test4);
-//Bitmap img2 = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
-//Bitmap img3 = BitmapFactory.decodeResource(getResources(), R.drawable.test3);
-//Bitmap[] images = {img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3, img1, img2, img3};
-//
-//fragmentHome.setGridViewData(date, colony_num, type, type);
-//fragmentHome.setGridView();

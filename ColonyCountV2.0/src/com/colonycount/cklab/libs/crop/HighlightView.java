@@ -22,6 +22,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import com.colonycount.cklab.activity.R;
@@ -311,7 +312,11 @@ public class HighlightView {
         RectF r = new RectF(mCropRect.left, mCropRect.top,
                             mCropRect.right, mCropRect.bottom);
         
+//        Log.d("test4", "before map: r.left = " + r.left + ", r.top = " + r.top + ", r.right = " + r.right + ", r.bottom = " + r.bottom);
+        
         mMatrix.mapRect(r);
+        
+//        Log.d("test4", "after map: r.left = " + r.left + ", r.top = " + r.top + ", r.right = " + r.right + ", r.bottom = " + r.bottom);
         
         return new Rect(Math.round(r.left), Math.round(r.top),
                         Math.round(r.right), Math.round(r.bottom));
@@ -374,39 +379,27 @@ public class HighlightView {
     private final Paint mNoFocusPaint = new Paint();
     private final Paint mOutlinePaint = new Paint();
 
-    public int getX(){
+    public int getDrawX(){
     	return mDrawRect.centerX();
     }
     
-    public int getY(){
+    public int getDrawY(){
     	return mDrawRect.centerY();
     }
     
-    public int getR(){
+    public int getDrawR(){
     	return mDrawRect.width() / 2;
     }
     
-//	public float getCenterX() {
-//		return centerX;
-//	}
-//
-//	public void setCenterX(float centerX) {
-//		this.centerX = centerX;
-//	}
-//
-//	public float getCenterY() {
-//		return centerY;
-//	}
-//
-//	public void setCenterY(float centerY) {
-//		this.centerY = centerY;
-//	}
-//
-//	public float getRadius() {
-//		return radius;
-//	}
-//
-//	public void setRadius(float radius) {
-//		this.radius = radius;
-//	}
+    public int getX(){
+    	return (int) mCropRect.centerX();
+    }
+    
+    public int getY(){
+    	return (int) mCropRect.centerY();
+    }
+    
+    public int getR(){
+    	return (int) (mCropRect.width() / 2);
+    }
 }

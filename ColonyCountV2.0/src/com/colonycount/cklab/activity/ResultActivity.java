@@ -115,6 +115,8 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
     	VIEW, ADD, SUB
     }
 	
+	private boolean matrixUpdated = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -133,12 +135,9 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 		    e.printStackTrace();
 		}
 		
-		setColony();
-		setImgInfoText();
-		// draw colony
 		image.setImageBitmap(mBitmap);
 		
-		// The MAGIC happens here!
+ 		// The MAGIC happens here!
         mAttacher = new PhotoViewAttacher2(image);
         mAttacher.setOnPhotoTapListener(new PhotoTapListener());
         mAttacher.setOnMatrixChangeListener(new MatrixChangeListener());
@@ -146,22 +145,12 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
         // my code
         mAttacher.setOnDragCallback(image);
         mAttacher.setOnScaleCallback(image);
-        
-//        DataWrapper dw = (DataWrapper) getIntent().getSerializableExtra("imageComponent");
-//		List<Component> components = dw.getParliaments();
-//		colonyCount = mAttacher.setColony(components, mBitmap);
-//        
-//        // 按圖片比例乘回去
-//		double countScale = (double)(Config.COUNT_IMAGE_WIDTH/2) * (double)(Config.COUNT_IMAGE_WIDTH/2) / (double)Config.TEST_RADIUS / (double)Config.TEST_RADIUS;
-//		colonyCount = (int) Math.round(colonyCount * countScale);
-//		Log.d("test4", "colonyCount = " + colonyCount);
-//		
 	}
 	
 	
 	public void setColony(){
+		// get counted components
 		DataWrapper dw = (DataWrapper) getIntent().getSerializableExtra("imageComponent");
-		// TODO: nullpointer
 		List<Component> components = dw.getParliaments();
 		
 		for(int i = 0; i < components.size(); i++){
@@ -192,11 +181,14 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	private class MatrixChangeListener implements OnMatrixChangedListener {
         @Override
         public void onMatrixChanged(RectF rect) {
-//        	float left = rect.left;
-//        	float top = rect.top;
-//        	float right = rect.right;
-//        	float bottom = rect.bottom;
-//        	Log.d("test4", "left = " + left + ", top = " + top + ", right = " + right + ", bottom = " + bottom);
+        	// while first update matrix, draw colonies
+        	if(!matrixUpdated){
+        		// draw colony
+          		setColony();
+          		setImgInfoText();
+          		
+	        	matrixUpdated = true;
+        	}
         }
     }
 	
@@ -366,6 +358,7 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
         
         Rect imageRect = new Rect(0, 0, width, height);
         boolean mCircleCrop = true;
+        
         Matrix mImageMatrix = image.getImageMatrix();
         
         RectF colonyRect = new RectF(x-r, y-r, x+r, y+r);
@@ -849,7 +842,9 @@ public class ResultActivity extends GPlusClientActivity implements View.OnClickL
 	protected void onStop() {
 		super.onStop();
 		
-		if(mBitmap != null && !mBitmap.isRecycled()){
+		Log.d("test4", "ResultActivity onStop");
+		
+		if(isFinishing() && mBitmap != null && !mBitmap.isRecycled()){
 			mBitmap.recycle();
 			mBitmap = null;
 		}

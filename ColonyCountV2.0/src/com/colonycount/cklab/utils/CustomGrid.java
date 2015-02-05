@@ -1,6 +1,7 @@
 package com.colonycount.cklab.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +36,13 @@ public class CustomGrid extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
-		return null;
+	public String getItem(int position) {
+		return img_urls[position];
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return 0;
+		return position;
 	}
 
 	@Override
@@ -52,19 +53,20 @@ public class CustomGrid extends BaseAdapter {
         	convertView = inflater.inflate(R.layout.custom_grid, null);
             
         	WebCachedImageView img = (WebCachedImageView) convertView.findViewById(R.id.picture);
-        	TextView expDate = (TextView) convertView.findViewById(R.id.date);
+        	TextView date = (TextView) convertView.findViewById(R.id.date);
         	TextView num = (TextView) convertView.findViewById(R.id.colony_num);
-        	gridItem = new GridItem(img, expDate, num);
-        	
         	img.setBitmapDecodedListener(bitmapDecodedListener);
-        	img.setImageUrl(img_urls[position]);
-        	num.setText(colony_num[position]);
-        	expDate.setText(date[position]);
         	
+        	
+        	gridItem = new GridItem(img, date, num);
         	convertView.setTag(gridItem);
         } else {
         	gridItem = (GridItem) convertView.getTag();
         }
+        
+        gridItem.img.setImageUrl(img_urls[position]);
+        gridItem.num.setText(colony_num[position]);
+        gridItem.date.setText(date[position]);
 
         return convertView;
 	}

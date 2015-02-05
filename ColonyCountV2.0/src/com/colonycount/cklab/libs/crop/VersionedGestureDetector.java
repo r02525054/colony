@@ -18,11 +18,11 @@ package com.colonycount.cklab.libs.crop;
 
 import android.content.Context;
 import android.os.Build;
+import android.widget.ImageView;
 
 public final class VersionedGestureDetector {
 
-    public static GestureDetector newInstance(Context context,
-                                              OnGestureListener listener) {
+    public static GestureDetector newInstance(Context context, OnGestureListener listener) {
         final int sdkVersion = Build.VERSION.SDK_INT;
         GestureDetector detector;
 

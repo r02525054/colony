@@ -34,6 +34,7 @@ import android.graphics.Region;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
@@ -280,12 +281,14 @@ public class CropPhotoActivity extends Activity implements View.OnClickListener,
 	protected void onStop() {
 		super.onStop();
 		
-		if(mBitmap != null && !mBitmap.isRecycled()){
+		Log.d("test4", "CropPhotoActivity onStop");
+		
+		if(isFinishing() && mBitmap != null && !mBitmap.isRecycled()){
 			mBitmap.recycle();
 			mBitmap = null;
 		}
 		
-		if(croppedImage != null && !croppedImage.isRecycled()){
+		if(isFinishing() && croppedImage != null && !croppedImage.isRecycled()){
 			croppedImage.recycle();
 			croppedImage = null;
 		}

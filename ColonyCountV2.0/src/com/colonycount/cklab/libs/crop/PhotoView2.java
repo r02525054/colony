@@ -32,6 +32,7 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.colonycount.cklab.activity.ResultActivity.State;
@@ -61,6 +62,9 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
     
     public PhotoView2(Context context) {
         this(context, null);
+        if (!isInEditMode()) {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
     }
 
     public PhotoView2(Context context, AttributeSet attr) {
@@ -70,6 +74,8 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
     public PhotoView2(Context context, AttributeSet attr, int defStyle) {
         super(context, attr, defStyle);
         super.setScaleType(ScaleType.MATRIX);
+        
+//        mAttacher = null;
         mAttacher = new PhotoViewAttacher2(this);
         
         // drawing setting
@@ -221,7 +227,6 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
         
-        Log.d("test4", "setImageDrawable");
         if (null != mAttacher) {
             mAttacher.update();
         }
@@ -340,35 +345,75 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
 //		mAttacher.setMinimumScale();
 //	}
 
+	
+//	private ArrayList<Path> paths = new ArrayList<Path>();
+	
+	
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		
 		Path path = new Path();
-		canvas.save();
 		
 		if(!hideColony){
 			for(int i = 0; i < colonyList.size(); i++){
 				HighlightView hv = colonyList.get(i);
-	            path.addCircle(hv.getX(), hv.getY(), hv.getR(), Path.Direction.CW);
+	            path.addCircle(hv.getDrawX(), hv.getDrawY(), hv.getDrawR(), Path.Direction.CW);
 			}
 		}
 		
 		for(int i = 0; i < colonyAddTempList.size(); i++){
 			HighlightView hv = colonyAddTempList.get(i);
-            path.addCircle(hv.getX(), hv.getY(), hv.getR(), Path.Direction.CW);
+            path.addCircle(hv.getDrawX(), hv.getDrawY(), hv.getDrawR(), Path.Direction.CW);
 		}
 		
-//		Log.d("test4", "path empty: " + path.isEmpty());
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
 		
 		if(state == State.ADD || state == State.SUB){
+			canvas.save();
+			canvas.clipPath(path, Region.Op.DIFFERENCE);
 			this.getDrawingRect(viewDrawingRect);
 			canvas.drawRect(viewDrawingRect, mNoFocusPaint);
+			canvas.restore();
 		}
 		
-        canvas.restore();
         canvas.drawPath(path, mOutlinePaint);
+		
+		
+		
+//		Path path = new Path();
+//		if(!hideColony){
+//			for(int i = 0; i < colonyList.size(); i++){
+//				HighlightView hv = colonyList.get(i);
+//	            path.addCircle(hv.getDrawX(), hv.getDrawY(), hv.getDrawR(), Path.Direction.CW);
+//	            paths.add(path);
+//	            path = new Path();
+//			}
+//		}
+//		
+//		for(int i = 0; i < colonyAddTempList.size(); i++){
+//			HighlightView hv = colonyAddTempList.get(i);
+//            path.addCircle(hv.getDrawX(), hv.getDrawY(), hv.getDrawR(), Path.Direction.CW);
+//            paths.add(path);
+//            path = new Path();
+//		}
+//		
+//		if(state == State.ADD || state == State.SUB){
+//			canvas.save();
+//			for(int i = 0; i < paths.size(); i++){
+//				canvas.clipPath(paths.get(i), Region.Op.DIFFERENCE);
+//			}
+//			
+//			this.getDrawingRect(viewDrawingRect);
+//			canvas.drawRect(viewDrawingRect, mNoFocusPaint);
+//			canvas.restore();
+//		}
+//        
+//        for(int i = 0; i < paths.size(); i++){
+//        	canvas.drawPath(paths.get(i), mOutlinePaint);
+//		}
+//        
+//        paths.clear();
+        
         
         // draw resize image
         for(int i = 0; i < colonyAddTempList.size(); i++){
@@ -376,8 +421,8 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
             Drawable resizeDiagonal = hv.getResizeDrawableDiagonal();
             Rect mDrawRect = hv.getDrawRect();
             
-            int width = hv.getR()+10;
-            int height = hv.getR()+10;
+            int width = hv.getDrawR()+10;
+            int height = hv.getDrawR()+10;
             if(width < 20)
             	width = 20;
             if(height < 20)
@@ -455,18 +500,21 @@ public class PhotoView2 extends ImageView implements IPhotoView2, OnDragCallback
 
 	@Override
 	public void onScaleFinish(float dx, float dy) {
+		Matrix imageMatrix = getImageMatrix();
 		// draw colony view
 		for(int i = 0; i < colonyList.size(); i++){
 			HighlightView hv = colonyList.get(i);	
-            hv.mMatrix.set(getImageMatrix());
+            hv.mMatrix.set(imageMatrix);
             hv.invalidate();
+//            invalidate();
         }
 		
 		// draw colony temp view
 		for(int i = 0; i < colonyAddTempList.size(); i++){
 			HighlightView hv = colonyAddTempList.get(i);
-            hv.mMatrix.set(getImageMatrix());
+            hv.mMatrix.set(imageMatrix);
             hv.invalidate();
+//            invalidate();
         }
 		
 		invalidate();

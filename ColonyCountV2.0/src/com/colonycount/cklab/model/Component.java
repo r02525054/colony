@@ -77,7 +77,6 @@ public class Component implements Serializable {
 		// 半徑
 		double radiusTemp = Math.sqrt(area / Math.PI);
 		radius = (int) Math.round(radiusTemp);
-		Log.d("test4", "radius = " + radius);
 		// 直徑
 		diameter = radius * 2;
 		// 周長x2
@@ -88,8 +87,6 @@ public class Component implements Serializable {
 		
 		shapeFactor = 4 * Math.PI * area / Math.pow(perimeter, 2);
 		shapeFactor = (double)Math.round(shapeFactor * 100) / 100.0;
-		
-		Log.d("test4", "x = " + centerX + ", y = " + centerY + ", r = " + radius);
 	}
 	
 	public int getDiameter() {

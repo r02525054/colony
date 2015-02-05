@@ -232,9 +232,16 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 		// add colony type 1, 2
 		for(int i = 0; i < colonyList.size(); i++){
 			HighlightView colony = colonyList.get(i);
-			colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + colony.getType() + ";");
-			Log.d("test4", "colony type = " + colony.getType());
+			if(i != colonyList.size() - 1)
+				colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + colony.getType() + ";");
+			else
+				colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + colony.getType());
 		}
+		
+		// add ";" if colonyRemovedList size != 0 to make request complete
+		if(colonyRemovedList.size() != 0)
+			colonyParam.append(";");
+		
 		// add colony type 3
 		for(int i = 0; i < colonyRemovedList.size(); i++){
 			HighlightView colony = colonyRemovedList.get(i);
@@ -242,8 +249,8 @@ public class SaveImgAsyncTask extends BaseAsyncTask {
 				colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + 3 + ";");
 			else
 				colonyParam.append(colony.getX() + "," + colony.getY() + "," + colony.getR() + "," + 3);
-			Log.d("test4", "colony type = " + 3);
 		}
+		
 		reqParams.add(new BasicNameValuePair("colony_param", colonyParam.toString()));
 	}
 	

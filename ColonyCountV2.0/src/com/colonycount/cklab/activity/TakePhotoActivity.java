@@ -581,7 +581,9 @@ public class TakePhotoActivity extends GPlusClientActivity implements SurfaceHol
 	protected void onStop() {
 		super.onStop();
 		
-		if(rawImg != null && !rawImg.isRecycled()){
+		Log.d("test4", "TakePhotoActivity onStop");
+		
+		if(isFinishing() && rawImg != null && !rawImg.isRecycled()){
 			rawImg.recycle();
 			rawImg = null;
 		}

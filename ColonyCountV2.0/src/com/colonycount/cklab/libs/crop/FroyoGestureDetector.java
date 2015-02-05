@@ -47,7 +47,15 @@ public class FroyoGestureDetector extends EclairGestureDetector {
 
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
-                // NO-OP
+            	
+            	// my code
+//            	float scaleFactor = detector.getScaleFactor();
+//
+//                if (Float.isNaN(scaleFactor) || Float.isInfinite(scaleFactor))
+//                    return;
+//
+//                mListener.onScale(scaleFactor, detector.getFocusX(), detector.getFocusY());
+//                // NO-OP
             }
         };
         mDetector = new ScaleGestureDetector(context, mScaleListener);

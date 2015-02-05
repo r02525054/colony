@@ -15,8 +15,11 @@
 	    android:id="@+id/picture"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    app:cache_mode="memory"
+	    app:cache_mode="disk"
         app:memoryPercentToUse="20.0" />
+    
+    <!-- app:cache_mode="memory"
+        app:memoryPercentToUse="20.0" -->
 
     <!--
          <com.colonycount.cklab.view.AutoResizeTextView

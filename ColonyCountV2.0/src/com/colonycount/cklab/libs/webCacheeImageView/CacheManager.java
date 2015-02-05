@@ -137,7 +137,7 @@ public class CacheManager {
 	}
 
 	public Bitmap getCachedOnDisk(String url, int width, int height) {
-
+		
 		if ((mMode & MODE_DISK) == MODE_DISK) {
 
 			synchronized (mDiskCacheLock) {

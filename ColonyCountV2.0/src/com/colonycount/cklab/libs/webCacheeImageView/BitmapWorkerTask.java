@@ -41,9 +41,11 @@ public class BitmapWorkerTask extends AsyncTask<Object, Void, Bitmap> {
 		if (imageView != null) {
         	final BitmapWorkerTask imageViewTask = imageView.getBitmapWorkerTask();
         	
-        	if (imageViewTask == this) {
-        		imageView.setImageResource(R.drawable.loading);
-        	}
+        	imageView.setImageResource(R.drawable.loading);
+        	
+//        	if (imageViewTask == this) {
+//        		imageView.setImageResource(R.drawable.loading);
+//        	}
         }
 	}
 
@@ -69,6 +71,9 @@ public class BitmapWorkerTask extends AsyncTask<Object, Void, Bitmap> {
 		// No cached versions. Download it
 		try {
 			bitmap = decodeSampledBitmapFromUrl(url, width, height);
+			
+			// my code
+    		bitmapDecodedListener.onDecoded(bitmap, url);
 
 		} catch (IOException e) {
 			Log.e("WebCachedImageView", "Can't download image at " + url, e);
@@ -98,9 +103,6 @@ public class BitmapWorkerTask extends AsyncTask<Object, Void, Bitmap> {
             	
             	if (imageViewTask == this) {
             		imageView.setImageBitmap(bitmap);
-            		
-            		// my code
-            		bitmapDecodedListener.onDecoded(bitmap, url);
             	}
             }
         }

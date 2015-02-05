@@ -157,7 +157,6 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
     private int screenHeight;
     
     public PhotoViewAttacher2(PhotoView2 imageView) {
-//        mImageView = new WeakReference<ImageView>(imageView);
     	mImageView = new WeakReference<PhotoView2>(imageView);
 
         imageView.setDrawingCacheEnabled(true);
@@ -174,8 +173,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
             return;
         }
         // Create Gesture Detectors...
-        mScaleDragDetector = VersionedGestureDetector.newInstance(
-                imageView.getContext(), this);
+        mScaleDragDetector = VersionedGestureDetector.newInstance(imageView.getContext(), this);
 
         mGestureDetector = new GestureDetector(imageView.getContext(),
                 new GestureDetector.SimpleOnGestureListener() {
@@ -189,7 +187,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
                 });
 
         mGestureDetector.setOnDoubleTapListener(new DefaultOnDoubleTapListener2(this));
-
+        
         // Finally, update the UI so that we're zoomable
         setZoomable(true);
     }
@@ -489,8 +487,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
 //                    String.format("onScale: scale: %.2f. fX: %.2f. fY: %.2f",
 //                            scaleFactor, focusX, focusY));
 //        }
-
-//    	Log.d("test4", "on scale");
+    	
         if (getScale() < mMaxScale || scaleFactor < 1f) {
             mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
             
@@ -710,6 +707,8 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
 
                 // Update the base matrix using the current drawable
                 updateBaseMatrix(imageView.getDrawable());
+                
+                
             } else {
                 // Reset the Matrix...
                 resetMatrix();
@@ -762,6 +761,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
 
     private boolean checkMatrixBounds() {
         final ImageView imageView = getImageView();
+        
         if (null == imageView) {
             return false;
         }
@@ -841,6 +841,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
             if (null != d) {
                 mDisplayRect.set(0, 0, d.getIntrinsicWidth(),
                         d.getIntrinsicHeight());
+                
                 matrix.mapRect(mDisplayRect);
                 return mDisplayRect;
             }
@@ -889,13 +890,15 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
     private void setImageViewMatrix(Matrix matrix) {
         ImageView imageView = getImageView();
         if (null != imageView) {
-
+        	
             checkImageViewScaleType();
+            
             imageView.setImageMatrix(matrix);
 
             // Call MatrixChangedListener if needed
             if (null != mMatrixChangeListener) {
                 RectF displayRect = getDisplayRect(matrix);
+                
                 if (null != displayRect) {
                     mMatrixChangeListener.onMatrixChanged(displayRect);
                 }
@@ -918,7 +921,7 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
         final float viewHeight = getImageViewHeight(imageView);
         final int drawableWidth = d.getIntrinsicWidth();
         final int drawableHeight = d.getIntrinsicHeight();
-
+        
         mBaseMatrix.reset();
 
         final float widthScale = viewWidth / drawableWidth;
@@ -943,25 +946,20 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
         } else {
             RectF mTempSrc = new RectF(0, 0, drawableWidth, drawableHeight);
             RectF mTempDst = new RectF(0, 0, viewWidth, viewHeight);
-
+            
             switch (mScaleType) {
                 case FIT_CENTER:
-                    mBaseMatrix
-                            .setRectToRect(mTempSrc, mTempDst, ScaleToFit.CENTER);
+                    mBaseMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.CENTER);
                     break;
-
                 case FIT_START:
                     mBaseMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.START);
                     break;
-
                 case FIT_END:
                     mBaseMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.END);
                     break;
-
                 case FIT_XY:
                     mBaseMatrix.setRectToRect(mTempSrc, mTempDst, ScaleToFit.FILL);
                     break;
-
                 default:
                     break;
             }
@@ -1194,36 +1192,4 @@ public class PhotoViewAttacher2 implements IPhotoView2, View.OnTouchListener, On
 	public void setState(State state){
 		this.state = state;
 	}
-	
-//	public int setColony(List<Component> components, Bitmap mBitmap){
-//		PhotoView2 image = getImageView();
-//		for(int i = 0; i < components.size(); i++){
-//			Component component = components.get(i);
-//			if(component.getArea() >= Config.T_AREA && component.getShapeFactor() >= Config.T_SHAPE_FACTOR){
-//				HighlightView hv = getHighlightView(component.getCenterX(), component.getCenterY(), component.getRadius(), mBitmap);
-//				image.addColony(hv);
-//			}
-//		}
-//		image.invalidate();
-//		
-//		return image.getColonyList().size();
-//	}
-//	
-//	public HighlightView getHighlightView(int x, int y, int r, Bitmap mBitmap){
-//		PhotoView2 image = getImageView();
-//		
-//		HighlightView hv = new HighlightView(image);
-//		
-//		int width = mBitmap.getWidth();
-//        int height = mBitmap.getHeight();
-//        
-//        Rect imageRect = new Rect(0, 0, width, height);
-//        boolean mCircleCrop = true;
-//        Matrix mImageMatrix = image.getImageMatrix();
-//        
-//        RectF colonyRect = new RectF(x-r, y-r, x+r, y+r);
-//        hv.setup(mImageMatrix, imageRect, colonyRect, mCircleCrop, true);
-//        
-//        return hv;
-//	}
 }

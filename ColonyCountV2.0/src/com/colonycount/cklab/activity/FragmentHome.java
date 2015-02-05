@@ -24,7 +24,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +51,7 @@ import com.colonycount.cklab.libs.calendarpicker.CalendarPickerView.SelectionMod
 import com.colonycount.cklab.libs.crop.HighlightView;
 import com.colonycount.cklab.libs.crop.PhotoView2;
 import com.colonycount.cklab.libs.crop.PhotoViewAttacher2;
+import com.colonycount.cklab.libs.crop.PhotoViewAttacher2.OnMatrixChangedListener;
 import com.colonycount.cklab.libs.rangebar.RangeBar;
 import com.colonycount.cklab.model.ImgSearchFilter;
 import com.colonycount.cklab.utils.CustomGrid;
@@ -91,6 +91,8 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
     
     private boolean isRedColonyShow = true;
     
+    private boolean matrixUpdated;
+    
     public FragmentHome(String user_id, HomeActivity context){
     	this.context = context;
     	isMenuVisible = true;
@@ -111,14 +113,12 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.d("test4", "fragmentHome onCreateView");
 		View view = inflater.inflate(R.layout.layout_fragment_home, container, false);
 		setHasOptionsMenu(true);
 		setViews(view);
 		setListeners();
 		
 		if(selected){
-			Log.d("test4", "fragmentHome selected");
 			context.setGridView();
 			selected = false;
 		}
@@ -135,11 +135,6 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 		colony_type_list = new ArrayList<ListItem>();
 		colony_exp_param_list = new ArrayList<ListItem>();
 		searchFilter = new ImgSearchFilter();
-		
-		// 如果要過data
-//		if( != null){
-//			colony_num, img_urls, img_ids();
-//		} 
 	}
 	
 	private void setListeners(){
@@ -256,16 +251,32 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 										String tag_dilution_num_str = resultObj.getString("tag_dilution_num");
 										String tag_exp_param_str = resultObj.getString("tag_exp_param");
 										int colony_num = resultObj.getInt("colony_num");
-										JSONArray colonies = resultObj.getJSONArray("colonies");
-										for(int i = 0; i < colonies.length(); i++){
-											JSONObject colony = colonies.getJSONObject(i);
-											image.addColony(getHighlightView(colony.getInt("x"), colony.getInt("y"), colony.getInt("r"), colony.getInt("type"), image, Config.OUTPUT_IMAGE_WIDTH, Config.OUTPUT_IMAGE_HEIGHT));
-										}
+										final JSONArray colonies = resultObj.getJSONArray("colonies");
+										
 										
 										// set to display
 										image.setImageBitmap(colonyImg);
 										
 										PhotoViewAttacher2 mAttacher = new PhotoViewAttacher2(image);
+										mAttacher.setOnMatrixChangeListener(new OnMatrixChangedListener() {
+											@Override
+											public void onMatrixChanged(RectF rect) {
+												// while first update matrix, draw colonies
+									        	if(!matrixUpdated){
+									        		// draw colony
+									        		try {
+									        			for(int i = 0; i < colonies.length(); i++){
+															JSONObject colony = colonies.getJSONObject(i);
+															image.addColony(getHighlightView(colony.getInt("x"), colony.getInt("y"), colony.getInt("r"), colony.getInt("type"), image, Config.OUTPUT_IMAGE_WIDTH, Config.OUTPUT_IMAGE_HEIGHT));
+														}
+										          		
+											        	matrixUpdated = true;
+									        		} catch(Exception e){
+									        			
+									        		}
+									        	}
+											}
+										});
 									    // my code
 								        mAttacher.setOnDragCallback(image);
 								        mAttacher.setOnScaleCallback(image);
@@ -296,6 +307,7 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 					dialogBtnClose.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
+							matrixUpdated = false;
 							d.dismiss();
 							if(colonyImg != null && !colonyImg.isRecycled()){
 								colonyImg.recycle();
