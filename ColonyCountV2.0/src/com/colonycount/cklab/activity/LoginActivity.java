@@ -7,9 +7,19 @@ import java.util.Map;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.colonycount.cklab.activity.base.GPlusClientActivity;
@@ -26,15 +36,33 @@ import com.google.android.gms.plus.model.people.Person.Name;
 import com.google.android.gms.plus.model.people.Person.Organizations;
 
 public class LoginActivity extends GPlusClientActivity implements View.OnClickListener, AsyncTaskCompleteListener<Boolean> {
-	private SignInButton mSignInButton;
+//	private SignInButton mSignInButton;
+	
+	/**
+     * The number of pages (wizard steps) to show in this demo.
+     */
+    private static final int NUM_PAGES = 4;
+    /**
+     * The pager widget, which handles animation and allows swiping horizontally to access previous
+     * and next wizard steps.
+     */
+    private ViewPager mPager;
+    
+    private Bitmap[] colonyInfos = new Bitmap[NUM_PAGES];
+    
+    private LoginActivity activity;
+
+    /**
+     * The pager adapter, which provides the pages to the view pager widget.
+     */
+    private PagerAdapter mPagerAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setFullScreen();
 		setContentView(R.layout.layout_main);
 		setViews();
-		setListeners();
-
 		
 		if (savedInstanceState != null) {
 			mSignInProgress = savedInstanceState.getInt(SAVED_PROGRESS, STATE_DEFAULT);
@@ -53,15 +81,59 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 	
 	
 	private void setViews(){
-		mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+//		mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+		// Instantiate a ViewPager and a PagerAdapter.
+		activity = this;
+        mPager = (ViewPager) findViewById(R.id.pager);
+        colonyInfos[0] = BitmapFactory.decodeResource(getResources(), R.drawable.colonyinfo_1);
+        colonyInfos[1] = BitmapFactory.decodeResource(getResources(), R.drawable.colonyinfo_2);
+        colonyInfos[2] = BitmapFactory.decodeResource(getResources(), R.drawable.colonyinfo_3);
+        colonyInfos[3] = BitmapFactory.decodeResource(getResources(), R.drawable.colonyinfo_4);
+        
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
 	}
 	
+	/**
+     * A simple pager adapter that represents 4 ScreenSlidePageFragment objects, in
+     * sequence.
+     */
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return new ScreenSlidePageFragment(colonyInfos[position]);
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+    }
+    
+    class ScreenSlidePageFragment extends Fragment {
+    	private Bitmap image;
+    	
+    	public ScreenSlidePageFragment(Bitmap image){
+    		this.image = image;
+    	}
+    		
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_page, container, false);
+            ImageView colonyInfo = (ImageView) rootView.findViewById(R.id.colony_info);
+            SignInButton mSignInButton = (SignInButton) rootView.findViewById(R.id.sign_in_button);
+            colonyInfo.setImageBitmap(image);
+            mSignInButton.setOnClickListener(activity);
+
+            return rootView;
+        }
+    }
 	
-	private void setListeners(){
-		mSignInButton.setOnClickListener(this);
-	}
-
-
+	
 	@Override
 	public void onClick(View v) {
 		if (!mGoogleApiClient.isConnecting()) {
@@ -258,7 +330,7 @@ public class LoginActivity extends GPlusClientActivity implements View.OnClickLi
 				mSignInProgress = STATE_SIGN_IN;
 				
 				// Update the user interface to reflect that the user is signed in.
-				mSignInButton.setEnabled(false);
+//				mSignInButton.setEnabled(false);
 			} else {
 				// If the error resolution was not successful or the user
 				// canceled, we should stop processing errors.
