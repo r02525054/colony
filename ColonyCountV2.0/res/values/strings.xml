@@ -16,7 +16,7 @@
 -->
 <resources>
 
-    <string name="app_name">ColonyCount</string>
+    <string name="app_name">Colony Counter</string>
     <string name="circles_title">Visible circles:</string>
     <string name="sign_out_button_name">Sign out</string>
     <string name="revoke_access_button_name">Revoke</string>
